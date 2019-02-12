@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed", "ProjectedFSLib.Managed.vcxproj", "{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectedFSLib.Managed.Test", "ProjectedFSLib.Managed.Test\ProjectedFSLib.Managed.Test.csproj", "{B4018C7F-BF11-47BC-8770-72B05C9437EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleProviderManaged", "simpleProviderManaged\SimpleProviderManaged.csproj", "{5697F978-E1ED-4C2E-8218-4110F5EA559D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Debug|x64.ActiveCfg = Debug|x64
+		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Debug|x64.Build.0 = Debug|x64
+		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.ActiveCfg = Release|x64
+		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.Build.0 = Release|x64
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.ActiveCfg = Debug|x64
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.Build.0 = Debug|x64
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.ActiveCfg = Release|x64
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.Build.0 = Release|x64
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.ActiveCfg = Debug|x64
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.Build.0 = Debug|x64
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.ActiveCfg = Release|x64
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F3321A2-4572-44F0-B7F3-BD0E79433A1E}
+	EndGlobalSection
+EndGlobal
