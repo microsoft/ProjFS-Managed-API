@@ -12,12 +12,13 @@ very large git repos.
 Conceptual documentation for ProjFS along with documentation of its Win32 API is at
 [docs.microsoft.com](https://docs.microsoft.com/en-us/windows/desktop/projfs/projected-file-system).
 
+ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
+starting in Windows 10 version 1809.
+
 ## What is the ProjFS Managed API?
 
-ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
-starting in Windows 10 version 1809, and the Windows SDK contains a native C API.  The ProjFS Managed
-API provides a wrapper around the native API so that developers can write ProjFS providers
-using managed code.
+The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a wrapper around
+the native API so that developers can write ProjFS providers using managed code.
 
 ## Solution Layout
 
