@@ -55,6 +55,11 @@ coverage of the managed wrapper API surface.
 
 The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
 
+**Note:** The Windows Projected File System optional component must be enabled in Windows before
+you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to
+[this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
+for instructions.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
