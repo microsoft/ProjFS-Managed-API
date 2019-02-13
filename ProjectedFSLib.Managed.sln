@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed", "ProjectedFSLib.Managed.vcxproj", "{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed", "ProjectedFSLib.Managed.API\ProjectedFSLib.Managed.vcxproj", "{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectedFSLib.Managed.Test", "ProjectedFSLib.Managed.Test\ProjectedFSLib.Managed.Test.csproj", "{B4018C7F-BF11-47BC-8770-72B05C9437EE}"
 EndProject

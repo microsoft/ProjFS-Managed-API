@@ -65,7 +65,7 @@
     <Compile Include="SimpleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ProjectedFSLib.Managed.vcxproj">
+    <ProjectReference Include="..\ProjectedFSLib.Managed.API\ProjectedFSLib.Managed.vcxproj">
       <Project>{4e5f40b3-b56f-4b62-92cb-68e7e0e36afa}</Project>
       <Name>ProjectedFSLib.Managed</Name>
     </ProjectReference>
