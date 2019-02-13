@@ -1621,7 +1621,7 @@ When overridden in a derived class, stores the provider's implementation of <see
 Interface to allow for easier unit testing of a virtualization provider.
 </summary>
             <remarks>
-This class defines the interface implemented by the <c>PrjFSLib.VirtualizationInstance</c> class.
+This class defines the interface implemented by the <c>ProjFS.VirtualizationInstance</c> class.
 This interface class is provided for use by unit tests to mock up the interface to ProjFS.
 </remarks>
         </member>
@@ -1729,7 +1729,7 @@ root has failed.
 </summary>
             <remarks>
 These values are used in the <paramref name="failureReason" /> output parameter of 
-<c>PrjFSLib.VirtualizationInstance.UpdateFileIfNeeded</c> and <c>PrjFSLib.VirtualizationInstance.DeleteFile</c>.
+<c>ProjFS.VirtualizationInstance.UpdateFileIfNeeded</c> and <c>ProjFS.VirtualizationInstance.DeleteFile</c>.
 These are set if the API returns <c>HResult.VirtualizationInvalidOp</c> because the file state
 does not allow the operation with the <paramref name="updateFlags" /> value(s) passed to the API.
 </remarks>
@@ -1767,7 +1767,7 @@ contents are likely to be modified.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFilePreConvertToFull</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FilePreConvertToFull" />
     when it started the virtualization instance.</para>
@@ -1794,7 +1794,7 @@ while that handle was open, or that the file or directory was deleted as part of
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFileHandleClosedFileModifiedOrDeleted</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileHandleClosedFileModified" />
     or <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileHandleClosedFileDeleted" /> when it started the virtualization instance.</para>
@@ -1822,7 +1822,7 @@ while that handle was open, and that the file or directory was not deleted as pa
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFileHandleClosedNoModification</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileHandleClosedNoModification" />
     when it started the virtualization instance.</para>
@@ -1841,7 +1841,7 @@ while that handle was open, and that the file or directory was not deleted as pa
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyHardlinkCreated</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.HardlinkCreated" />
     when it started the virtualization instance.</para>
@@ -1849,7 +1849,7 @@ while that handle was open, and that the file or directory was not deleted as pa
     parameters of this callback are non-empty strings, this indicates that the new hard link
     was created under the virtualization root for a file that exists under the virtualization
     root.  If the provider specified different notification masks in the <paramref name="notificationMappings" />
-    parameter of <c>PrjFSLib.VirtualizationInstance.StartVirtualizing</c> for the source and
+    parameter of <c>ProjFS.VirtualizationInstance.StartVirtualizing</c> for the source and
     destination paths, then ProjFS will send this notification if the provider specified
     <see cref="F:Microsoft.Windows.ProjFS.NotificationType.HardlinkCreated" /> when registering either the source or destination
     paths.</para>
@@ -1877,7 +1877,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFileRenamed</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileRenamed" />
     when it started the virtualization instance.</para>
@@ -1885,7 +1885,7 @@ into the virtualization instance.
     parameters of this callback are non-empty strings, this indicates that the source and
     destination of the rename were both under the virtualization root.  If the provider specified
     different notification masks in the <paramref name="notificationMappings" /> parameter of
-    <c>PrjFSLib.VirtualizationInstance.StartVirtualizing</c> for the source and destination
+    <c>ProjFS.VirtualizationInstance.StartVirtualizing</c> for the source and destination
     paths, then ProjFS will send this notification if the provider specified
     <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileRenamed" /> when registering either the source or destination
     paths.</para>
@@ -1919,7 +1919,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyPreCreateHardlink</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.PreCreateHardlink" />
     when it started the virtualization instance.</para>
@@ -1927,7 +1927,7 @@ into the virtualization instance.
     parameters of this callback are non-empty strings, this indicates that the new hard link
     will be created under the virtualization root for a file that is under the virtualization
     root.  If the provider specified different notification masks in the
-    <paramref name="notificationMappings" /> parameter of <c>PrjFSLib.VirtualizationInstance.StartVirtualizing</c>
+    <paramref name="notificationMappings" /> parameter of <c>ProjFS.VirtualizationInstance.StartVirtualizing</c>
     for the source and destination paths, then ProjFS will send this notification if the provider
     specified <see cref="F:Microsoft.Windows.ProjFS.NotificationType.PreCreateHardlink" /> when registering either the
     source or destination paths.</para>
@@ -1959,7 +1959,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyPreRename</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.PreRename" />
     when it started the virtualization instance.</para>
@@ -1967,7 +1967,7 @@ into the virtualization instance.
     parameters of this callback are non-empty strings, this indicates that the source and
     destination of the rename are under the virtualization root.  If the provider specified
     different notification masks in the <paramref name="notificationMappings" /> parameter of
-    <c>PrjFSLib.VirtualizationInstance.StartVirtualizing</c> for the source and destination
+    <c>ProjFS.VirtualizationInstance.StartVirtualizing</c> for the source and destination
     paths, then ProjFS will send this notification if the provider specified
     <see cref="F:Microsoft.Windows.ProjFS.NotificationType.PreRename" /> when registering either the source or destination
     paths.</para>
@@ -2002,7 +2002,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyPreDelete</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.PreDelete" />
     when it started the virtualization instance.</para>
@@ -2028,7 +2028,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFileOverwritten</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileOverwritten" />
     when it started the virtualization instance.</para>
@@ -2051,7 +2051,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyNewFileCreated</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.NewFileCreated" />
     when it started the virtualization instance.</para>
@@ -2074,7 +2074,7 @@ into the virtualization instance.
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnNotifyFileOpened</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>
     ProjFS will invoke this callback if the provider registered for <see cref="F:Microsoft.Windows.ProjFS.NotificationType.FileOpened" />
@@ -2109,14 +2109,14 @@ is to be canceled.</summary>
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnCancelCommand</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>
     ProjFS invokes this callback to indicate that the I/O that caused the earlier callback
     to be invoked was canceled, either explicitly or because the thread it was issued on terminated.
     </para>
                 <para>
-    Calling <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> for the <paramref name="commandId" />
+    Calling <c>ProjFS.VirtualizationInstance.CompleteCommand</c> for the <paramref name="commandId" />
     passed by this callback is not an error, however it is a no-op because the I/O that caused
     the callback invocation identified by <paramref name="commandId" /> has already ended.
     </para>
@@ -2140,7 +2140,7 @@ can be canceled.</param>
             <remarks>
                 <para>
     The provider sets its implementation of this delegate into the <c>OnQueryFileName</c>
-    property of <c>PrjFSLib.VirtualizationInstance</c>.
+    property of <c>ProjFS.VirtualizationInstance</c>.
     </para>
                 <para>
     If the provider does not implement this callback, ProjFS will call the enumeration callbacks
@@ -2183,13 +2183,13 @@ Helper class to ensure correct alignment when providing file contents for a plac
             <remarks>
                 <para>
 The provider does not instantiate this class directly.  It uses the 
-<c>PrjFSLib.VirtualizationInstance.CreateWriteBuffer</c> method to obtain a properly initialized
+<c>ProjFS.VirtualizationInstance.CreateWriteBuffer</c> method to obtain a properly initialized
 instance of this class.
 </para>
                 <para>
-The <c>PrjFSLib.VirtualizationInstance.WriteFileData</c> method requires a data buffer containing
+The <c>ProjFS.VirtualizationInstance.WriteFileData</c> method requires a data buffer containing
 file data for a placeholder so that ProjFS can convert the placeholder to a hydrated placeholder
-(see <c>PrjFSLib.OnDiskFileState</c> for a discussion of file states).  Internally ProjFS uses
+(see <c>ProjFS.OnDiskFileState</c> for a discussion of file states).  Internally ProjFS uses
 the user's FILE_OBJECT to write this data to the file.  Because the user may have opened the
 file for unbuffered I/O, and unbuffered I/O imposes certain alignment requirements, this
 class is provided to abstract out those details.
@@ -2208,12 +2208,12 @@ method.
                 <para>ProjFS uses the data the provider provides in this callback to convert the file into
     a hydrated placeholder.</para>
                 <para>To handle this callback, the provider issues one or more calls to
-    <c>PrjFSLib.VirtualizationInstance.WriteFile</c> to give ProjFS the contents of the file's
+    <c>ProjFS.VirtualizationInstance.WriteFile</c> to give ProjFS the contents of the file's
     primary data stream.  Then the provider completes the callback.</para>
             </remarks>
             <param name="commandId">A value that uniquely identifies an invocation of the callback.
     <para>If the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Pending" /> from this method, then it must pass
-    this value to <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> to signal that it has
+    this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to signal that it has
     finished processing this invocation of the callback.</para></param>
             <param name="relativePath">The path, relative to the virtualization root, of the file for
 which to provide data.</param>
@@ -2223,12 +2223,12 @@ which to provide data.</param>
             <param name="length">Number of bytes of file data requested.  The provider must return at least
     this many bytes of file data beginning at <paramref name="byteOffset" />.</param>
             <param name="dataStreamId">The unique value to associate with this file stream.  The provider
-    must pass this value to <c>PrjFSLib.VirtualizationInstance.WriteFile</c> when providing
+    must pass this value to <c>ProjFS.VirtualizationInstance.WriteFile</c> when providing
     file data as part of handling this callback.</param>
             <param name="contentId">The <paramref name="contentId" /> value specified by the provider when
-    it created the placeholder for this file.  See <c>PrjFSLib.VirtualizationInstance.WritePlaceholderInfo</c>.</param>
+    it created the placeholder for this file.  See <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c>.</param>
             <param name="providerId">The <paramref name="providerId" /> value specified by the provider when
-    it created the placeholder for this file.  See <c>PrjFSLib.VirtualizationInstance.WritePlaceholderInfo</c>.</param>
+    it created the placeholder for this file.  See <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c>.</param>
             <param name="triggeringProcessId">The PID for the process that triggered this callback.  If
 this information is not available, this will be 0.</param>
             <param name="triggeringProcessImageFileName">The image file name corresponding to
@@ -2248,10 +2248,10 @@ will be <c>null</c>.</param>
                 <para>ProjFS uses the information the provider provides in this callback to create a
     placeholder for the requested item.</para>
                 <para>To handle this callback, the provider typically calls
-    <c>PrjFSLib.VirtualizationInstance.WritePlaceholderInfo</c> to give ProjFS the information
+    <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c> to give ProjFS the information
     for the requested file name.  Then the provider completes the callback.</para>
                 <para>This callback tells the provider that it must ensure that <paramref name="relativePath" />
-    exists.  Although calling <c>PrjFSLib.VirtualizationInstance.WritePlaceholderInfo</c>
+    exists.  Although calling <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c>
     is the normal way of handling this callback, a provider may satisfy the request for
     <paramref name="relativePath" /> in another way.  For example, it may instead create a
     normal file or a symbolic link to an existing file.</para>
@@ -2259,7 +2259,7 @@ will be <c>null</c>.</param>
             <param name="commandId">
                 <para>A value that uniquely identifies an invocation of the callback.</para>
                 <para>If the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Pending" /> from this method, then it must pass
-    this value to <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> to signal that it has
+    this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to signal that it has
     finished processing this invocation of the callback.</para>
             </param>
             <param name="relativePath">The path, relative to the virtualization root, of the file for
@@ -2331,15 +2331,15 @@ Requests directory enumeration information from the provider.
             <param name="commandId">
                 <para>A value that uniquely identifies an invocation of the callback.</para>
                 <para>If the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Pending" /> from this method, then it must pass
-    this value to <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> to signal that it has
+    this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to signal that it has
     finished processing this invocation of the callback.</para>
             </param>
             <param name="enumerationId">Identifies this enumeration session.</param>
             <param name="filterFileName">
                 <para>An optional string specifying a search expression.  This parameter may be <c>null</c>.</para>
                 <para>The search expression may include wildcard characters.  The provider should use the
-    <c>PrjFSLib.Utils.DoesNameContainWildCards</c> method routine to determine whether wildcards
-    are present in the search expression.  The provider should use the <c>PrjFSLib.Utils.IsFileNameMatch</c>
+    <c>ProjFS.Utils.DoesNameContainWildCards</c> method routine to determine whether wildcards
+    are present in the search expression.  The provider should use the <c>ProjFS.Utils.IsFileNameMatch</c>
     method to determine whether a directory entry in its store matches the search expression.</para>
                 <para>If this parameter is not <c>null</c>, only files whose names match the search expression
     should be included in the directory scan.</para>
@@ -2359,7 +2359,7 @@ Requests directory enumeration information from the provider.
                 <para>The provider uses one of the <see cref="T:Microsoft.Windows.ProjFS.IDirectoryEnumerationResults" />::<c>Add</c>
     methods of this object to provide the enumeration results.</para>
                 <para>If the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Pending" /> from this method, then it must pass
-    this value to <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> to provide the
+    this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to provide the
     enumeration results.</para>
             </param>
             <returns>
@@ -2392,7 +2392,7 @@ Informs the provider that a directory enumeration is starting.
             </remarks>
             <param name="commandId">A value that uniquely identifies an invocation of the callback.
     <para>If the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Pending" /> from this method, then it must pass
-    this value to <c>PrjFSLib.VirtualizationInstance.CompleteCommand</c> to signal that it has
+    this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to signal that it has
     finished processing this invocation of the callback.</para></param>
             <param name="enumerationId">Identifies this enumeration session.</param>
             <param name="relativePath">Identifies the directory to be enumerated.  The path is specified
@@ -2914,11 +2914,11 @@ has already been completed.</summary>
             <remarks>
                 <para>
 These values are used in the <paramref name="updateFlags" /> input parameter of 
-<c>PrjFSLib.VirtualizationInstance.UpdateFileIfNeeded</c> and <c>PrjFSLib.VirtualizationInstance.DeleteFile</c>.
+<c>ProjFS.VirtualizationInstance.UpdateFileIfNeeded</c> and <c>ProjFS.VirtualizationInstance.DeleteFile</c>.
 The flags control whether ProjFS should allow the update given the state of the file or directory on disk.
 </para>
                 <para>
-See the documentation for <c>PrjFSLib.OnDiskFileState</c> for a description of possible file
+See the documentation for <c>ProjFS.OnDiskFileState</c> for a description of possible file
 and directory states in ProjFS.
 </para>
             </remarks>
@@ -2953,7 +2953,7 @@ Defines values for file system operation notifications ProjFS can send to a prov
     starts a virtualization instance it specifies which notifications it wishes to receive.
     It may also specify a new set of notifications for a file when it is created or renamed.
     The provider must set implementations of <c>Notify...Callback</c> delegates in the <c>OnNotify...</c>
-    properties of <c>PrjFSLib.VirtualizationInstance</c> in order to receive the notifications
+    properties of <c>ProjFS.VirtualizationInstance</c> in order to receive the notifications
     for which it registers.
     </para>
                 <para>
@@ -2970,9 +2970,9 @@ Defines values for file system operation notifications ProjFS can send to a prov
     ProjFS does not send notifications for an inactive virtualization instance.  A virtualization
     instance is inactive if any one of the following is true:
         <list type="bullet"><item><description>
-                The provider has not yet started it by calling <c>PrjFSLib.VirtualizationInstance.StartVirtualizing</c>.
+                The provider has not yet started it by calling <c>ProjFS.VirtualizationInstance.StartVirtualizing</c>.
                 </description></item><item><description>
-                The provider has stopped the instance by calling <c>PrjFSLib.VirtualizationInstance.StopVirtualizing</c>.
+                The provider has stopped the instance by calling <c>ProjFS.VirtualizationInstance.StopVirtualizing</c>.
                 </description></item><item><description>
                 The provider process has exited.
                 </description></item></list></para>
@@ -2982,7 +2982,7 @@ Defines values for file system operation notifications ProjFS can send to a prov
     The provider specifies a default set of notifications that it wants ProjFS to send for the
     virtualization instance when it starts the instance.  The provider specifies the default
     notifications via the <paramref name="notificationMappings" /> parameter of the
-    <c>PrjFSLib.VirtualizationInstance</c> constructor, which may specify different notification
+    <c>ProjFS.VirtualizationInstance</c> constructor, which may specify different notification
     masks for different subtrees of the virtualization instance.
     </para>
                 <para>

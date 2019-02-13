@@ -10,7 +10,7 @@ namespace ProjectedFSLib.Managed.Test
 {
     // Set of basic tests to exercise the entry points in the managed code API wrapper.
     //
-    // The Microsoft.Windows.PrjFSLib managed API is a fairly thin wrapper around a set of native
+    // The Microsoft.Windows.ProjFS managed API is a fairly thin wrapper around a set of native
     // APIs for ProjFS.  The native API functionality has its own tests that are routinely executed
     // at Microsoft in the normal course of OS development.
     //
@@ -35,7 +35,7 @@ namespace ProjectedFSLib.Managed.Test
         }
 
         // We start the virtualization instance in the SetUp fixture, so that exercises the following
-        // methods in Microsoft.Windows.PrjFSLib:
+        // methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.VirtualizationInstance()
         //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
         //  VirtualizationInstance.StartVirtualizing()
@@ -50,7 +50,7 @@ namespace ProjectedFSLib.Managed.Test
         }
 
         // We stop the virtualization instance in the TearDown fixture, so that exercises the following
-        // methods in Microsoft.Windows.PrjFSLib:
+        // methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.StopVirtualizing()
         [TearDown]
         public void TestTeardown()
@@ -90,7 +90,7 @@ namespace ProjectedFSLib.Managed.Test
             helpers.StopTestProvider();
         }
 
-        // This case exercises the following methods in Microsoft.Windows.PrjFSLib:
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.WritePlaceholderInfo()
         //  VirtualizationInstance.CreateWriteBuffer()
         //  VirtualizationInstance.WriteFileData()
@@ -117,7 +117,7 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That("RandomNonsense", Is.Not.EqualTo(line));
         }
 
-        // This case exercises the following methods in Microsoft.Windows.PrjFSLib:
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
         //  DirectoryEnumerationResults.Add()
         //  
         // It also illustrates the SimpleProvider implementation of the following callbacks:
