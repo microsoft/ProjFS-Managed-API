@@ -12,7 +12,7 @@ IF EXIST %VFS_PUBLISHDIR% (
     ECHO deleting published output
     rmdir /s /q %VFS_PUBLISHDIR%
 ) ELSE (
-    ECHO no packages found
+    ECHO no published output found
 )
 
 IF EXIST %VFS_PACKAGESDIR% (
