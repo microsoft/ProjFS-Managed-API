@@ -1,5 +1,7 @@
 # ProjFS Managed API
-
+|Branch|Functional Tests|
+|:--:|:--:|
+|**master**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=1)|
 ## What is ProjFS?
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
