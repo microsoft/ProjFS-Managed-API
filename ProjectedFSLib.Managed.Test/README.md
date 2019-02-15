@@ -2,11 +2,11 @@
 
 ## Command line parameters
 
-`ProjectedFSLib.Managed.Test.exe [NUnit parameters] --ProviderExe=<path to SimpleProviderManaged.exe>`
+`ProjectedFSLib.Managed.Test.exe [NUnit parameters] --params ProviderExe=<path to SimpleProviderManaged.exe>`
 
 Where:
 * `[NUnit parameters]` are the [normal NUnit parameters](https://github.com/nunit/docs/wiki/Console-Command-Line)
-* `--ProviderExe` specifies the path to the `SimpleProviderManaged.exe` sample/test provider from the
+* `--params ProviderExe` specifies the path to the `SimpleProviderManaged.exe` sample/test provider from the
 [simpleProviderManaged](https://github.com/Microsoft/ProjFS-Managed-API/tree/master/simpleProviderManaged) project.
 
 ## Notes
