@@ -54,7 +54,8 @@ coverage of the managed wrapper API surface.
     * Windows 10 SDK (10.0.17763.0)
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
 * Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
-* Build the solution.
+* Run `src\scripts\BuildProjFS-Managed.bat`
+  * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
 
 The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
 
