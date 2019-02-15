@@ -5,6 +5,6 @@ IF "%1"=="" (SET "Configuration=Debug") ELSE (SET "Configuration=%1")
 
 set RESULT=0
 
-%VFS_OUTPUTDIR%\ProjectedFSLib.Managed.Test\bin\x64\Release\net461\ProjectedFSLib.Managed.Test.exe --params ProviderExe=%VFS_OUTPUTDIR%\SimpleProviderManaged\bin\x64\Release\SimpleProviderManaged.exe  || set RESULT=1
+%VFS_OUTPUTDIR%\ProjectedFSLib.Managed.Test\bin\x64\%Configuration%\net461\ProjectedFSLib.Managed.Test.exe --params ProviderExe=%VFS_OUTPUTDIR%\SimpleProviderManaged\bin\x64\Release\SimpleProviderManaged.exe  || set RESULT=1
 
 exit /b %RESULT%
