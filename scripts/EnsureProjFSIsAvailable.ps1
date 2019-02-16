@@ -38,7 +38,7 @@ else
 
     if (!(Test-Path $ProjFSPackageRoot))
     {
-        Write-Error "Failed to fetch $ProjFSPackageName.$ProjFSPackageVersion nupkg!"
+        Write-Error "Could not find $ProjFSPackageRoot!"
         return 1
     }
 
