@@ -6,8 +6,16 @@ $VFS_SRCDIR = (Get-Item -Path $VFS_SCRIPTSDIR\..).FullName
 $VFS_ENLISTMENTDIR = (Get-Item -Path $VFS_SRCDIR\..).FullName
 $VFS_OUTPUTDIR = "$VFS_ENLISTMENTDIR\BuildOutput"
 $VFS_PACKAGESDIR = "$VFS_ENLISTMENTDIR\packages"
-$VFS_PUBLISHDIR = "$VFS_ENLISTMENTDIR\Publish"
 $VFS_TOOLSDIR = "$VFS_ENLISTMENTDIR\.tools"
+
+Write-Host "-----------------------------------------------------"
+Write-Host "VFS_SCRIPTSDIR:     $VFS_SCRIPTSDIR"
+Write-Host "VFS_SRCDIR:         $VFS_SRCDIR"
+Write-Host "VFS_ENLISTMENTDIR:  $VFS_ENLISTMENTDIR"
+Write-Host "VFS_OUTPUTDIR:      $VFS_OUTPUTDIR"
+Write-Host "VFS_PACKAGESDIR:    $VFS_PACKAGESDIR"
+Write-Host "VFS_TOOLSDIR:       $VFS_TOOLSDIR"
+Write-Host "-----------------------------------------------------"
 
 $featureProjFS = Get-WindowsOptionalFeature -FeatureName Client-ProjFS -Online
 
@@ -46,16 +54,16 @@ else
     $RunDllArgs = "SETUPAPI.DLL,InstallHinfSection DefaultInstall 132"
     $RunDllInfPath = "$ProjFSPackageRoot\filter\PrjFlt.inf"
 
-	$InstallCommand = "$RunDll32 $RunDllArgs $RunDllInfPath"
+    $InstallCommand = "$RunDll32 $RunDllArgs $RunDllInfPath"
 
-	Write-Host "Using INF to install PrjFlt.sys: $InstallCommand"
+    Write-Host "Using INF to install PrjFlt.sys: $InstallCommand"
     iex $InstallCommand
 
-	# The above takes a moment to take effect.  Poll for the service to arrive.
-	while ((Get-Service -Name "prjflt" -ErrorAction SilentlyContinue).Count -eq 0)
-	{
-		Start-Sleep -Seconds 1
-	}
+    # The above takes a moment to take effect.  Poll for the service to arrive.
+    while ((Get-Service -Name "prjflt" -ErrorAction SilentlyContinue).Count -eq 0)
+    {
+        Start-Sleep -Seconds 1
+    }
 
-	Start-Service -Name "prjflt"
+    Start-Service -Name "prjflt"
 }
