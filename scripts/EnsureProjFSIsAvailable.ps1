@@ -1,7 +1,7 @@
 ﻿$ProjFSPackageName = "GVFS.ProjFS"
 $ProjFSPackageVersion = "2018.823.1"
 
-$VFS_SCRIPTSDIR = (Get-Location).Path
+$VFS_SCRIPTSDIR = $PSScriptRoot
 $VFS_SRCDIR = (Get-Item -Path $VFS_SCRIPTSDIR\..).FullName
 $VFS_ENLISTMENTDIR = (Get-Item -Path $VFS_SRCDIR\..).FullName
 $VFS_OUTPUTDIR = "$VFS_ENLISTMENTDIR\BuildOutput"
