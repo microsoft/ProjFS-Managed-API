@@ -1,9 +1,4 @@
-﻿function ExitWithCode($exitcode) {
-  $host.SetShouldExit($exitcode)
-  exit $exitcode
-}
-
-$ProjFSPackageName = "GVFS.ProjFS"
+﻿$ProjFSPackageName = "GVFS.ProjFS"
 $ProjFSPackageVersion = "2018.823.1"
 
 $VFS_SCRIPTSDIR = (Get-Location).Path
@@ -44,12 +39,23 @@ else
     if (!(Test-Path $ProjFSPackageRoot))
     {
         Write-Error "Failed to fetch $ProjFSPackageName.$ProjFSPackageVersion nupkg!"
-        ExitWithCode(1)
+        return 1
     }
 
     $RunDll32 = "$env:SystemRoot\System32\rundll32.exe"
-    $RunDllArgs = "SETUPAPI.DLL,InstallHinfSection DefaultInstall 128"
+    $RunDllArgs = "SETUPAPI.DLL,InstallHinfSection DefaultInstall 132"
     $RunDllInfPath = "$ProjFSPackageRoot\filter\PrjFlt.inf"
 
-    & $RunDll32 $RunDllArgs $RunDllInfPath
+	$InstallCommand = "$RunDll32 $RunDllArgs $RunDllInfPath"
+
+	Write-Host "Using INF to install PrjFlt.sys: $InstallCommand"
+    iex $InstallCommand
+
+	# The above takes a moment to take effect.  Poll for the service to arrive.
+	while ((Get-Service -Name "prjflt" -ErrorAction SilentlyContinue).Count -eq 0)
+	{
+		Start-Sleep -Seconds 1
+	}
+
+	Start-Service -Name "prjflt"
 }
