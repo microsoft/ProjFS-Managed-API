@@ -5,6 +5,7 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using Microsoft.Windows.ProjFS;
+using Serilog;
 
 namespace SimpleProviderManaged
 {
@@ -76,10 +77,11 @@ namespace SimpleProviderManaged
                 this.virtualizationInstance,
                 notificationMappings);
 
-            Console.WriteLine($"Created instance. Layer [{this.layerRoot}], Scratch [{this.scratchRoot}]");
+            Log.Information($"Created instance. Layer [{this.layerRoot}], Scratch [{this.scratchRoot}]");
+
             if (this.testMode)
             {
-                Console.WriteLine("Provider started in TEST MODE.");
+                Log.Information("Provider started in TEST MODE.");
             }
 
             this.activeEnumerations = new ConcurrentDictionary<Guid, ActiveEnumeration>();
@@ -94,7 +96,7 @@ namespace SimpleProviderManaged
             HResult hr = this.virtualizationInstance.StartVirtualizing(requiredCallbacks);
             if (hr != HResult.Ok)
             {
-                Console.WriteLine($"Failed to start virtualization instance, hr [{hr}]");
+                Log.Error($"Failed to start virtualization instance, hr [{hr}]");
                 return false;
             }
 
@@ -132,20 +134,20 @@ namespace SimpleProviderManaged
                     // Tell the test that it is allowed to proceed.
                     waitHandle.Set();
                 }
-                catch (WaitHandleCannotBeOpenedException)
+                catch (WaitHandleCannotBeOpenedException ex)
                 {
-                    Console.Error.WriteLine("Test mode specified but wait event does not exist.  Clearing test mode.");
+                    Log.Error(ex, "Test mode specified but wait event does not exist.  Clearing test mode.");
                     this.testMode = false;
                     notificationCallbacks.TestMode = false;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    Console.Error.WriteLine("Unauthorized access: {0}", ex.Message);
+                    Log.Fatal(ex, "Opening event {Name}", eventName);
                     return false;
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine("Some other exception: {0}", ex.Message);
+                    Log.Fatal(ex, "Opening event {Name}", eventName);
                     return false;
                 }
             }

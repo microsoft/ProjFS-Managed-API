@@ -1,7 +1,6 @@
 using CommandLine;
+using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleProviderManaged
 {
@@ -9,18 +8,29 @@ namespace SimpleProviderManaged
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("SimpleProviderManaged-.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            Log.Information("Start");
+
             var parserResult = Parser.Default
                 .ParseArguments<ProviderOptions>(args)
                 .WithParsed((ProviderOptions options) => { Run(options); });
+
+            Log.Information("Exit");
         }
 
         private static void Run(ProviderOptions options)
         {
             SimpleProvider provider = new SimpleProvider(options);
 
+            Log.Information("Starting provider");
+
             if (!provider.StartVirtualization())
             {
-                Console.Error.WriteLine("Could not start provider.");
+                Log.Error("Could not start provider.");
                 Environment.Exit(1);
             }
 
