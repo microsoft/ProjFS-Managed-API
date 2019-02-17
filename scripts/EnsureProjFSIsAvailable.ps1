@@ -32,6 +32,7 @@ else
 {
     Write-Host "Installing ProjFS RS5 from NuGet"
 
+    # Ensure that we have nuget.exe
     $nuget = "$VFS_TOOLSDIR\nuget.exe"
 
     if (!(Test-Path $nuget))
@@ -40,6 +41,7 @@ else
         Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile $nuget
     }
 
+    # Get the ProjFS RS5 package
     & $nuget install $ProjFSPackageName -Version $ProjFSPackageVersion
 
     $ProjFSPackageRoot = "$VFS_PACKAGESDIR\$ProjFSPackageName.$ProjFSPackageVersion"
@@ -50,6 +52,7 @@ else
         return 1
     }
 
+    # Install prjflt.sys.
     $RunDll32 = "$env:SystemRoot\System32\rundll32.exe"
     $RunDllArgs = "SETUPAPI.DLL,InstallHinfSection DefaultInstall 132"
     $RunDllInfPath = "$ProjFSPackageRoot\filter\PrjFlt.inf"
@@ -57,13 +60,18 @@ else
     $InstallCommand = "$RunDll32 $RunDllArgs $RunDllInfPath"
 
     Write-Host "Using INF to install PrjFlt.sys: $InstallCommand"
-    iex $InstallCommand
+    Invoke-Expression $InstallCommand
 
-    # The above takes a moment to take effect.  Poll for the service to arrive.
+    # Copy the user-mode library DLL into place.
+    
+
+    # The rundll32.exe command can take a second or two to take effect.  Poll for
+    # the service to arrive.
     while ((Get-Service -Name "prjflt" -ErrorAction SilentlyContinue).Count -eq 0)
     {
         Start-Sleep -Seconds 1
     }
 
+    # Load prjflt.sys.
     Start-Service -Name "prjflt"
 }
