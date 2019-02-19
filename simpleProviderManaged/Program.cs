@@ -8,9 +8,10 @@ namespace SimpleProviderManaged
     {
         public static void Main(string[] args)
         {
+            // We want verbose logging so we can see all our callback invocations.
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File("SimpleProviderManaged-.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
             Log.Information("Start");
@@ -24,7 +25,16 @@ namespace SimpleProviderManaged
 
         private static void Run(ProviderOptions options)
         {
-            SimpleProvider provider = new SimpleProvider(options);
+            SimpleProvider provider;
+            try
+            {
+                provider = new SimpleProvider(options);
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Failed to create SimpleProvider.");
+                throw;
+            }
 
             Log.Information("Starting provider");
 
