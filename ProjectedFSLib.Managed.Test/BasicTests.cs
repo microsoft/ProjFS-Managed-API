@@ -31,7 +31,8 @@ namespace ProjectedFSLib.Managed.Test
         [OneTimeSetUp]
         public void ClassSetup()
         {
-            helpers = new Helpers();
+            // Default timeout for wait handles is 10 seconds
+            helpers = new Helpers(10 * 1000);
         }
 
         // We start the virtualization instance in the SetUp fixture, so that exercises the following
@@ -228,8 +229,8 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the FileOpened and
             // FileHandleClosedNoModification notifications.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOpened].WaitOne(100));
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedNoModification].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOpened].WaitOne(helpers.WaitTimeoutInMs));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedNoModification].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [Test]
@@ -241,7 +242,7 @@ namespace ProjectedFSLib.Managed.Test
             helpers.CreateFullFile(fileName);
 
             // Wait for the provider to signal that it processed the NewFileCreated notification.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.NewFileCreated].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.NewFileCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [Test]
@@ -258,7 +259,7 @@ namespace ProjectedFSLib.Managed.Test
             }
 
             // Wait for the provider to signal that it processed the FileOverwritten notification.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOverwritten].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOverwritten].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [Test]
@@ -275,8 +276,8 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the PreDelete and
             // FileHandleClosedFileModifiedOrDeleted notifications.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreDelete].WaitOne(100));
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedFileModifiedOrDeleted].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreDelete].WaitOne(helpers.WaitTimeoutInMs));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedFileModifiedOrDeleted].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [Test]
@@ -294,8 +295,8 @@ namespace ProjectedFSLib.Managed.Test
             File.Move(filePath, newFilePath);
 
             // Wait for the provider to signal that it processed the PreRename and FileRenamed notifications.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreRename].WaitOne(100));
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileRenamed].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreRename].WaitOne(helpers.WaitTimeoutInMs));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileRenamed].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Unicode)]
@@ -321,8 +322,8 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the PreCreateHardlink and HardlinkCreated
             // notifications.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreCreateHardlink].WaitOne(100));
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.HardlinkCreated].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.PreCreateHardlink].WaitOne(helpers.WaitTimeoutInMs));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.HardlinkCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
         [Test]
@@ -340,7 +341,7 @@ namespace ProjectedFSLib.Managed.Test
             }
 
             // Wait for the provider to signal that it processed the FilePreConvertToFull notification.
-            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(100));
+            Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(helpers.WaitTimeoutInMs));
         }
     }
 }
