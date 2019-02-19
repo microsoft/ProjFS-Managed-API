@@ -39,7 +39,7 @@ namespace ProjectedFSLib.Managed.Test
         )
         {
             m_waitTimeoutInMs = waitTimeoutInMs;
-            
+
             // Create the events that the notifications tests use.
             notificationEvents = new List<EventWaitHandle>();
             foreach (string eventName in Enum.GetNames(typeof(NotifyWaitHandleNames)))
@@ -70,7 +70,7 @@ namespace ProjectedFSLib.Managed.Test
             ProviderProcess.Start();
 
             // Wait for the provider to signal the event.
-            if (!waitHandle.WaitOne(WaittTimeoutInMs))
+            if (!waitHandle.WaitOne(WaitTimeoutInMs))
             {
                 throw new Exception("SimpleProviderManaged did not signal the ProviderTestProceed event in a timely manner.");
             }
