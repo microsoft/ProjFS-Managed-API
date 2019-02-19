@@ -1,4 +1,6 @@
-﻿$ProjFSPackageName = "GVFS.ProjFS"
+﻿$ErrorActionPreference = "Stop"
+
+$ProjFSPackageName = "GVFS.ProjFS"
 $ProjFSPackageVersion = "2018.823.1"
 
 $VFS_SCRIPTSDIR = $PSScriptRoot
@@ -63,7 +65,7 @@ else
     Invoke-Expression $InstallCommand
 
     # Copy the user-mode library DLL into place.
-    
+    Copy-Item -Path $ProjFSPackageRoot\lib\x64\ProjectedFSLib.dll -Destination $env:SystemRoot\System32
 
     # The rundll32.exe command can take a second or two to take effect.  Poll for
     # the service to arrive.
