@@ -1,7 +1,6 @@
 using CommandLine;
+using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SimpleProviderManaged
 {
@@ -9,18 +8,39 @@ namespace SimpleProviderManaged
     {
         public static void Main(string[] args)
         {
+            // We want verbose logging so we can see all our callback invocations.
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            Log.Information("Start");
+
             var parserResult = Parser.Default
                 .ParseArguments<ProviderOptions>(args)
                 .WithParsed((ProviderOptions options) => { Run(options); });
+
+            Log.Information("Exit");
         }
 
         private static void Run(ProviderOptions options)
         {
-            SimpleProvider provider = new SimpleProvider(options);
+            SimpleProvider provider;
+            try
+            {
+                provider = new SimpleProvider(options);
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Failed to create SimpleProvider.");
+                throw;
+            }
+
+            Log.Information("Starting provider");
 
             if (!provider.StartVirtualization())
             {
-                Console.Error.WriteLine("Could not start provider.");
+                Log.Error("Could not start provider.");
                 Environment.Exit(1);
             }
 

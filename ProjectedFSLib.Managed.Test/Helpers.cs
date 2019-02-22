@@ -10,8 +10,11 @@ namespace ProjectedFSLib.Managed.Test
 {
     class Helpers
     {
-        private Process providerProcess;
-        public Process ProviderProcess { get => providerProcess; set => providerProcess = value; }
+        private Process m_providerProcess;
+        public Process ProviderProcess { get => m_providerProcess; set => m_providerProcess = value; }
+
+        private int m_waitTimeoutInMs;
+        public int WaitTimeoutInMs { get => m_waitTimeoutInMs; set => m_waitTimeoutInMs = value; }
 
         internal enum NotifyWaitHandleNames
         {
@@ -30,9 +33,13 @@ namespace ProjectedFSLib.Managed.Test
 
         private List<EventWaitHandle> notificationEvents;
         public List<EventWaitHandle> NotificationEvents { get => notificationEvents; }
-
-        public Helpers()
+        
+        public Helpers(
+            int waitTimeoutInMs
+        )
         {
+            m_waitTimeoutInMs = waitTimeoutInMs;
+
             // Create the events that the notifications tests use.
             notificationEvents = new List<EventWaitHandle>();
             foreach (string eventName in Enum.GetNames(typeof(NotifyWaitHandleNames)))
@@ -63,7 +70,7 @@ namespace ProjectedFSLib.Managed.Test
             ProviderProcess.Start();
 
             // Wait for the provider to signal the event.
-            if (!waitHandle.WaitOne(500))
+            if (!waitHandle.WaitOne(WaitTimeoutInMs))
             {
                 throw new Exception("SimpleProviderManaged did not signal the ProviderTestProceed event in a timely manner.");
             }

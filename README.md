@@ -1,5 +1,7 @@
 # ProjFS Managed API
-
+|Branch|Functional Tests|
+|:--:|:--:|
+|**master**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=1)|
 ## What is ProjFS?
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
@@ -44,15 +46,17 @@ coverage of the managed wrapper API surface.
 
 * Install Visual Studio 2017 Community Edition or higher (https://www.visualstudio.com/downloads/).
   * Include the following workloads: 
-    * .NET desktop development
-    * Desktop development with C++
+    * **.NET desktop development**
+      * Add the **.NET Core 2.1 development tools** optional component.
+    * **Desktop development with C++**
   * Include the following individual components:
-    * .NET Framework 4.6.1 SDK
-    * C++/CLI support
-    * Windows 10 SDK (10.0.17763.0)
+    * **.NET Framework 4.6.1 SDK**
+    * **C++/CLI support**
+    * **Windows 10 SDK (10.0.17763.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
 * Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
-* Build the solution.
+* Run `src\scripts\BuildProjFS-Managed.bat`
+  * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
 
 The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
 

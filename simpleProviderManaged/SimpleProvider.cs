@@ -1,3 +1,4 @@
+using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -61,13 +62,21 @@ namespace SimpleProviderManaged
                 };
             }
 
-            // This will create the virtualization root directory if it doesn't already exist.
-            this.virtualizationInstance = new VirtualizationInstance(
-                this.scratchRoot,
-                poolThreadCount: 0,
-                concurrentThreadCount: 0,
-                enableNegativePathCache: false,
-                notificationMappings: notificationMappings);
+            try
+            {
+                // This will create the virtualization root directory if it doesn't already exist.
+                this.virtualizationInstance = new VirtualizationInstance(
+                    this.scratchRoot,
+                    poolThreadCount: 0,
+                    concurrentThreadCount: 0,
+                    enableNegativePathCache: false,
+                    notificationMappings: notificationMappings);
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal(ex, "Failed to create VirtualizationInstance.");
+                throw;
+            }
 
             // Set up notifications.
             notificationCallbacks = new NotificationCallbacks(
@@ -76,10 +85,11 @@ namespace SimpleProviderManaged
                 this.virtualizationInstance,
                 notificationMappings);
 
-            Console.WriteLine($"Created instance. Layer [{this.layerRoot}], Scratch [{this.scratchRoot}]");
+            Log.Information("Created instance. Layer [{Layer}], Scratch [{Scratch}]", this.layerRoot, this.scratchRoot);
+
             if (this.testMode)
             {
-                Console.WriteLine("Provider started in TEST MODE.");
+                Log.Information("Provider started in TEST MODE.");
             }
 
             this.activeEnumerations = new ConcurrentDictionary<Guid, ActiveEnumeration>();
@@ -94,7 +104,7 @@ namespace SimpleProviderManaged
             HResult hr = this.virtualizationInstance.StartVirtualizing(requiredCallbacks);
             if (hr != HResult.Ok)
             {
-                Console.WriteLine($"Failed to start virtualization instance, hr [{hr}]");
+                Log.Error("Failed to start virtualization instance: {Result}", hr);
                 return false;
             }
 
@@ -132,20 +142,20 @@ namespace SimpleProviderManaged
                     // Tell the test that it is allowed to proceed.
                     waitHandle.Set();
                 }
-                catch (WaitHandleCannotBeOpenedException)
+                catch (WaitHandleCannotBeOpenedException ex)
                 {
-                    Console.Error.WriteLine("Test mode specified but wait event does not exist.  Clearing test mode.");
+                    Log.Error(ex, "Test mode specified but wait event does not exist.  Clearing test mode.");
                     this.testMode = false;
                     notificationCallbacks.TestMode = false;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    Console.Error.WriteLine("Unauthorized access: {0}", ex.Message);
+                    Log.Fatal(ex, "Opening event {Name}", eventName);
                     return false;
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine("Some other exception: {0}", ex.Message);
+                    Log.Fatal(ex, "Opening event {Name}", eventName);
                     return false;
                 }
             }
@@ -313,7 +323,7 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"----> StartDirectoryEnumerationCallback Path [{relativePath}]");
+            Log.Information("----> StartDirectoryEnumerationCallback Path [{Path}]", relativePath);
 
             // Enumerate the corresponding directory in the layer and ensure it is sorted the way
             // ProjFS expects.
@@ -330,7 +340,7 @@ namespace SimpleProviderManaged
                 return HResult.InternalError;
             }
 
-            Console.WriteLine($"<---- StartDirectoryEnumerationCallback {HResult.Ok}");
+            Log.Information("<---- StartDirectoryEnumerationCallback {Result}", HResult.Ok);
 
             return HResult.Ok;
         }
@@ -342,7 +352,7 @@ namespace SimpleProviderManaged
             bool restartScan,
             IDirectoryEnumerationResults enumResult)
         {
-            Console.WriteLine($"----> GetDirectoryEnumerationCallback filterFileName [{filterFileName}]");
+            Log.Information("----> GetDirectoryEnumerationCallback filterFileName [{Filter}]", filterFileName);
 
             // Find the requested enumeration.  It should have been put there by StartDirectoryEnumeration.
             if (!this.activeEnumerations.TryGetValue(enumerationId, out ActiveEnumeration enumeration))
@@ -401,21 +411,21 @@ namespace SimpleProviderManaged
                 }
             }
 
-            Console.WriteLine($"<---- GetDirectoryEnumerationCallback {hr}");
+            Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
             return hr;
         }
 
         internal HResult EndDirectoryEnumerationCallback(
             Guid enumerationId)
         {
-            Console.WriteLine("----> EndDirectoryEnumerationCallback");
+            Log.Information("----> EndDirectoryEnumerationCallback");
 
             if (!this.activeEnumerations.TryRemove(enumerationId, out ActiveEnumeration enumeration))
             {
                 return HResult.InternalError;
             }
 
-            Console.WriteLine($"<---- EndDirectoryEnumerationCallback {HResult.Ok}");
+            Log.Information("<---- EndDirectoryEnumerationCallback {Result}", HResult.Ok);
 
             return HResult.Ok;
         }
@@ -426,8 +436,8 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"----> GetPlaceholderInfoCallback [{relativePath}]");
-            Console.WriteLine($"  Placeholder creation triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("----> GetPlaceholderInfoCallback [{Path}]", relativePath);
+            Log.Information("  Placeholder creation triggered by [{ProcName} {PID}]", triggeringProcessImageFileName, triggeringProcessId);
 
             HResult hr = HResult.Ok;
             ProjectedFileInfo fileInfo = this.GetFileInfoInLayer(relativePath);
@@ -450,7 +460,7 @@ namespace SimpleProviderManaged
                     providerId: new byte[] { 1 });
             }
 
-            Console.WriteLine($"<---- GetPlaceholderInfoCallback {hr}");
+            Log.Information("<---- GetPlaceholderInfoCallback {Result}", hr);
             return hr;
         }
 
@@ -465,8 +475,8 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"----> GetFileDataCallback relativePath [{relativePath}]");
-            Console.WriteLine($"  triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("----> GetFileDataCallback relativePath [{Path}]", relativePath);
+            Log.Information("  triggered by [{ProcName} {PID}]", triggeringProcessImageFileName, triggeringProcessId);
 
             HResult hr = HResult.Ok;
 
@@ -510,7 +520,7 @@ namespace SimpleProviderManaged
 
                                 if (writeResult != HResult.Ok)
                                 {
-                                    Console.WriteLine($"WriteFileData failed: {writeResult}");
+                                    Log.Error("VirtualizationInstance.WriteFileData failed: {Result}", writeResult);
                                     return false;
                                 }
 
@@ -526,29 +536,24 @@ namespace SimpleProviderManaged
                 }
                 catch (OutOfMemoryException e)
                 {
-                    Console.WriteLine("OutOfMemoryException in GetFileDataCallback: " + e.Message);
+                    Log.Error(e, "Out of memory");
                     hr = HResult.OutOfMemory;
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
-                    Console.WriteLine("IOException in GetFileDataCallback: " + e.Message);
-                    hr = HResult.InternalError;
-                }
-                catch (UnauthorizedAccessException e)
-                {
-                    Console.WriteLine("UnauthorizedAccessException in GetFileDataCallback: " + e.Message);
+                    Log.Error(e, "Exception");
                     hr = HResult.InternalError;
                 }
             }
 
-            Console.WriteLine($"<---- return status {hr}");
+            Log.Information("<---- return status {Result}", hr);
             return hr;
         }
 
         private HResult QueryFileNameCallback(
             string relativePath)
         {
-            Console.WriteLine($"----> QueryFileNameCallback relativePath [{relativePath}]");
+            Log.Information("----> QueryFileNameCallback relativePath [{Path}]", relativePath);
 
             HResult hr = HResult.Ok;
             string parentDirectory = Path.GetDirectoryName(relativePath);
@@ -562,7 +567,7 @@ namespace SimpleProviderManaged
                 hr = HResult.FileNotFound;
             }
 
-            Console.WriteLine($"<---- QueryFileNameCallback {hr}");
+            Log.Information("<---- QueryFileNameCallback {Result}", hr);
             return hr;
         }
 
