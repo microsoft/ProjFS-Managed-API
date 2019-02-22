@@ -17,7 +17,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{80F77524-CD14-4BD0-A197-8E7D5DD7B6E0}"
 	ProjectSection(SolutionItems) = preProject
 		scripts\BuildProjFS-Managed.bat = scripts\BuildProjFS-Managed.bat
-		scripts\EnsureProjFSIsAvailable.ps1 = scripts\EnsureProjFSIsAvailable.ps1
 		scripts\InitializeEnvironment.bat = scripts\InitializeEnvironment.bat
 		scripts\NukeBuildOutputs.bat = scripts\NukeBuildOutputs.bat
 		scripts\RunTests.bat = scripts\RunTests.bat
