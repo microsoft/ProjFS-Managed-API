@@ -8,7 +8,7 @@ IF "%2"=="" (SET "ProjFSManagedVersion=0.2.173.2") ELSE (SET "ProjFSManagedVersi
 
 SET SolutionConfiguration=%Configuration%
 
-SET nuget="%VFS_TOOLSDIR%\nuget.exe"
+SET nuget="%PROJFS_TOOLSDIR%\nuget.exe"
 IF NOT EXIST %nuget% (
   mkdir %nuget%\..
   powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile %nuget%"
@@ -17,7 +17,7 @@ IF NOT EXIST %nuget% (
 :: Acquire vswhere to find dev15 installations reliably.
 SET vswherever=2.5.2
 %nuget% install vswhere -Version %vswherever% || exit /b 1
-SET vswhere=%VFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
+SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 
 :: Use vswhere to find the latest VS installation (including prerelease installations) with the msbuild component.
 :: See https://github.com/Microsoft/vswhere/wiki/Find-MSBuild
@@ -38,10 +38,10 @@ IF NOT EXIST %msbuild% (
 )
 
 :: Restore all dependencies.
-%nuget% restore %VFS_SRCDIR%\ProjectedFSLib.Managed.sln
-dotnet restore %VFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:Configuration=%SolutionConfiguration% /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140" --packages %VFS_PACKAGESDIR% || exit /b 1
+%nuget% restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln
+dotnet restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:Configuration=%SolutionConfiguration% /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140" --packages %PROJFS_PACKAGESDIR% || exit /b 1
 
 :: Kick off the build.
-%msbuild% %VFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 || exit /b 1
+%msbuild% %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 || exit /b 1
 
 ENDLOCAL
