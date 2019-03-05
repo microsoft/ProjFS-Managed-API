@@ -16,6 +16,11 @@ SET PROJFS_PACKAGESDIR=%PROJFS_ENLISTMENTDIR%\packages
 SET PROJFS_PUBLISHDIR=%PROJFS_ENLISTMENTDIR%\Publish
 SET PROJFS_TOOLSDIR=%PROJFS_ENLISTMENTDIR%\.tools
 
+@echo '##vso[task.setvariable variable=PROJFS_OUTPUTDIR]%PROJFS_OUTPUTDIR%'
+@echo '##vso[task.setvariable variable=PROJFS_PACKAGESDIR]%PROJFS_PACKAGESDIR%'
+@echo '##vso[task.setvariable variable=PROJFS_PUBLISHDIR]%PROJFS_PUBLISHDIR%'
+@echo '##vso[task.setvariable variable=PROJFS_TOOLSDIR]%PROJFS_TOOLSDIR%'
+
 REM Clean up
 SET _PARSED_PATH_=
 
