@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
+#include "IWriteBuffer.h"
 #include "ApiHelper.h"
 
 #pragma once
@@ -32,7 +33,7 @@ namespace ProjFS {
     /// method.
     /// </para>
     /// </remarks>
-    public ref class WriteBuffer
+    public ref class WriteBuffer : IWriteBuffer
     {
     internal:
         WriteBuffer(
@@ -50,25 +51,25 @@ namespace ProjFS {
         /// <summary>
         /// Gets the allocated length of the buffer.
         /// </summary>
-        property long long Length
+        virtual property long long Length
         {
-            long long get(void);
+            long long get(void) sealed;
         };
 
         /// <summary>
         /// Gets a <see cref="System::IO::UnmanagedMemoryStream"/> representing the internal buffer.
         /// </summary>
-        property System::IO::UnmanagedMemoryStream^ Stream
+        virtual property System::IO::UnmanagedMemoryStream^ Stream
         {
-            System::IO::UnmanagedMemoryStream^ get(void);
+            System::IO::UnmanagedMemoryStream^ get(void) sealed;
         };
 
         /// <summary>
         /// Gets a pointer to the internal buffer.
         /// </summary>
-        property System::IntPtr Pointer
+        virtual property System::IntPtr Pointer
         {
-            System::IntPtr get(void);
+            System::IntPtr get(void) sealed;
         }
 
     protected:

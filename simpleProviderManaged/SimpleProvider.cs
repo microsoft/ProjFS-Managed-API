@@ -496,7 +496,7 @@ namespace SimpleProviderManaged
                     // We could have used VirtualizationInstance.CreateWriteBuffer(uint), but this 
                     // illustrates how to use its more complex overload.  This method gets us a 
                     // buffer whose underlying storage is properly aligned for unbuffered I/O.
-                    using (WriteBuffer writeBuffer = this.virtualizationInstance.CreateWriteBuffer(
+                    using (IWriteBuffer writeBuffer = this.virtualizationInstance.CreateWriteBuffer(
                         byteOffset,
                         desiredBufferSize,
                         out ulong alignedWriteOffset,
