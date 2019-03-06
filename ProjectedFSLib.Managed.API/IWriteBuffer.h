@@ -14,7 +14,7 @@ namespace ProjFS {
 /// This class defines the interface implemented by the <c>Microsoft.Windows.ProjFS.WriteBuffer</c>
 /// class.  This interface class is provided for use by unit tests to mock up the interface to ProjFS.
 /// </remarks>
-public interface class IWriteBuffer
+public interface class IWriteBuffer : System::IDisposable
 {
 public:
 
