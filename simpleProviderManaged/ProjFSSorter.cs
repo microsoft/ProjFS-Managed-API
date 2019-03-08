@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Windows.ProjFS;
 
 namespace SimpleProviderManaged

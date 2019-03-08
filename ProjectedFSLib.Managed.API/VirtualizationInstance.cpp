@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-
 #include "stdafx.h"
 #include "VirtualizationInstance.h"
 #include "Utils.h"
@@ -746,7 +743,7 @@ HResult VirtualizationInstance::ClearNegativePathCache([Out] unsigned int% total
 
 HResult VirtualizationInstance::WriteFileData(
     Guid dataStreamId,
-    IWriteBuffer^ buffer,
+    WriteBuffer^ buffer,
     unsigned long long byteOffset,
     unsigned long length)
 {
@@ -957,7 +954,7 @@ HResult VirtualizationInstance::CompleteCommand(
         &extendedParams));
 }
 
-IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
+WriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     unsigned int desiredBufferSize)
 {
     WriteBuffer^ buffer;
@@ -992,7 +989,7 @@ IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     return buffer;
 }
 
-IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
+WriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     unsigned long long byteOffset,
     unsigned int length,
     [Out] unsigned long long% alignedByteOffset,

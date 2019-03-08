@@ -108,7 +108,6 @@
     <ClInclude Include="IDirectoryEnumerationResults.h" />
     <ClInclude Include="IRequiredCallbacks.h" />
     <ClInclude Include="IVirtualizationInstance.h" />
-    <ClInclude Include="IWriteBuffer.h" />
     <ClInclude Include="NotificationMapping.h" />
     <ClInclude Include="NotificationType.h" />
     <ClInclude Include="OnDiskFileState.h" />

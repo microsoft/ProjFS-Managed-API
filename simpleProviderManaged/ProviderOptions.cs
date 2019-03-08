@@ -1,7 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-
-using CommandLine;
+﻿using CommandLine;
 using CommandLine.Text;
 using System.Collections.Generic;
 

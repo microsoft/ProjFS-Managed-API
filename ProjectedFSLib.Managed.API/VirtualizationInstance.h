@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-
 #pragma once
 
 #include "IVirtualizationInstance.h"
@@ -514,7 +511,7 @@ namespace ProjFS {
         /// <seealso cref="WriteBuffer"/>
         virtual HResult WriteFileData(
             System::Guid dataStreamId,
-            IWriteBuffer^ buffer,
+            WriteBuffer^ buffer,
             unsigned long long byteOffset,
             unsigned long length) sealed;
 
@@ -933,7 +930,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        virtual IWriteBuffer^ CreateWriteBuffer(
+        virtual WriteBuffer^ CreateWriteBuffer(
             unsigned int desiredBufferSize) sealed;
 
         /// <summary>
@@ -980,7 +977,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        virtual IWriteBuffer^ CreateWriteBuffer(
+        virtual WriteBuffer^ CreateWriteBuffer(
             unsigned long long byteOffset,
             unsigned int length,
             [Out] unsigned long long% alignedByteOffset,
