@@ -514,7 +514,7 @@ namespace ProjFS {
         /// <seealso cref="WriteBuffer"/>
         virtual HResult WriteFileData(
             System::Guid dataStreamId,
-            WriteBuffer^ buffer,
+            IWriteBuffer^ buffer,
             unsigned long long byteOffset,
             unsigned long length) sealed;
 
@@ -933,7 +933,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        virtual WriteBuffer^ CreateWriteBuffer(
+        virtual IWriteBuffer^ CreateWriteBuffer(
             unsigned int desiredBufferSize) sealed;
 
         /// <summary>
@@ -980,7 +980,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        virtual WriteBuffer^ CreateWriteBuffer(
+        virtual IWriteBuffer^ CreateWriteBuffer(
             unsigned long long byteOffset,
             unsigned int length,
             [Out] unsigned long long% alignedByteOffset,

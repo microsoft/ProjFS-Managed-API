@@ -746,7 +746,7 @@ HResult VirtualizationInstance::ClearNegativePathCache([Out] unsigned int% total
 
 HResult VirtualizationInstance::WriteFileData(
     Guid dataStreamId,
-    WriteBuffer^ buffer,
+    IWriteBuffer^ buffer,
     unsigned long long byteOffset,
     unsigned long length)
 {
@@ -957,7 +957,7 @@ HResult VirtualizationInstance::CompleteCommand(
         &extendedParams));
 }
 
-WriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
+IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     unsigned int desiredBufferSize)
 {
     WriteBuffer^ buffer;
@@ -992,7 +992,7 @@ WriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     return buffer;
 }
 
-WriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
+IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     unsigned long long byteOffset,
     unsigned int length,
     [Out] unsigned long long% alignedByteOffset,
