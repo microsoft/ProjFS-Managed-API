@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 #pragma once
 
 #include "IRequiredCallbacks.h"
@@ -243,7 +246,7 @@ namespace ProjFS {
         /// <seealso cref="WriteBuffer"/>
         HResult WriteFileData(
             System::Guid dataStreamId,
-            WriteBuffer^ buffer,
+            IWriteBuffer^ buffer,
             unsigned long long byteOffset,
             unsigned long length);
 
@@ -644,7 +647,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        WriteBuffer^ CreateWriteBuffer(
+        IWriteBuffer^ CreateWriteBuffer(
             unsigned int desiredBufferSize);
 
         /// <summary>
@@ -686,7 +689,7 @@ namespace ProjFS {
         /// <exception cref="System::OutOfMemoryException">
         /// A buffer could not be allocated.
         /// </exception>
-        WriteBuffer^ CreateWriteBuffer(
+        IWriteBuffer^ CreateWriteBuffer(
             unsigned long long byteOffset,
             unsigned int length,
             [Out] unsigned long long% alignedByteOffset,

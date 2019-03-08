@@ -17,3 +17,7 @@ provider is running, the contents of `SourceRoot` will appear to exist in `VirtR
 
 ## Shutting down the provider
 To stop the provider hit the `<Enter>` key in the provider's console window.
+
+## Notices
+This project calls [Serilog](https://serilog.net/) APIs, which are under the
+[license](https://github.com/serilog/serilog/blob/dev/LICENSE) for Serilog.

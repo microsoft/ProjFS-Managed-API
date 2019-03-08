@@ -1,4 +1,7 @@
-﻿using Microsoft.Windows.ProjFS;
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+using Microsoft.Windows.ProjFS;
 using System;
 using System.Collections.Generic;
 
