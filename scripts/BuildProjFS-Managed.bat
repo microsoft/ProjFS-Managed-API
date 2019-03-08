@@ -8,6 +8,9 @@ IF "%2"=="" (SET "ProjFSManagedVersion=0.2.173.2") ELSE (SET "ProjFSManagedVersi
 
 SET SolutionConfiguration=%Configuration%
 
+:: Make the build version available in the DevOps environment.
+@echo ##vso[task.setvariable variable=PROJFS_MANAGED_VERSION]%ProjFSManagedVersion%
+
 SET nuget="%PROJFS_TOOLSDIR%\nuget.exe"
 IF NOT EXIST %nuget% (
   mkdir %nuget%\..
