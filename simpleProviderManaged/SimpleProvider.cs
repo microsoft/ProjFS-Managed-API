@@ -25,27 +25,29 @@ namespace SimpleProviderManaged
         private readonly VirtualizationInstance virtualizationInstance;
         private readonly ConcurrentDictionary<Guid, ActiveEnumeration> activeEnumerations;
 
-        private bool testMode;
-
         private NotificationCallbacks notificationCallbacks;
+
+        private readonly ProviderOptions options;
+
+        public ProviderOptions Options => options;
 
         public SimpleProvider(ProviderOptions options)
         {
             this.scratchRoot = options.VirtRoot;
             this.layerRoot = options.SourceRoot;
 
-            this.testMode = options.TestMode;
+            this.options = options;
 
             // If in test mode, enable notification callbacks.
-            List<NotificationMapping> notificationMappings;
-            if (!this.testMode)
+            if (this.Options.TestMode)
             {
-                // If we're not in test mode we don't want notifications.
-                notificationMappings = new List<NotificationMapping>();
+                this.Options.EnableNotifications = true;
             }
-            else
+
+            // Enable notifications if the user requested them.
+            List<NotificationMapping> notificationMappings;
+            if (this.Options.EnableNotifications)
             {
-                // In test mode we want to enable all notifications on the notification root.
                 notificationMappings = new List<NotificationMapping>()
                 {
                     new NotificationMapping(
@@ -63,6 +65,10 @@ namespace SimpleProviderManaged
                         | NotificationType.FilePreConvertToFull,
                         string.Empty)
                 };
+            }
+            else
+            {
+                notificationMappings = new List<NotificationMapping>();
             }
 
             try
@@ -84,13 +90,12 @@ namespace SimpleProviderManaged
             // Set up notifications.
             notificationCallbacks = new NotificationCallbacks(
                 this,
-                this.testMode,
                 this.virtualizationInstance,
                 notificationMappings);
 
             Log.Information("Created instance. Layer [{Layer}], Scratch [{Scratch}]", this.layerRoot, this.scratchRoot);
 
-            if (this.testMode)
+            if (this.Options.TestMode)
             {
                 Log.Information("Provider started in TEST MODE.");
             }
@@ -136,7 +141,7 @@ namespace SimpleProviderManaged
 
         internal bool SignalIfTestMode(string eventName)
         {
-            if (this.testMode)
+            if (this.Options.TestMode)
             {
                 try
                 {
@@ -148,8 +153,7 @@ namespace SimpleProviderManaged
                 catch (WaitHandleCannotBeOpenedException ex)
                 {
                     Log.Error(ex, "Test mode specified but wait event does not exist.  Clearing test mode.");
-                    this.testMode = false;
-                    notificationCallbacks.TestMode = false;
+                    this.Options.TestMode = false;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
