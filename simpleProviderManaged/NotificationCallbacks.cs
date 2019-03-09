@@ -9,18 +9,13 @@ namespace SimpleProviderManaged
 {
     class NotificationCallbacks
     {
-        private bool testMode;
-
         private readonly SimpleProvider provider;
 
         public NotificationCallbacks(
             SimpleProvider provider,
-            bool testMode,
             VirtualizationInstance virtInstance,
             IReadOnlyCollection<NotificationMapping> notificationMappings)
         {
-            TestMode = testMode;
-
             this.provider = provider;
 
             // Look through notificationMappings for all the set notification bits.  Supply a callback
@@ -88,8 +83,6 @@ namespace SimpleProviderManaged
             }
         }
 
-        public bool TestMode { get => testMode; set => testMode = value; }
-
         public bool NotifyFileOpenedCallback(
             string relativePath,
             bool isDirectory,
@@ -144,7 +137,7 @@ namespace SimpleProviderManaged
             Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
 
             provider.SignalIfTestMode("PreDelete");
-            return true;
+            return provider.Options.DenyDeletes ? false : true;
         }
 
         public bool NotifyPreRenameCallback(

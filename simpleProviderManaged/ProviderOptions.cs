@@ -18,6 +18,9 @@ namespace SimpleProviderManaged
         [Option('t', HelpText = "Use this when running the provider with the test package.", Hidden = true)]
         public bool TestMode { get; set; }
 
+        [Option("denyDeletes", HelpText = "Deny deletes.", Hidden = true)]
+        public bool DenyDeletes { get; set; }
+
         [Usage(ApplicationAlias = "SimpleProviderManaged")]
         public static IEnumerable<Example> Examples
         {
