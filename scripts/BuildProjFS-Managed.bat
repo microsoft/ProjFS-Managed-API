@@ -1,5 +1,5 @@
 @ECHO OFF
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 
 CALL %~dp0\InitializeEnvironment.bat || EXIT /b 10
 
@@ -17,14 +17,14 @@ IF NOT EXIST %nuget% (
   powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile %nuget%"
 )
 
-:: Acquire vswhere to find dev15 installations reliably.
+:: Acquire vswhere to find dev15/dev16 installations reliably.
 SET vswherever=2.5.2
 %nuget% install vswhere -Version %vswherever% || exit /b 1
 SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 
 :: Use vswhere to find the latest VS installation (including prerelease installations) with the msbuild component.
 :: See https://github.com/Microsoft/vswhere/wiki/Find-MSBuild
-for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[15.0,16.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.NetCore.ComponentGroup.DevelopmentTools.2.1 Microsoft.VisualStudio.Component.Windows10SDK.17763 -property installationPath`) do (
+for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[15.0,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.17763 Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath`) do (
   set VsInstallDir=%%i
 )
 
@@ -35,9 +35,15 @@ IF NOT DEFINED VsInstallDir (
 )
 
 SET msbuild="%VsInstallDir%\MSBuild\15.0\Bin\amd64\msbuild.exe"
+SET PlatformToolset="v141"
 IF NOT EXIST %msbuild% (
-  echo ERROR: Could not find msbuild
-  exit /b 1
+  :: dev16 has msbuild.exe at a different location
+  SET msbuild="%VsInstallDir%\MSBuild\Current\Bin\amd64\msbuild.exe"
+  SET PlatformToolset="v142"
+  IF NOT EXIST !msbuild! (
+    echo ERROR: Could not find msbuild
+    exit /b 1
+  )
 )
 
 :: Restore all dependencies.
@@ -45,6 +51,6 @@ IF NOT EXIST %msbuild% (
 dotnet restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:Configuration=%SolutionConfiguration% /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140" --packages %PROJFS_PACKAGESDIR% || exit /b 1
 
 :: Kick off the build.
-%msbuild% %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 || exit /b 1
+!msbuild! %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 /p:PlatformToolset=!PlatformToolset! || exit /b 1
 
 ENDLOCAL

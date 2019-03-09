@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using Microsoft.Windows.ProjFS;
+using Serilog;
 using System;
 using System.Collections.Generic;
 
@@ -90,8 +91,9 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName,
             out NotificationType notificationMask)
         {
-            Console.WriteLine($"NotifyFileOpenedCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyFileOpenedCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             notificationMask = NotificationType.UseExistingMask;
             provider.SignalIfTestMode("FileOpened");
@@ -106,8 +108,9 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName,
             out NotificationType notificationMask)
         {
-            Console.WriteLine($"NotifyNewFileCreatedCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyNewFileCreatedCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             notificationMask = NotificationType.UseExistingMask;
             provider.SignalIfTestMode("NewFileCreated");
@@ -120,8 +123,9 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName,
             out NotificationType notificationMask)
         {
-            Console.WriteLine($"NotifyFileOverwrittenCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyFileOverwrittenCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             notificationMask = NotificationType.UseExistingMask;
             provider.SignalIfTestMode("FileOverwritten");
@@ -133,8 +137,9 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyPreDeleteCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyPreDeleteCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("PreDelete");
             return provider.Options.DenyDeletes ? false : true;
@@ -147,7 +152,8 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName)
         {
             Console.WriteLine($"NotifyPreRenameCallback [{relativePath}] [{destinationPath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("PreRename");
             return true;
@@ -160,7 +166,8 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName)
         {
             Console.WriteLine($"NotifyPreCreateHardlinkCallback [{relativePath}] [{destinationPath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("PreCreateHardlink");
             return true;
@@ -175,7 +182,8 @@ namespace SimpleProviderManaged
             out NotificationType notificationMask)
         {
             Console.WriteLine($"NotifyFileRenamedCallback [{relativePath}] [{destinationPath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             notificationMask = NotificationType.UseExistingMask;
             provider.SignalIfTestMode("FileRenamed");
@@ -188,7 +196,8 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName)
         {
             Console.WriteLine($"NotifyHardlinkCreatedCallback [{relativePath}] [{destinationPath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("HardlinkCreated");
         }
@@ -199,8 +208,9 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyFileHandleClosedNoModificationCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyFileHandleClosedNoModificationCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("FileHandleClosedNoModification");
         }
@@ -213,9 +223,10 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyFileHandleClosedFileModifiedOrDeletedCallback [{relativePath}]");
+            Log.Information("NotifyFileHandleClosedFileModifiedOrDeletedCallback [{relativePath}]", relativePath);
             Console.WriteLine($"  Modified: {isFileModified}, Deleted: {isFileDeleted} ");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("FileHandleClosedFileModifiedOrDeleted");
         }
@@ -225,8 +236,9 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyFilePreConvertToFullCallback [{relativePath}]");
-            Console.WriteLine($"  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]");
+            Log.Information("NotifyFilePreConvertToFullCallback [{relativePath}]", relativePath);
+            Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
+                triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("FilePreConvertToFull");
             return true;

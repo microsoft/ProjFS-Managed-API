@@ -33,21 +33,21 @@ namespace SimpleProviderManaged
 
         public SimpleProvider(ProviderOptions options)
         {
-            this.options = options;
             this.scratchRoot = options.VirtRoot;
             this.layerRoot = options.SourceRoot;
 
+            this.options = options;
+
             // If in test mode, enable notification callbacks.
-            List<NotificationMapping> notificationMappings;
-            if (!this.Options.TestMode &&
-                !this.Options.DenyDeletes)
+            if (this.Options.TestMode)
             {
-                // If we're not in test mode we don't want notifications.
-                notificationMappings = new List<NotificationMapping>();
+                this.Options.EnableNotifications = true;
             }
-            else
+
+            // Enable notifications if the user requested them.
+            List<NotificationMapping> notificationMappings;
+            if (this.Options.EnableNotifications)
             {
-                // In test mode we want to enable all notifications on the notification root.
                 notificationMappings = new List<NotificationMapping>()
                 {
                     new NotificationMapping(
@@ -65,6 +65,10 @@ namespace SimpleProviderManaged
                         | NotificationType.FilePreConvertToFull,
                         string.Empty)
                 };
+            }
+            else
+            {
+                notificationMappings = new List<NotificationMapping>();
             }
 
             try
