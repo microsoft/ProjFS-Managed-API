@@ -21,6 +21,9 @@ namespace SimpleProviderManaged
         [Option('n', "notifications", HelpText = "Enable file system operation notifications.")]
         public bool EnableNotifications { get; set; }
 
+        [Option('d', "denyDeletes", HelpText = "Deny deletes.", Hidden = true)]
+        public bool DenyDeletes { get; set; }
+
         [Usage(ApplicationAlias = "SimpleProviderManaged")]
         public static IEnumerable<Example> Examples
         {

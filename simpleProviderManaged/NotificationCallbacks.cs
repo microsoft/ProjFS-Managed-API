@@ -142,7 +142,7 @@ namespace SimpleProviderManaged
                 triggeringProcessImageFileName, triggeringProcessId);
 
             provider.SignalIfTestMode("PreDelete");
-            return true;
+            return provider.Options.DenyDeletes ? false : true;
         }
 
         public bool NotifyPreRenameCallback(
