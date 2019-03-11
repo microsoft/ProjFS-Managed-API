@@ -27,16 +27,14 @@ namespace SimpleProviderManaged
 
         private NotificationCallbacks notificationCallbacks;
 
-        private readonly ProviderOptions options;
-
-        public ProviderOptions Options => options;
+        public ProviderOptions Options { get; }
 
         public SimpleProvider(ProviderOptions options)
         {
             this.scratchRoot = options.VirtRoot;
             this.layerRoot = options.SourceRoot;
 
-            this.options = options;
+            this.Options = options;
 
             // If in test mode, enable notification callbacks.
             if (this.Options.TestMode)
