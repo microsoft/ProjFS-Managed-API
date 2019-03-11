@@ -21,4 +21,4 @@ of another one, this will cause the tests to fail.  You can use NUnit's `--work`
 to change where it creates the roots.
 
 For example, to run the tests under your $TEMP directory:
-`ProjectedFSLib.Managed.Test.exe --work=$TEMP --ProviderExe=<path to SimpleProviderManaged.exe>`
+`ProjectedFSLib.Managed.Test.exe --work=$TEMP --params ProviderExe=<path to SimpleProviderManaged.exe>`

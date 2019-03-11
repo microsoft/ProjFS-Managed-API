@@ -151,7 +151,7 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyPreRenameCallback [{relativePath}] [{destinationPath}]");
+            Log.Information("NotifyPreRenameCallback [{relativePath}] [{destinationPath}]", relativePath, destinationPath);
             Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
                 triggeringProcessImageFileName, triggeringProcessId);
 
@@ -165,7 +165,7 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyPreCreateHardlinkCallback [{relativePath}] [{destinationPath}]");
+            Log.Information("NotifyPreCreateHardlinkCallback [{relativePath}] [{destinationPath}]", relativePath, destinationPath);
             Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
                 triggeringProcessImageFileName, triggeringProcessId);
 
@@ -181,7 +181,7 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName,
             out NotificationType notificationMask)
         {
-            Console.WriteLine($"NotifyFileRenamedCallback [{relativePath}] [{destinationPath}]");
+            Log.Information("NotifyFileRenamedCallback [{relativePath}] [{destinationPath}]", relativePath, destinationPath);
             Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
                 triggeringProcessImageFileName, triggeringProcessId);
 
@@ -195,7 +195,7 @@ namespace SimpleProviderManaged
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
-            Console.WriteLine($"NotifyHardlinkCreatedCallback [{relativePath}] [{destinationPath}]");
+            Log.Information("NotifyHardlinkCreatedCallback [{relativePath}] [{destinationPath}]", relativePath, destinationPath);
             Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
                 triggeringProcessImageFileName, triggeringProcessId);
 
@@ -224,7 +224,7 @@ namespace SimpleProviderManaged
             string triggeringProcessImageFileName)
         {
             Log.Information("NotifyFileHandleClosedFileModifiedOrDeletedCallback [{relativePath}]", relativePath);
-            Console.WriteLine($"  Modified: {isFileModified}, Deleted: {isFileDeleted} ");
+            Log.Information("  Modified: {isFileModified}, Deleted: {isFileDeleted} ", isFileModified, isFileDeleted);
             Log.Information("  Notification triggered by [{triggeringProcessImageFileName} {triggeringProcessId}]",
                 triggeringProcessImageFileName, triggeringProcessId);
 
