@@ -1446,7 +1446,7 @@ HRESULT PrjNotificationCB(_In_ const PRJ_CALLBACK_DATA* callbackData,
                                                                    callbackData->TriggeringProcessId,
                                                                    GetTriggeringProcessNameSafe(callbackData)))
                 {
-                    notificationResult = HResult::AccessDenied;
+                    notificationResult = HResult::CannotDelete;
                 }
             }
             break;
