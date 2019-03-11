@@ -100,6 +100,9 @@ namespace ProjFS {
         ///<summary>Ran out of memory.</summary>
         OutOfMemory = E_OUTOFMEMORY,
 
+        ///<summary>Access is denied.</summary>
+        AccessDenied = HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED),
+
         ///<summary>The data area passed to a system call is too small.</summary>
         InsufficientBuffer = HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER),
 
@@ -130,17 +133,6 @@ namespace ProjFS {
         ///<summary>An attempt was made to perform an initialization operation when initialization
         ///has already been completed.</summary>
         AlreadyInitialized = HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED),
-
-        ///<summary>Access is denied.</summary>
-        AccessDenied = HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED),
-
-        ///<summary>An attempt has been made to remove a file or directory that cannot be deleted.</summary>
-        // There is not a Win32 error code that can reverse-map back to STATUS_CANNOT_DELETE.  However
-        // the I/O system expects the file system to return that status code as an indication that a
-        // delete is not allowed. To ensure the I/O system gets the correct code we define it here
-        // by hand.  This is equivalent to HRESULT_FROM_NT(STATUS_CANNOT_DELETE).  Doing it this way
-        // saves us from having to do weird things with #include and #define.
-        CannotDelete = ((HRESULT) (0xc0000121 | 0x10000000)),
 
         ///<summary>The directory name is invalid (it may not be a directory).</summary>
         Directory = HRESULT_FROM_WIN32(ERROR_DIRECTORY),
