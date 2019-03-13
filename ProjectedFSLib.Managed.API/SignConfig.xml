@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SignConfigXML>
-  <job platform="x64" configuration="" dest="__RELBINPATH__\bin\signed" jobname="ProjFS Managed API" approvers="vigarg;gstolt;dougp;salaks" useESRP="true">
+  <job platform="" configuration="" dest="__RELBINPATH__\bin\signed" jobname="ProjFS Managed API" approvers="vigarg;gstolt;dougp;salaks" useESRP="true">
     <file src="__INPATHROOT__\ProjectedFSLib.Managed.dll" signType="141290001;72" dest="__OUTPATHROOT__\ProjectedFSLib.Managed.dll" />
   </job>
 </SignConfigXML>
