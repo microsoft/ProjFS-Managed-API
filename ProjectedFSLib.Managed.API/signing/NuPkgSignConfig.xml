@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SignConfigXML>
+  <job platform="AnyCPU" configuration="" dest="__OUTPATHROOT__" jobname="ProjFS Managed API" approvers="vigarg;gstolt;salaks" useESRP="true">
+    <file src="__INPATHROOT__\Microsoft.Windows.ProjFS.*.nupkg" signType="Nuget" />
+  </job>
+</SignConfigXML>
