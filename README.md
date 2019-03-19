@@ -2,7 +2,7 @@
 |Branch|Functional Tests|
 |:--:|:--:|
 |**master**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202019?branchName=master)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=5)|
-|**release**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/CI%20-%20Build%20and%20Package)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=3)|
+|**release**|[![Build status](https://dev.azure.com/microsoft/OS/_apis/build/status/ProjFS%20CI%20-%20Build,%20Sign,%20Package)](https://dev.azure.com/microsoft/OS/_build/latest?definitionId=37476)|
 ## What is ProjFS?
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
