@@ -1,9 +1,11 @@
 # ProjFS Managed API
+
 |Branch|Functional Tests|
 |:--:|:--:|
 |**master**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202019?branchName=master)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=5)|
 |**release**|[![Build status](https://dev.azure.com/microsoft/OS/_apis/build/status/ProjFS%20CI%20-%20Build,%20Sign,%20Package)](https://dev.azure.com/microsoft/OS/_build/latest?definitionId=37476)|
-## What is ProjFS?
+
+## About ProjFS
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
 "provider" to project hierarchical data into the file system, making it appear as files and directories
@@ -18,7 +20,7 @@ Conceptual documentation for ProjFS along with documentation of its Win32 API is
 ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
 starting in Windows 10 version 1809.
 
-## What is the ProjFS Managed API?
+## About the ProjFS Managed API
 
 The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a wrapper around
 the native API so that developers can write ProjFS providers using managed code.
@@ -45,8 +47,8 @@ coverage of the managed wrapper API surface.
 
 ## Building the ProjFS Managed API
 
-* Install Visual Studio 2017 Community Edition or higher (https://www.visualstudio.com/downloads/).
-  * Include the following workloads: 
+* Install [Visual Studio 2017 Community Edition](https://www.visualstudio.com/downloads/) or higher.
+  * Include the following workloads:
     * **.NET desktop development**
     * **.NET Core cross-platform development**
     * **Desktop development with C++**
@@ -66,15 +68,9 @@ you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer
 [this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
 for instructions.
 
-# Contributing
+## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+For details on how to contribute to this project, see the CONTRIBUTING.md file in this repository.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
