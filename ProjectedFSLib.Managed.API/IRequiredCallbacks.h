@@ -167,11 +167,6 @@ public:
     ///     <para>To handle this callback, the provider typically calls
     ///     <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c> to give ProjFS the information
     ///     for the requested file name.  Then the provider completes the callback.</para>
-    ///     <para>This callback tells the provider that it must ensure that <paramref name="relativePath"/>
-    ///     exists.  Although calling <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c>
-    ///     is the normal way of handling this callback, a provider may satisfy the request for
-    ///     <paramref name="relativePath"/> in another way.  For example, it may instead create a
-    ///     normal file or a symbolic link to an existing file.</para>
     /// </remarks>
     /// <param name="commandId">
     ///     <para>A value that uniquely identifies an invocation of the callback.</para>
