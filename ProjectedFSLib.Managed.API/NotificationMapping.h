@@ -94,7 +94,7 @@ namespace ProjFS {
         /// <param name="notificationMask">The set of notifications that ProjFS should return for the
         /// virtualization root specified in <paramref name="notificationRoot"/>.</param>
         /// <param name="notificationRoot">The path to the notification root, relative to the virtualization
-        /// root.</param>
+        /// root.  The virtualization root itself must be specified as an empty string.</param>
         NotificationMapping(NotificationType notificationMask, System::String^ notificationRoot);
 
         /// <summary>
@@ -111,7 +111,8 @@ namespace ProjFS {
         }
 
         /// <summary>
-        /// A path to a directory, relative to the virtualization root.
+        /// A path to a directory, relative to the virtualization root.  The virtualization root itself
+        /// must be specified as an empty string.
         /// </summary>
         /// <value>
         /// ProjFS will send to the provider the notifications specified in <see cref="NotificationMask"/>
@@ -138,6 +139,12 @@ namespace ProjFS {
         : notificationMask(notificationMask)
         , notificationRoot(notificationRoot)
     {
+        // The underlying native API expects that the virtualization root is specified as an empty
+        // string.  If the caller provides ".", convert that to the correct form.
+        if (notificationRoot->Equals("."))
+        {
+            notificationRoot = "";
+        }
     }
 
     inline NotificationType NotificationMapping::NotificationMask::get(void)
@@ -157,6 +164,13 @@ namespace ProjFS {
 
     inline void NotificationMapping::NotificationRoot::set(System::String^ root)
     {
+        // The underlying native API expects that the virtualization root is specified as an empty
+        // string.  If the caller provides ".", convert that to the correct form.
+        if (root->Equals("."))
+        {
+            root = "";
+        }
+
         this->notificationRoot = root;
     }
 }}} // namespace Microsoft.Windows.ProjFS
