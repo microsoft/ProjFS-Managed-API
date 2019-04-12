@@ -19,6 +19,7 @@ namespace SimpleProviderManaged
 
             Log.Information("Start");
 
+            // Parse the command-line options and then start the SimpleProvider.
             var parserResult = Parser.Default
                 .ParseArguments<ProviderOptions>(args)
                 .WithParsed((ProviderOptions options) => { Run(options); });

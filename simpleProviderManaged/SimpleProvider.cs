@@ -18,8 +18,9 @@ namespace SimpleProviderManaged
     /// </summary>
     public class SimpleProvider
     {
-        // These variables hold the layer and scratch paths.
+        /// <summary>Path to the directory into which the contents of <see cref="layerRoot"/> will be projected.</summary>
         private readonly string scratchRoot;
+        /// <summary>Path to the directory containing the files and directories to be projected into <see cref="scratchRoot"/></summary>
         private readonly string layerRoot;
 
         private readonly VirtualizationInstance virtualizationInstance;
@@ -85,7 +86,7 @@ namespace SimpleProviderManaged
                 throw;
             }
 
-            // Set up notifications.
+            // Set up file system operation notifications callbacks.
             notificationCallbacks = new NotificationCallbacks(
                 this,
                 this.virtualizationInstance,
@@ -103,10 +104,14 @@ namespace SimpleProviderManaged
 
         public bool StartVirtualization()
         {
-            // Optional callbacks
+            // Set up the optional QueryFileNameCallback.
             this.virtualizationInstance.OnQueryFileName = QueryFileNameCallback;
 
+            // Set up required callbacks.
             RequiredCallbacks requiredCallbacks = new RequiredCallbacks(this);
+
+            // Now start virtualizing.  After this point the contents of layerRoot will appear to be
+            // in scratchRoot as well.
             HResult hr = this.virtualizationInstance.StartVirtualizing(requiredCallbacks);
             if (hr != HResult.Ok)
             {
@@ -168,8 +173,18 @@ namespace SimpleProviderManaged
             return true;
         }
 
+        /// <summary>
+        /// Returns the full path to a file in <see cref="layerRoot"/>.
+        /// </summary>
+        /// <param name="relativePath">The path, relative to <see cref="scratchRoot"/>, of the file.</param>
+        /// <returns>The full path in <see cref="layerRoot"/> of the file.</returns>
         protected string GetFullPathInLayer(string relativePath) => Path.Combine(this.layerRoot, relativePath);
 
+        /// <summary>
+        /// Indicates whether a given directory exists in <see cref="layerRoot"/>.
+        /// </summary>
+        /// <param name="relativePath"></param>
+        /// <returns><see langword="true"/> if it exists, <see langword="false"/> otherwise.</returns>
         protected bool DirectoryExistsInLayer(string relativePath)
         {
             string layerPath = this.GetFullPathInLayer(relativePath);
@@ -178,6 +193,11 @@ namespace SimpleProviderManaged
             return dirInfo.Exists;
         }
 
+        /// <summary>
+        /// Indicates whether a given file exists in <see cref="layerRoot"/>.
+        /// </summary>
+        /// <param name="relativePath"></param>
+        /// <returns><see langword="true"/> if it exists, <see langword="false"/> otherwise.</returns>
         protected bool FileExistsInLayer(string relativePath)
         {
             string layerPath = this.GetFullPathInLayer(relativePath);

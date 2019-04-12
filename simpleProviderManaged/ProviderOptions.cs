@@ -15,12 +15,15 @@ namespace SimpleProviderManaged
         [Option(Required = true, HelpText = "Path to the virtualization root.")]
         public string VirtRoot { get; set; }
 
-        [Option('t', "testmode", HelpText = "Use this when running the provider with the test package.", Hidden = true)]
-        public bool TestMode { get; set; }
-
         [Option('n', "notifications", HelpText = "Enable file system operation notifications.")]
         public bool EnableNotifications { get; set; }
 
+        // Used by ProjectedFSLib.Managed.Test.BasicTests.
+        [Option('t', "testmode", HelpText = "Use this when running the provider with the test package.", Hidden = true)]
+        public bool TestMode { get; set; }
+
+        // Use in conjunction with the EnableNotifications option.  When set the provider will not
+        // allow deletes to happen beneath the virtualization root.
         [Option('d', "denyDeletes", HelpText = "Deny deletes.", Hidden = true)]
         public bool DenyDeletes { get; set; }
 

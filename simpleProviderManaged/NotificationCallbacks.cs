@@ -8,10 +8,23 @@ using System.Collections.Generic;
 
 namespace SimpleProviderManaged
 {
+    /// <summary>
+    /// This class implements the file system operation notification callbacks for <see cref="SimpleProvider"/>.
+    /// The callbacks here are basic examples.  Each one simply logs a message when triggered.  If 
+    /// the provider is running in test mode, the callback also signals the test that it received
+    /// the callback.
+    /// </summary>
     class NotificationCallbacks
     {
         private readonly SimpleProvider provider;
 
+        /// <summary>
+        /// Instantiates the class.
+        /// </summary>
+        /// <param name="provider">The <see cref="SimpleProvider"/> instance that will receive the callbacks.</param>
+        /// <param name="virtInstance">The <see cref="VirtualizationInstance"/> for <paramref name="provider"/>.</param>
+        /// <param name="notificationMappings">A collection of <see cref="NotificationMapping"/> objects
+        /// describing which notifications <paramref name="provider"/> will receive and on what paths.</param>
         public NotificationCallbacks(
             SimpleProvider provider,
             VirtualizationInstance virtInstance,
