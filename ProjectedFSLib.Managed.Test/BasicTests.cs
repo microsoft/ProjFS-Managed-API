@@ -38,11 +38,6 @@ namespace ProjectedFSLib.Managed.Test
             helpers = new Helpers(10 * 1000);
         }
 
-        // We start the virtualization instance in the SetUp fixture, so that exercises the following
-        // methods in Microsoft.Windows.ProjFS:
-        //  VirtualizationInstance.VirtualizationInstance()
-        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
-        //  VirtualizationInstance.StartVirtualizing()
         [SetUp]
         public void TestSetup()
         {
@@ -50,7 +45,8 @@ namespace ProjectedFSLib.Managed.Test
                 out string sourceRoot,
                 out string virtRoot);
 
-            helpers.StartTestProvider(sourceRoot, virtRoot);
+            // We defer starting the provider to the test case so that it can specify extra options
+            // if it wants to.
         }
 
         // We stop the virtualization instance in the TearDown fixture, so that exercises the following
@@ -94,6 +90,12 @@ namespace ProjectedFSLib.Managed.Test
             helpers.StopTestProvider();
         }
 
+        // We start the virtualization instance in each test case, so that exercises the following
+        // methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.VirtualizationInstance()
+        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
+        //  VirtualizationInstance.StartVirtualizing()
+
         // This case exercises the following methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.WritePlaceholderInfo()
         //  VirtualizationInstance.CreateWriteBuffer()
@@ -106,7 +108,7 @@ namespace ProjectedFSLib.Managed.Test
         [TestCase("dir1\\dir2\\dir3\\bar.txt")]
         public void TestCanReadThroughVirtualizationRoot(string destinationFile)
         {
-            helpers.GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
 
             // Some contents to write to the file in the source and read out through the virtualization.
             string fileContent = nameof(TestCanReadThroughVirtualizationRoot);
@@ -131,7 +133,7 @@ namespace ProjectedFSLib.Managed.Test
         [Test]
         public void TestEnumerationInVirtualizationRoot()
         {
-            helpers.GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
 
             Random random = new Random();
 
@@ -219,9 +221,12 @@ namespace ProjectedFSLib.Managed.Test
             }
         }
 
-        [Test]
-        public void TestNotificationFileOpened()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationFileOpened(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "file.txt";
 
             // Create the virtual file.
@@ -236,9 +241,12 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedNoModification].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [Test]
-        public void TestNotificationNewFileCreated()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationNewFileCreated(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "newfile.txt";
 
             // Create a new file in the virtualization root.
@@ -248,9 +256,12 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.NewFileCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [Test]
-        public void TestNotificationFileOverwritten()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationFileOverwritten(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "overwriteme.txt";
 
             // Create a virtual file.
@@ -265,9 +276,12 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOverwritten].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [Test]
-        public void TestNotificationDelete()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationDelete(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "deleteme.txt";
 
             // Create a virtual file.
@@ -283,9 +297,12 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedFileModifiedOrDeleted].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [Test]
-        public void TestNotificationRename()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationRename(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "OldName.txt";
 
             // Create a virtual file.
@@ -309,9 +326,12 @@ namespace ProjectedFSLib.Managed.Test
           IntPtr lpSecurityAttributes
           );
 
-        [Test]
-        public void TestNotificationHardLink()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestNotificationHardLink(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "linkTarget.txt";
 
             // Create a virtual file.
@@ -329,9 +349,12 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.HardlinkCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [Test]
-        public void TestConvertToFull()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void TestConvertToFull(bool useDotAsRootName)
         {
+            helpers.StartTestProvider(useDotAsRootName);
+
             string fileName = "fileToWriteTo.txt";
 
             // Create a virtual file.
