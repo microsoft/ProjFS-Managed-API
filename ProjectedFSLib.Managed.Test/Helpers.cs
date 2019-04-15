@@ -51,8 +51,20 @@ namespace ProjectedFSLib.Managed.Test
             }
         }
 
-        public void StartTestProvider(string sourceRoot, string virtRoot)
+        public void StartTestProvider()
         {
+            StartTestProvider(out string sourceRoot, out string virtRoot);
+        }
+
+        public void StartTestProvider(bool useDotAsRootName)
+        {
+            StartTestProvider(out string sourceRoot, out string virtRoot, useDotAsRootName);
+        }
+
+        public void StartTestProvider(out string sourceRoot, out string virtRoot, bool useDotAsRootName = false)
+        {
+            GetRootNamesForTest(out sourceRoot, out virtRoot);
+
             // Get the provider name from the command line.
             var providerExe = TestContext.Parameters.Get("ProviderExe");
 
@@ -66,7 +78,13 @@ namespace ProjectedFSLib.Managed.Test
             string sourceArg = " --sourceroot " + sourceRoot;
             string virtRootArg = " --virtroot " + virtRoot;
 
-            // Add the source and virtRoot arguments, as well as the "test mode" argument.
+            string useDot = string.Empty;
+            if (useDotAsRootName)
+            {
+                useDot = " -u ";
+            }
+
+            // Add all the arguments, as well as the "test mode" argument.
             ProviderProcess.StartInfo.Arguments = sourceArg + virtRootArg + " -t";
             ProviderProcess.StartInfo.UseShellExecute = true;
 

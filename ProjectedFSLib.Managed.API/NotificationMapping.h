@@ -138,6 +138,12 @@ namespace ProjFS {
         : notificationMask(notificationMask)
         , notificationRoot(notificationRoot)
     {
+        // The underlying native API expects that the virtualization root is specified as an empty
+        // string.  If the caller provides ".", convert that to the correct form.
+        if (notificationRoot->Equals("."))
+        {
+            notificationRoot = "";
+        }
     }
 
     inline NotificationType NotificationMapping::NotificationMask::get(void)
@@ -157,6 +163,13 @@ namespace ProjFS {
 
     inline void NotificationMapping::NotificationRoot::set(System::String^ root)
     {
+        // The underlying native API expects that the virtualization root is specified as an empty
+        // string.  If the caller provides ".", convert that to the correct form.
+        if (root->Equals("."))
+        {
+            root = "";
+        }
+
         this->notificationRoot = root;
     }
 }}} // namespace Microsoft.Windows.ProjFS
