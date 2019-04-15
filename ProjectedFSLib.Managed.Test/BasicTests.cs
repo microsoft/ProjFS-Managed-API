@@ -11,21 +11,6 @@ using System.Threading;
 
 namespace ProjectedFSLib.Managed.Test
 {
-    public class DataSources
-    {
-        public static object[] AllBools
-        {
-            get
-            {
-                return new object[]
-                {
-                     new object[] { true },
-                     new object[] { false },
-                };
-            }
-        }
-    }
-
     // Set of basic tests to exercise the entry points in the managed code API wrapper.
     //
     // The Microsoft.Windows.ProjFS managed API is a fairly thin wrapper around a set of native
@@ -236,10 +221,10 @@ namespace ProjectedFSLib.Managed.Test
             }
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationFileOpened(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationFileOpened()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "file.txt";
 
@@ -255,10 +240,10 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedNoModification].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationNewFileCreated(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationNewFileCreated()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "newfile.txt";
 
@@ -269,10 +254,10 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.NewFileCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationFileOverwritten(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationFileOverwritten()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "overwriteme.txt";
 
@@ -288,10 +273,10 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileOverwritten].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationDelete(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationDelete()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "deleteme.txt";
 
@@ -308,10 +293,10 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FileHandleClosedFileModifiedOrDeleted].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationRename(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationRename()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "OldName.txt";
 
@@ -336,10 +321,10 @@ namespace ProjectedFSLib.Managed.Test
           IntPtr lpSecurityAttributes
           );
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestNotificationHardLink(bool useDotAsRootName)
+        [Test]
+        public void TestNotificationHardLink()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "linkTarget.txt";
 
@@ -358,10 +343,10 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.HardlinkCreated].WaitOne(helpers.WaitTimeoutInMs));
         }
 
-        [TestCaseSource(typeof(DataSources), nameof(DataSources.AllBools))]
-        public void TestConvertToFull(bool useDotAsRootName)
+        [Test]
+        public void TestConvertToFull()
         {
-            helpers.StartTestProvider(useDotAsRootName);
+            helpers.StartTestProvider();
 
             string fileName = "fileToWriteTo.txt";
 
