@@ -149,10 +149,11 @@ namespace ProjFS {
         : notificationMask(notificationMask)
         , notificationRoot(notificationRoot)
     {
-        if (notificationRoot->StartsWith("."))
+        if ((notificationRoot == ".") ||
+            notificationRoot->StartsWith(".\\"))
         {
             throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
-                                                                         "notificationRoot cannot begin with \".\""));
+                                                                         "notificationRoot cannot be \".\" or begin with \".\\\""));
         }
     }
 
@@ -173,10 +174,11 @@ namespace ProjFS {
 
     inline void NotificationMapping::NotificationRoot::set(System::String^ root)
     {
-        if (root->StartsWith("."))
+        if ((root == ".") ||
+            root->StartsWith(".\\"))
         {
             throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
-                                                                         "The notification root path cannot begin with \".\""));
+                                                                         "The notification root path cannot be \".\" or begin with \".\\\""));
         }
         this->notificationRoot = root;
     }
