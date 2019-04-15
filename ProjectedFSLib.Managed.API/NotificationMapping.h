@@ -94,7 +94,7 @@ namespace ProjFS {
         /// <param name="notificationMask">The set of notifications that ProjFS should return for the
         /// virtualization root specified in <paramref name="notificationRoot"/>.</param>
         /// <param name="notificationRoot">The path to the notification root, relative to the virtualization
-        /// root.  The virtualization root itself must be specified as an empty string.</param>
+        /// root.</param>
         NotificationMapping(NotificationType notificationMask, System::String^ notificationRoot);
 
         /// <summary>
@@ -111,8 +111,7 @@ namespace ProjFS {
         }
 
         /// <summary>
-        /// A path to a directory, relative to the virtualization root.  The virtualization root itself
-        /// must be specified as an empty string.
+        /// A path to a directory, relative to the virtualization root.
         /// </summary>
         /// <value>
         /// ProjFS will send to the provider the notifications specified in <see cref="NotificationMask"/>
