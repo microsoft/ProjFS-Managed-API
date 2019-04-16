@@ -96,7 +96,7 @@ namespace ProjFS {
         /// <param name="notificationRoot">The path to the notification root, relative to the virtualization
         /// root.  The virtualization root itself must be specified as an empty string.</param>
         /// <exception cref="System::ArgumentException">
-        /// <paramref name="notificationRoot"/> begins with <c>.</c>.  <paramref name="notificationRoot"/>
+        /// <paramref name="notificationRoot"/> is <c>.</c> or begins with <c>.\</c>.  <paramref name="notificationRoot"/>
         /// must be specified relative to the virtualization root, with the virtualization root itself
         /// specified as an empty string.
         /// </exception>
@@ -124,9 +124,9 @@ namespace ProjFS {
         /// for this directory and its descendants.
         /// </value>
         /// <exception cref="System::ArgumentException">
-        /// The notification root value begins with <c>.</c>.  The notification root must be specified
-        /// relative to the virtualization root, with the virtualization root itself specified as an
-        /// empty string.
+        /// The notification root value is <c>.</c> or begins with <c>.\</c>.  The notification root
+        /// must be specified relative to the virtualization root, with the virtualization root itself
+        /// specified as an empty string.
         /// </exception>
         property System::String^ NotificationRoot
         {
