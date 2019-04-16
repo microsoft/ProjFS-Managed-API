@@ -24,9 +24,6 @@ namespace SimpleProviderManaged
         [Option('d', "denyDeletes", HelpText = "Deny deletes.", Hidden = true)]
         public bool DenyDeletes { get; set; }
 
-        [Option('u', "useDotAsRootName", HelpText = "Set up notifications using . as root name instead of empty string.", Hidden = true)]
-        public bool UseDotAsRootname { get; set; }
-
         [Usage(ApplicationAlias = "SimpleProviderManaged")]
         public static IEnumerable<Example> Examples
         {

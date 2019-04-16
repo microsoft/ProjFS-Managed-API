@@ -94,7 +94,12 @@ namespace ProjFS {
         /// <param name="notificationMask">The set of notifications that ProjFS should return for the
         /// virtualization root specified in <paramref name="notificationRoot"/>.</param>
         /// <param name="notificationRoot">The path to the notification root, relative to the virtualization
-        /// root.</param>
+        /// root.  The virtualization root itself must be specified as an empty string.</param>
+        /// <exception cref="System::ArgumentException">
+        /// <paramref name="notificationRoot"/> is <c>.</c> or begins with <c>.\</c>.  <paramref name="notificationRoot"/>
+        /// must be specified relative to the virtualization root, with the virtualization root itself
+        /// specified as an empty string.
+        /// </exception>
         NotificationMapping(NotificationType notificationMask, System::String^ notificationRoot);
 
         /// <summary>
@@ -111,12 +116,18 @@ namespace ProjFS {
         }
 
         /// <summary>
-        /// A path to a directory, relative to the virtualization root.
+        /// A path to a directory, relative to the virtualization root.  The virtualization root itself
+        /// must be specified as an empty string.
         /// </summary>
         /// <value>
         /// ProjFS will send to the provider the notifications specified in <see cref="NotificationMask"/>
         /// for this directory and its descendants.
         /// </value>
+        /// <exception cref="System::ArgumentException">
+        /// The notification root value is <c>.</c> or begins with <c>.\</c>.  The notification root
+        /// must be specified relative to the virtualization root, with the virtualization root itself
+        /// specified as an empty string.
+        /// </exception>
         property System::String^ NotificationRoot
         {
             System::String^ get(void);
@@ -138,11 +149,11 @@ namespace ProjFS {
         : notificationMask(notificationMask)
         , notificationRoot(notificationRoot)
     {
-        // The underlying native API expects that the virtualization root is specified as an empty
-        // string.  If the caller provides ".", convert that to the correct form.
-        if (notificationRoot->Equals("."))
+        if ((notificationRoot == ".") ||
+            notificationRoot->StartsWith(".\\"))
         {
-            notificationRoot = "";
+            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
+                                                                         "notificationRoot cannot be \".\" or begin with \".\\\""));
         }
     }
 
@@ -163,13 +174,12 @@ namespace ProjFS {
 
     inline void NotificationMapping::NotificationRoot::set(System::String^ root)
     {
-        // The underlying native API expects that the virtualization root is specified as an empty
-        // string.  If the caller provides ".", convert that to the correct form.
-        if (root->Equals("."))
+        if ((root == ".") ||
+            root->StartsWith(".\\"))
         {
-            root = "";
+            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
+                                                                         "The notification root path cannot be \".\" or begin with \".\\\""));
         }
-
         this->notificationRoot = root;
     }
 }}} // namespace Microsoft.Windows.ProjFS

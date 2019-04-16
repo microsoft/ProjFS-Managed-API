@@ -47,11 +47,6 @@ namespace SimpleProviderManaged
             if (this.Options.EnableNotifications)
             {
                 string rootName = string.Empty;
-                if (this.Options.UseDotAsRootname)
-                {
-                    rootName = ".";
-                }
-
                 notificationMappings = new List<NotificationMapping>()
                 {
                     new NotificationMapping(

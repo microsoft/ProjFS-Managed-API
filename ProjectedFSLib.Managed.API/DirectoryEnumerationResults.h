@@ -52,7 +52,7 @@ public:
     ///     the entry it was trying to add when it got <c>false</c>. 
     ///     </para>
     ///     <para>
-    ///     If the function returns <c>false</c> for the first file or directory in the enumeration, the
+    ///     If the method returns <c>false</c> for the first file or directory in the enumeration, the
     ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
     ///     method.
     ///     </para>
@@ -109,7 +109,7 @@ public:
     ///     the entry it was trying to add when it got <c>false</c>. 
     ///     </para>
     ///     <para>
-    ///     If the function returns <c>false</c> for the first file or directory in the enumeration, the
+    ///     If the method returns <c>false</c> for the first file or directory in the enumeration, the
     ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
     ///     method.
     ///     </para>
