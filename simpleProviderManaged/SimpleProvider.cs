@@ -46,6 +46,7 @@ namespace SimpleProviderManaged
             List<NotificationMapping> notificationMappings;
             if (this.Options.EnableNotifications)
             {
+                string rootName = string.Empty;
                 notificationMappings = new List<NotificationMapping>()
                 {
                     new NotificationMapping(
@@ -61,7 +62,7 @@ namespace SimpleProviderManaged
                         | NotificationType.FileHandleClosedFileModified
                         | NotificationType.FileHandleClosedFileDeleted
                         | NotificationType.FilePreConvertToFull,
-                        string.Empty)
+                        rootName)
                 };
             }
             else
