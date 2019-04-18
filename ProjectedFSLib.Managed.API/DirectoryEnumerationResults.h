@@ -47,14 +47,14 @@ public:
     ///     timestamps, it must use the other <c>Add</c> overload.
     ///     </para>
     ///     <para>
-    ///     If this method returns <see cref="HResult::InsufficientBuffer"/>, the provider returns <see cref="HResult::Ok"/> 
-    ///     and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-    ///     the enumeration with the entry it was trying to add when it got <see cref="HResult::InsufficientBuffer"/>.
+    ///     If this method returns <c>false</c>, the provider returns <see cref="HResult::Ok"/> and waits for
+    ///     the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+    ///     the entry it was trying to add when it got <c>false</c>. 
     ///     </para>
     ///     <para>
-    ///     If the function returns <see cref="HResult::InsufficientBuffer"/> for the first file or
-    ///     directory in the enumeration, the provider returns <see cref="HResult::InsufficientBuffer"/> from
-    ///     the delegate.
+    ///     If the method returns <c>false</c> for the first file or directory in the enumeration, the
+    ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
+    ///     method.
     ///     </para>
     /// </remarks>
     /// <param name="fileName">The name of the file or directory.</param>
@@ -63,16 +63,6 @@ public:
     /// <returns>
     ///     <para>
     ///     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
-    ///     </para>
-    ///     <para>
-    ///     If this method returns <c>false</c>, the provider returns <see cref="HResult::Ok"/> and waits for
-    ///     the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
-    ///     the entry it was trying to add when it got <c>false</c>. 
-    ///     </para>
-    ///     <para>
-    ///     If the function returns <c>false</c> for the first file or directory in the enumeration, the
-    ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
-    ///     method.
     ///     </para>
     /// </returns>
     /// <exception cref="System::ArgumentException">
@@ -114,14 +104,14 @@ public:
     ///     calls this method for each matching file or directory in the enumeration.
     ///     </para>
     ///     <para>
-    ///     If this method returns <see cref="HResult::InsufficientBuffer"/>, the provider returns <see cref="HResult::Ok"/> 
-    ///     and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-    ///     the enumeration with the entry it was trying to add when it got <see cref="HResult::InsufficientBuffer"/>.
+    ///     If this method returns <c>false</c>, the provider returns <see cref="HResult::Ok"/> and waits for
+    ///     the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+    ///     the entry it was trying to add when it got <c>false</c>. 
     ///     </para>
     ///     <para>
-    ///     If the function returns <see cref="HResult::InsufficientBuffer"/> for the first file or
-    ///     directory in the enumeration, the provider returns <see cref="HResult::InsufficientBuffer"/> from
-    ///     the delegate.
+    ///     If the method returns <c>false</c> for the first file or directory in the enumeration, the
+    ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
+    ///     method.
     ///     </para>
     /// </remarks>
     /// <param name="fileName">The name of the file or directory.</param>
@@ -135,16 +125,6 @@ public:
     /// <returns>
     ///     <para>
     ///     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
-    ///     </para>
-    ///     <para>
-    ///     If this method returns <c>false</c>, the provider returns <see cref="HResult::Ok"/> and waits for
-    ///     the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
-    ///     the entry it was trying to add when it got <c>false</c>. 
-    ///     </para>
-    ///     <para>
-    ///     If the function returns <c>false</c> for the first file or directory in the enumeration, the
-    ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
-    ///     method.
     ///     </para>
     /// </returns>
     /// <exception cref="System::ArgumentException">
