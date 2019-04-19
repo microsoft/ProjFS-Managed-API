@@ -891,7 +891,7 @@ Stores the provider's implementation of <see cref="T:Microsoft.Windows.ProjFS.Qu
             <seealso cref="T:Microsoft.Windows.ProjFS.QueryFileNameCallback" />
             <remarks>The provider must set this property prior to calling <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.StartVirtualizing(Microsoft.Windows.ProjFS.IRequiredCallbacks)" />.</remarks>
         </member>
-        <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.#ctor(System.String,System.UInt32,System.UInt32,System.Boolean,System.Collections.Generic.IReadOnlyCollection`1{Microsoft.Windows.ProjFS.NotificationMapping})">
+        <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.#ctor(System.String,System.UInt32,System.UInt32,System.Boolean,System.Collections.Generic.IReadOnlyCollection{Microsoft.Windows.ProjFS.NotificationMapping})">
             <summary>
 Initializes an object that manages communication between a provider and ProjFS.
 </summary>
@@ -1635,7 +1635,7 @@ ProjFS will send to the provider the notifications specified in <see cref="P:Mic
 for this directory and its descendants.
 </value>
             <exception cref="T:System.ArgumentException">
-The notification root value is <c>.</c> or begins with <c>.\</c>.  The notification root
+The notification root value is <c>.</c> or begins with <c>.\\</c>.  The notification root
 must be specified relative to the virtualization root, with the virtualization root itself
 specified as an empty string.
 </exception>
@@ -1659,7 +1659,7 @@ virtualization root specified in <paramref name="notificationRoot" />.</param>
             <param name="notificationRoot">The path to the notification root, relative to the virtualization
 root.  The virtualization root itself must be specified as an empty string.</param>
             <exception cref="T:System.ArgumentException">
-                <paramref name="notificationRoot" /> is <c>.</c> or begins with <c>.\</c>.  <paramref name="notificationRoot" />
+                <paramref name="notificationRoot" /> is <c>.</c> or begins with <c>.\\</c>.  <paramref name="notificationRoot" />
 must be specified relative to the virtualization root, with the virtualization root itself
 specified as an empty string.
 </exception>
