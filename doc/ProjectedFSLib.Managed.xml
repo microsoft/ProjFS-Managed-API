@@ -1635,7 +1635,7 @@ ProjFS will send to the provider the notifications specified in <see cref="P:Mic
 for this directory and its descendants.
 </value>
             <exception cref="T:System.ArgumentException">
-The notification root value is <c>.</c> or begins with <c>.\\</c>.  The notification root
+The notification root value is <c>.</c> or begins with <c>.\</c>.  The notification root
 must be specified relative to the virtualization root, with the virtualization root itself
 specified as an empty string.
 </exception>
@@ -1659,7 +1659,7 @@ virtualization root specified in <paramref name="notificationRoot" />.</param>
             <param name="notificationRoot">The path to the notification root, relative to the virtualization
 root.  The virtualization root itself must be specified as an empty string.</param>
             <exception cref="T:System.ArgumentException">
-                <paramref name="notificationRoot" /> is <c>.</c> or begins with <c>.\\</c>.  <paramref name="notificationRoot" />
+                <paramref name="notificationRoot" /> is <c>.</c> or begins with <c>.\</c>.  <paramref name="notificationRoot" />
 must be specified relative to the virtualization root, with the virtualization root itself
 specified as an empty string.
 </exception>
@@ -1748,6 +1748,11 @@ does not allow the operation with the <paramref name="updateFlags" /> value(s) p
         <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.ReadOnly">
             <summary>
 The item had the DOS read-only bit set and the provider did not specify <c>UpdateType.AllowReadOnly.</c></summary>
+        </member>
+        <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.Tombstone">
+            <summary>
+The item was a tombstone and the provider did not specify <c>UpdateType.AllowTombstone</c>.
+</summary>
         </member>
         <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.DirtyData">
             <summary>
