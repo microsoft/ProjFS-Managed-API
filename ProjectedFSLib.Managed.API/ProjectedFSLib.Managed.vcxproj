@@ -58,6 +58,7 @@
     <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <TargetName>ProjectedFSLib.Managed</TargetName>
+    <IncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -92,6 +93,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>ProjectedFSLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.17763.0\ucrt\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
       <Command>$(ProjectDir)\Scripts\CreateVersionHeader.bat $(ProjectName) $(ProjFSManagedVersion) $(SolutionDir) &amp;&amp; $(ProjectDir)\Scripts\CreateCliAssemblyVersion.bat $(ProjectName) $(ProjFSManagedVersion) $(SolutionDir)</Command>
