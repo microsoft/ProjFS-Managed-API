@@ -82,19 +82,19 @@ is already a placeholder or some other kind of reparse point.</para>
         </member>
         <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.CreateWriteBuffer(System.UInt64,System.UInt32,System.UInt64@,System.UInt32@)">
             <summary>
-Creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+Creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </summary>
             <remarks>
                 <para>
     The <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> object ensures that any alignment requirements of the
-    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
+    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
     method.
     </para>
                 <para>
     This overload allows a provider to get sector-aligned values for the start offset and
     length of the write.  The provider uses <paramref name="alignedByteOffset" /> and
     <paramref name="alignedLength" /> to copy the correct data out of its backing store
-    into the <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> and transfer it when calling <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+    into the <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> and transfer it when calling <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
     </para>
                 <para>
     Note that unlike most methods on <see cref="T:Microsoft.Windows.ProjFS.VirtualizationInstance" />, this method
@@ -110,11 +110,11 @@ The number of bytes to write to the file.
 </param>
             <param name="alignedByteOffset">
                 <paramref name="byteOffset" />, aligned to the sector size of the storage device.  The
-provider uses this value as the <c>byteOffset</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+provider uses this value as the <c>byteOffset</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </param>
             <param name="alignedLength">
                 <paramref name="length" />, aligned to the sector size of the storage device.  The
-provider uses this value as the <c>length</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+provider uses this value as the <c>length</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </param>
             <returns>
 A <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> that provides the needed capacity.
@@ -128,12 +128,12 @@ A buffer could not be allocated.
         </member>
         <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.CreateWriteBuffer(System.UInt32)">
             <summary>
-Creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+Creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </summary>
             <remarks>
                 <para>
     The <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> object ensures that any alignment requirements of the
-    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
+    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
     method.
     </para>
                 <para>
@@ -537,7 +537,7 @@ If this method fails with <see cref="F:Microsoft.Windows.ProjFS.HResult.Virtuali
     of <paramref name="failureReason" /> indicates the cause of the failure.</para>
             </returns>
         </member>
-        <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)">
+        <member name="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)">
             <summary>
 Sends file contents to ProjFS.
 </summary>
@@ -633,7 +633,7 @@ on the provider.
     requirements of the underlying storage device and stores that information internally
     in the <see cref="T:Microsoft.Windows.ProjFS.VirtualizationInstance" /> instance.  This information is required
     by the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.CreateWriteBuffer(System.UInt32)" /> method to ensure that it can return data in
-    the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" /> method when the original reader is using unbuffered
+    the <see cref="M:Microsoft.Windows.ProjFS.VirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" /> method when the original reader is using unbuffered
     I/O.  If this method cannot determine the sector alignment requirements of the
     underlying storage device, it will throw a <see cref="T:System.IO.IOException" />
     exception.
@@ -1024,19 +1024,19 @@ is already a placeholder or some other kind of reparse point.</para>
         </member>
         <member name="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.CreateWriteBuffer(System.UInt64,System.UInt32,System.UInt64@,System.UInt32@)">
             <summary>
-When overridden in a derived class, creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+When overridden in a derived class, creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </summary>
             <remarks>
                 <para>
     The <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> object ensures that any alignment requirements of the
-    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
+    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
     method.
     </para>
                 <para>
     This overload allows a provider to get sector-aligned values for the start offset and
     length of the write.  The provider uses <paramref name="alignedByteOffset" /> and
     <paramref name="alignedLength" /> to copy the correct data out of its backing store
-    into the <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> and transfer it when calling <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+    into the <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> and transfer it when calling <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
     </para>
             </remarks>
             <param name="byteOffset">
@@ -1047,11 +1047,11 @@ The number of bytes to write to the file.
 </param>
             <param name="alignedByteOffset">
                 <paramref name="byteOffset" />, aligned to the sector size of the storage device.  The
-provider uses this value as the <c>byteOffset</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+provider uses this value as the <c>byteOffset</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </param>
             <param name="alignedLength">
                 <paramref name="length" />, aligned to the sector size of the storage device.  The
-provider uses this value as the <c>length</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+provider uses this value as the <c>length</c> parameter to <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </param>
             <returns>
 A <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> that provides the needed capacity.
@@ -1066,12 +1066,12 @@ A buffer could not be allocated.
         <member name="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.CreateWriteBuffer(System.UInt32)">
             <summary>
 When overridden in a derived class, creates a <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> for use with
-<see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
+<see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />.
 </summary>
             <remarks>
                 <para>
     The <see cref="T:Microsoft.Windows.ProjFS.WriteBuffer" /> object ensures that any alignment requirements of the
-    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
+    underlying storage device are met when writing data with the <see cref="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)" />
     method.
     </para>
             </remarks>
@@ -1456,7 +1456,7 @@ If this method fails with <see cref="F:Microsoft.Windows.ProjFS.HResult.Virtuali
     of <paramref name="failureReason" /> indicates the cause of the failure.</para>
             </returns>
         </member>
-        <member name="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.WriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)">
+        <member name="M:Microsoft.Windows.ProjFS.IVirtualizationInstance.WriteFileData(System.Guid,Microsoft.Windows.ProjFS.IWriteBuffer,System.UInt64,System.UInt32!System.Runtime.CompilerServices.IsLong)">
             <summary>
 When overridden in a derived class, sends file contents to ProjFS.
 </summary>
@@ -1627,12 +1627,18 @@ This interface class is provided for use by unit tests to mock up the interface 
         </member>
         <member name="P:Microsoft.Windows.ProjFS.NotificationMapping.NotificationRoot">
             <summary>
-A path to a directory, relative to the virtualization root.
+A path to a directory, relative to the virtualization root.  The virtualization root itself
+must be specified as an empty string.
 </summary>
             <value>
 ProjFS will send to the provider the notifications specified in <see cref="P:Microsoft.Windows.ProjFS.NotificationMapping.NotificationMask" />
 for this directory and its descendants.
 </value>
+            <exception cref="T:System.ArgumentException">
+The notification root value is <c>.</c> or begins with <c>.\</c>.  The notification root
+must be specified relative to the virtualization root, with the virtualization root itself
+specified as an empty string.
+</exception>
         </member>
         <member name="P:Microsoft.Windows.ProjFS.NotificationMapping.NotificationMask">
             <summary>
@@ -1651,7 +1657,12 @@ specified property values.
             <param name="notificationMask">The set of notifications that ProjFS should return for the
 virtualization root specified in <paramref name="notificationRoot" />.</param>
             <param name="notificationRoot">The path to the notification root, relative to the virtualization
-root.</param>
+root.  The virtualization root itself must be specified as an empty string.</param>
+            <exception cref="T:System.ArgumentException">
+                <paramref name="notificationRoot" /> is <c>.</c> or begins with <c>.\</c>.  <paramref name="notificationRoot" />
+must be specified relative to the virtualization root, with the virtualization root itself
+specified as an empty string.
+</exception>
         </member>
         <member name="M:Microsoft.Windows.ProjFS.NotificationMapping.#ctor">
             <summary>
@@ -1738,16 +1749,16 @@ does not allow the operation with the <paramref name="updateFlags" /> value(s) p
             <summary>
 The item had the DOS read-only bit set and the provider did not specify <c>UpdateType.AllowReadOnly.</c></summary>
         </member>
+        <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.Tombstone">
+            <summary>
+The item was a tombstone and the provider did not specify <c>UpdateType.AllowTombstone</c>.
+</summary>
+        </member>
         <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.DirtyData">
             <summary>
 The item was a full file and the provider did not specify <c>UpdateType.AllowDirtyData</c>.
 </summary>
         </member>
-		<member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.Tombstone">
-            <summary>
-The item was a tombstone and the provider did not specify <c>UpdateType.AllowTombstone</c>.
-</summary>
-		</member>
         <member name="F:Microsoft.Windows.ProjFS.UpdateFailureCause.DirtyMetadata">
             <summary>
 The item was a dirty placeholder (hydrated or not), and the provider did not specify
@@ -2156,52 +2167,6 @@ can be canceled.</param>
                 <para>An appropriate error code if the provider fails the operation.</para>
             </returns>
         </member>
-        <member name="M:Microsoft.Windows.ProjFS.WriteBuffer.Finalize">
-            <summary>
-Frees the internal buffer.
-</summary>
-        </member>
-        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Pointer">
-            <summary>
-Gets a pointer to the internal buffer.
-</summary>
-        </member>
-        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Stream">
-            <summary>
-Gets a <see cref="T:System.IO.UnmanagedMemoryStream" /> representing the internal buffer.
-</summary>
-        </member>
-        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Length">
-            <summary>
-Gets the allocated length of the buffer.
-</summary>
-        </member>
-        <member name="T:Microsoft.Windows.ProjFS.WriteBuffer">
-            <summary>
-Helper class to ensure correct alignment when providing file contents for a placeholder.
-</summary>
-            <remarks>
-                <para>
-The provider does not instantiate this class directly.  It uses the 
-<c>ProjFS.VirtualizationInstance.CreateWriteBuffer</c> method to obtain a properly initialized
-instance of this class.
-</para>
-                <para>
-The <c>ProjFS.VirtualizationInstance.WriteFileData</c> method requires a data buffer containing
-file data for a placeholder so that ProjFS can convert the placeholder to a hydrated placeholder
-(see <c>ProjFS.OnDiskFileState</c> for a discussion of file states).  Internally ProjFS uses
-the user's FILE_OBJECT to write this data to the file.  Because the user may have opened the
-file for unbuffered I/O, and unbuffered I/O imposes certain alignment requirements, this
-class is provided to abstract out those details.
-</para>
-                <para>
-When the provider starts its virtualization instance, the <c>VirtualizationInstance</c> class
-queries the alignment requirements of the underlying physical storage device and uses this
-information to return a properly-initialized instance of this class from its <c>CreateWriteBuffer</c>
-method.
-</para>
-            </remarks>
-        </member>
         <member name="M:Microsoft.Windows.ProjFS.IRequiredCallbacks.GetFileDataCallback(System.Int32,System.String,System.UInt64,System.UInt32,System.Guid,System.Byte[],System.Byte[],System.UInt32,System.String)">
             <summary>Requests the contents of a file's primary data stream.</summary>
             <remarks>
@@ -2250,11 +2215,6 @@ will be <c>null</c>.</param>
                 <para>To handle this callback, the provider typically calls
     <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c> to give ProjFS the information
     for the requested file name.  Then the provider completes the callback.</para>
-                <para>This callback tells the provider that it must ensure that <paramref name="relativePath" />
-    exists.  Although calling <c>ProjFS.VirtualizationInstance.WritePlaceholderInfo</c>
-    is the normal way of handling this callback, a provider may satisfy the request for
-    <paramref name="relativePath" /> in another way.  For example, it may instead create a
-    normal file or a symbolic link to an existing file.</para>
             </remarks>
             <param name="commandId">
                 <para>A value that uniquely identifies an invocation of the callback.</para>
@@ -2430,14 +2390,14 @@ method.
     calls this method for each matching file or directory in the enumeration.
     </para>
                 <para>
-    If this method returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" />, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> 
-    and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-    the enumeration with the entry it was trying to add when it got <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" />.
+    If this method returns <c>false</c>, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> and waits for
+    the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+    the entry it was trying to add when it got <c>false</c>. 
     </para>
                 <para>
-    If the function returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> for the first file or
-    directory in the enumeration, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from
-    the delegate.
+    If the method returns <c>false</c> for the first file or directory in the enumeration, the
+    provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from the <c>GetDirectoryEnumerationCallback</c>
+    method.
     </para>
             </remarks>
             <param name="fileName">The name of the file or directory.</param>
@@ -2452,16 +2412,6 @@ method.
             <returns>
                 <para>
                     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
-    </para>
-                <para>
-    If this method returns <c>false</c>, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> and waits for
-    the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
-    the entry it was trying to add when it got <c>false</c>. 
-    </para>
-                <para>
-    If the function returns <c>false</c> for the first file or directory in the enumeration, the
-    provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from the <c>GetDirectoryEnumerationCallback</c>
-    method.
     </para>
             </returns>
             <exception cref="T:System.ArgumentException">
@@ -2481,14 +2431,14 @@ method.
     timestamps, it must use the other <c>Add</c> overload.
     </para>
                 <para>
-    If this method returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" />, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> 
-    and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-    the enumeration with the entry it was trying to add when it got <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" />.
+    If this method returns <c>false</c>, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> and waits for
+    the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+    the entry it was trying to add when it got <c>false</c>. 
     </para>
                 <para>
-    If the function returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> for the first file or
-    directory in the enumeration, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from
-    the delegate.
+    If the method returns <c>false</c> for the first file or directory in the enumeration, the
+    provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from the <c>GetDirectoryEnumerationCallback</c>
+    method.
     </para>
             </remarks>
             <param name="fileName">The name of the file or directory.</param>
@@ -2498,16 +2448,6 @@ method.
             <returns>
                 <para>
                     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
-    </para>
-                <para>
-    If this method returns <c>false</c>, the provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.Ok" /> and waits for
-    the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
-    the entry it was trying to add when it got <c>false</c>. 
-    </para>
-                <para>
-    If the function returns <c>false</c> for the first file or directory in the enumeration, the
-    provider returns <see cref="F:Microsoft.Windows.ProjFS.HResult.InsufficientBuffer" /> from the <c>GetDirectoryEnumerationCallback</c>
-    method.
     </para>
             </returns>
             <exception cref="T:System.ArgumentException">
@@ -2533,31 +2473,6 @@ In its implementation of a <c>GetDirectoryEnumerationCallback</c> delegate the p
 calls this method for each matching file or directory in the enumeration.
 </para>
                 <para>
-If this method returns <c>HResult.InsufficientBuffer</c>, the provider returns <c>HResult.Ok</c> 
-and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-the enumeration with the entry it was trying to add when it got <c>HResult.InsufficientBuffer</c>.
-</para>
-                <para>
-If the function returns <c>HResult.InsufficientBuffer</c> for the first file or
-directory in the enumeration, the provider returns <c>HResult.InsufficientBuffer</c> from
-the delegate.
-</para>
-            </remarks>
-            <param name="fileName">The name of the file or directory.</param>
-            <param name="fileSize">The size of the file.</param>
-            <param name="isDirectory">
-                <c>true</c> if this item is a directory, <c>false</c> if it is a file.</param>
-            <param name="fileAttributes">Specifies one or more FILE_ATTRIBUTE_XXX flags. For descriptions of these flags,
-see the documentation for the <c>GetFileAttributes</c> function in the Microsoft Windows SDK.</param>
-            <param name="creationTime">Specifies the time that the file was created.</param>
-            <param name="lastAccessTime">Specifies the time that the file was last accessed.</param>
-            <param name="lastWriteTime">Specifies the time that the file was last written to.</param>
-            <param name="changeTime">Specifies the last time the file was changed.</param>
-            <returns>
-                <para>
-                    <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
-</para>
-                <para>
 If this method returns <c>false</c>, the provider returns <c>HResult.Ok</c> and waits for
 the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
 the entry it was trying to add when it got <c>false</c>. 
@@ -2566,6 +2481,20 @@ the entry it was trying to add when it got <c>false</c>.
 If the function returns <c>false</c> for the first file or directory in the enumeration, the
 provider returns <c>HResult.InsufficientBuffer</c> from the <c>GetDirectoryEnumerationCallback</c>
 method.
+</para>
+            </remarks>
+            <param name="fileName">The name of the file or directory.</param>
+            <param name="fileSize">The size of the file.</param>
+            <param name="isDirectory">
+                <c>true</c> if this item is a directory, <c>false</c> if it is a file.</param>
+            <param name="fileAttributes">The file attributes.</param>
+            <param name="creationTime">Specifies the time that the file was created.</param>
+            <param name="lastAccessTime">Specifies the time that the file was last accessed.</param>
+            <param name="lastWriteTime">Specifies the time that the file was last written to.</param>
+            <param name="changeTime">Specifies the last time the file was changed.</param>
+            <returns>
+                <para>
+                    <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
 </para>
             </returns>
         </member>
@@ -2579,14 +2508,14 @@ In its implementation of a <c>GetDirectoryEnumerationCallback</c> delegate the p
 calls this method for each matching file or directory in the enumeration.
 </para>
                 <para>
-If this method returns <c>HResult.InsufficientBuffer</c>, the provider returns <c>HResult.Ok</c> 
-and waits for the next <c>GetDirectoryEnumerationCallback</c>. Then it resumes filling 
-the enumeration with the entry it was trying to add when it got <c>HResult.InsufficientBuffer</c>.
+If this method returns <c>false</c>, the provider returns <c>HResult.Ok</c> and waits for
+the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+the entry it was trying to add when it got <c>false</c>. 
 </para>
                 <para>
-If the function returns <c>HResult.InsufficientBuffer</c> for the first file or
-directory in the enumeration, the provider returns <c>HResult.InsufficientBuffer</c> from
-the delegate.
+If the function returns <c>false</c> for the first file or directory in the enumeration, the
+provider returns <c>HResult.InsufficientBuffer</c> from the <c>GetDirectoryEnumerationCallback</c>
+method.
 </para>
             </remarks>
             <param name="fileName">The name of the file or directory.</param>
@@ -2597,16 +2526,6 @@ the delegate.
                 <para>
                     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
 </para>
-                <para>
-If this method returns <c>false</c>, the provider returns <c>HResult.Ok</c> and waits for
-the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
-the entry it was trying to add when it got <c>false</c>. 
-</para>
-                <para>
-If the function returns <c>false</c> for the first file or directory in the enumeration, the
-provider returns <c>HResult.InsufficientBuffer</c> from the <c>GetDirectoryEnumerationCallback</c>
-method.
-</para>
             </returns>
         </member>
         <member name="T:Microsoft.Windows.ProjFS.IDirectoryEnumerationResults">
@@ -2615,6 +2534,101 @@ Interface to allow for easier unit testing of a virtualization provider.
 </summary>
             <remarks>
 This class defines the interface implemented by the <c>Microsoft.Windows.ProjFS.DirectoryEnumerationResults</c>
+class.  This interface class is provided for use by unit tests to mock up the interface to ProjFS.
+</remarks>
+        </member>
+        <member name="M:Microsoft.Windows.ProjFS.WriteBuffer.Finalize">
+            <summary>
+Frees the internal buffer.
+</summary>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Pointer">
+            <summary>
+Gets a pointer to the internal buffer.
+</summary>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Stream">
+            <summary>
+Gets a <see cref="T:System.IO.UnmanagedMemoryStream" /> representing the internal buffer.
+</summary>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.WriteBuffer.Length">
+            <summary>
+Gets the allocated length of the buffer.
+</summary>
+        </member>
+        <member name="T:Microsoft.Windows.ProjFS.WriteBuffer">
+            <summary>
+Helper class to ensure correct alignment when providing file contents for a placeholder.
+</summary>
+            <remarks>
+                <para>
+The provider does not instantiate this class directly.  It uses the 
+<c>ProjFS.VirtualizationInstance.CreateWriteBuffer</c> method to obtain a properly initialized
+instance of this class.
+</para>
+                <para>
+The <c>ProjFS.VirtualizationInstance.WriteFileData</c> method requires a data buffer containing
+file data for a placeholder so that ProjFS can convert the placeholder to a hydrated placeholder
+(see <c>ProjFS.OnDiskFileState</c> for a discussion of file states).  Internally ProjFS uses
+the user's FILE_OBJECT to write this data to the file.  Because the user may have opened the
+file for unbuffered I/O, and unbuffered I/O imposes certain alignment requirements, this
+class is provided to abstract out those details.
+</para>
+                <para>
+When the provider starts its virtualization instance, the <c>VirtualizationInstance</c> class
+queries the alignment requirements of the underlying physical storage device and uses this
+information to return a properly-initialized instance of this class from its <c>CreateWriteBuffer</c>
+method.
+</para>
+            </remarks>
+        </member>
+        <member name="T:Microsoft.Windows.ProjFS.ApiHelper">
+            <summary>Helper class for using the correct native APIs in the managed layer.</summary>
+            <remarks>
+                <para>
+The final ProjFS native APIs released in Windows 10 version 1809 differ from the now-deprecated
+beta APIs released in Windows 10 version 1803.  In 1809 the beta APIs are still exported from
+ProjectedFSLib.dll, in case an experimental provider written against the native 1803 APIs is run
+on 1809.
+</para>
+                <para>
+This managed API wrapper is meant to be usable on 1803 and later, so it is able to use the
+beta 1803 native APIs and the final 1809 native APIs.  Since the 1809 APIs are not present on
+1803, and because we intend to remove the beta 1803 APIs from a later version of Windows, we
+dynamically load the native APIs here.  If we didn't do that then trying to use this managed
+wrapper on a version of Windows missing one or the other native API would result in the program
+dying on startup with an unhandled <c>System::IO::FileLoadException</c>: "A procedure
+imported by 'ProjectedFSLib.Managed.dll' could not be loaded."
+</para>
+                <para>
+It is likely that at some point after removing the beta 1803 native APIs from Windows we will
+also remove support for them from this managed wrapper.
+</para>
+            </remarks>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.IWriteBuffer.Pointer">
+            <summary>
+When overridden in a derived class, gets a pointer to the internal buffer.
+</summary>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.IWriteBuffer.Stream">
+            <summary>
+When overridden in a derived class, gets a <see cref="T:System.IO.UnmanagedMemoryStream" />
+representing the internal buffer.
+</summary>
+        </member>
+        <member name="P:Microsoft.Windows.ProjFS.IWriteBuffer.Length">
+            <summary>
+When overridden in a derived class, gets the allocated length of the buffer.
+</summary>
+        </member>
+        <member name="T:Microsoft.Windows.ProjFS.IWriteBuffer">
+            <summary>
+Interface to allow for easier unit testing of a virtualization provider.
+</summary>
+            <remarks>
+This class defines the interface implemented by the <c>Microsoft.Windows.ProjFS.WriteBuffer</c>
 class.  This interface class is provided for use by unit tests to mock up the interface to ProjFS.
 </remarks>
         </member>
@@ -2755,6 +2769,9 @@ that has a single file "foo.txt" located in the virtualization root C:\root.
 A special hidden placeholder that represents an item that has been deleted from the local
 file system.
 </summary>
+            <summary>
+The item was a tombstone and the provider did not specify <c>UpdateType.AllowTombstone</c>.
+</summary>
         </member>
         <member name="F:Microsoft.Windows.ProjFS.OnDiskFileState.Full">
             <summary>
@@ -2782,30 +2799,6 @@ The item's content and metadata have been cached to the disk.  Also referred to 
 The item's content (primary data stream) is not present on the disk.  The item's metadata
 (name, size, timestamps, attributes, etc.) is cached on the disk.
 </summary>
-        </member>
-        <member name="T:Microsoft.Windows.ProjFS.ApiHelper">
-            <summary>Helper class for using the correct native APIs in the managed layer.</summary>
-            <remarks>
-                <para>
-The final ProjFS native APIs released in Windows 10 version 1809 differ from the now-deprecated
-beta APIs released in Windows 10 version 1803.  In 1809 the beta APIs are still exported from
-ProjectedFSLib.dll, in case an experimental provider written against the native 1803 APIs is run
-on 1809.
-</para>
-                <para>
-This managed API wrapper is meant to be usable on 1803 and later, so it is able to use the
-beta 1803 native APIs and the final 1809 native APIs.  Since the 1809 APIs are not present on
-1803, and because we intend to remove the beta 1803 APIs from a later version of Windows, we
-dynamically load the native APIs here.  If we didn't do that then trying to use this managed
-wrapper on a version of Windows missing one or the other native API would result in the program
-dying on startup with an unhandled <c>System::IO::FileLoadException</c>: "A procedure
-imported by 'ProjectedFSLib.Managed.dll' could not be loaded."
-</para>
-                <para>
-It is likely that at some point after removing the beta 1803 native APIs from Windows we will
-also remove support for them from this managed wrapper.
-</para>
-            </remarks>
         </member>
         <member name="T:Microsoft.Windows.ProjFS.HResult">
             <summary>
