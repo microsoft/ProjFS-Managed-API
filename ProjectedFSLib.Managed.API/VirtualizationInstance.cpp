@@ -504,8 +504,8 @@ HResult VirtualizationInstance::StartVirtualizing(IRequiredCallbacks^ requiredCa
         pin_ptr<const WCHAR> rootPath = PtrToStringChars(m_virtualizationRootPath);
 
         // Use a temp location to avoid e0158.
-        auto tempHandle = reinterpret_cast<PRJ_VIRTUALIZATIONINSTANCE_HANDLE>(m_virtualizationContext);
-        pin_ptr<PRJ_VIRTUALIZATIONINSTANCE_HANDLE> instanceHandle = &tempHandle;
+        pin_ptr<PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT> tempHandle = &(m_virtualizationContext);
+        auto instanceHandle = reinterpret_cast<PRJ_VIRTUALIZATIONINSTANCE_HANDLE*>(tempHandle);
 
         VIRTUALIZATION_INST_EXTENDED_PARAMETERS extendedParameters;
         memset(&extendedParameters, 0, sizeof(VIRTUALIZATION_INST_EXTENDED_PARAMETERS));
