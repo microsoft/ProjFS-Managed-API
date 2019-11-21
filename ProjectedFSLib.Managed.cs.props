@@ -4,9 +4,9 @@
   <Import Project="ProjectedFSLib.Managed.props" />
 
   <PropertyGroup>
-    <OutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-    <IntDir>$(BuildOutputDir)\$(MSBuildProjectName)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\$(TargetFramework)\</OutputPath>
+    <IntermediateOutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\obj\$(Platform)\$(Configuration)\$(TargetFramework)\</IntermediateOutputPath>
+    <IntDir>$(BuildOutputDir)\$(MSBuildProjectName)\intermediate\$(Platform)\$(Configuration)\$(TargetFramework)\</IntDir>
   </PropertyGroup>
-  
+
 </Project>

@@ -4,7 +4,7 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL %~dp0\InitializeEnvironment.bat || EXIT /b 10
 
 IF "%1"=="" (SET "Configuration=Debug") ELSE (SET "Configuration=%1")
-IF "%2"=="" (SET "ProjFSManagedVersion=0.2.173.2") ELSE (SET "ProjFSManagedVersion=%2")
+IF "%2"=="" (SET "ProjFSManagedVersion=0.3.0.0") ELSE (SET "ProjFSManagedVersion=%2")
 
 SET SolutionConfiguration=%Configuration%
 
@@ -48,7 +48,7 @@ IF NOT EXIST %msbuild% (
 
 :: Restore all dependencies.
 %nuget% restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln
-dotnet restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:Configuration=%SolutionConfiguration% /p:VCTargetsPath="C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140" --packages %PROJFS_PACKAGESDIR% || exit /b 1
+dotnet restore %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:Configuration=%SolutionConfiguration% /p:VCTargetsPath="C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\MSBuild\Microsoft\VC\v160\Platforms\x64\PlatformToolsets\!PlatformToolset!" --packages %PROJFS_PACKAGESDIR% || exit /b 1
 
 :: Kick off the build.
 !msbuild! %PROJFS_SRCDIR%\ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 /p:PlatformToolset=!PlatformToolset! || exit /b 1

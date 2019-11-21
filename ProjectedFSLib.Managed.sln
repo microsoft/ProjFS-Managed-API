@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2048
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29512.175
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed", "ProjectedFSLib.Managed.API\ProjectedFSLib.Managed.vcxproj", "{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed", "ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj", "{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed.NetCore", "ProjectedFSLib.Managed.API\NetCore\ProjectedFSLib.Managed.NetCore.vcxproj", "{D29E5723-25E6-41C7-AEB9-099CDE30538A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectedFSLib.Managed.Test", "ProjectedFSLib.Managed.Test\ProjectedFSLib.Managed.Test.csproj", "{B4018C7F-BF11-47BC-8770-72B05C9437EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleProviderManaged", "simpleProviderManaged\SimpleProviderManaged.csproj", "{5697F978-E1ED-4C2E-8218-4110F5EA559D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleProviderManaged", "simpleProviderManaged\SimpleProviderManaged.csproj", "{5697F978-E1ED-4C2E-8218-4110F5EA559D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{028D4D62-E4B9-44F0-A086-921292B7E89B}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,14 +34,18 @@ Global
 		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Debug|x64.Build.0 = Debug|x64
 		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.ActiveCfg = Release|x64
 		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.Build.0 = Release|x64
-		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.ActiveCfg = Debug|x64
-		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.Build.0 = Debug|x64
-		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.ActiveCfg = Release|x64
-		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.Build.0 = Release|x64
-		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.ActiveCfg = Debug|x64
-		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.Build.0 = Debug|x64
-		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.ActiveCfg = Release|x64
-		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.Build.0 = Release|x64
+		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|x64.ActiveCfg = Debug|x64
+		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|x64.Build.0 = Debug|x64
+		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|x64.ActiveCfg = Release|x64
+		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|x64.Build.0 = Release|x64
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|x64.Build.0 = Debug|Any CPU
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.ActiveCfg = Release|Any CPU
+		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Release|x64.Build.0 = Release|Any CPU
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.Build.0 = Debug|Any CPU
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
