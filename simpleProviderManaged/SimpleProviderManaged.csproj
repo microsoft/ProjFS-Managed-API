@@ -17,10 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj">
-      <Project>{4e5f40b3-b56f-4b62-92cb-68e7e0e36afa}</Project>
-      <Name>ProjectedFSLib.Managed</Name>
-    </ProjectReference>
+    <ProjectReference Condition="'$(TargetFramework)'=='net472'" Include="..\ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj" />
+    <ProjectReference Condition="'$(TargetFramework)'=='netcoreapp3.1'" Include="..\ProjectedFSLib.Managed.API\NetCore\ProjectedFSLib.Managed.NetCore.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>

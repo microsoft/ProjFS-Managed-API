@@ -18,7 +18,7 @@ IF NOT EXIST %nuget% (
 )
 
 :: Acquire vswhere to find dev15/dev16 installations reliably.
-SET vswherever=2.5.2
+SET vswherever=2.8.4
 %nuget% install vswhere -Version %vswherever% || exit /b 1
 SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 

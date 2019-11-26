@@ -4,26 +4,44 @@
 using CommandLine;
 using Serilog;
 using System;
+using System.Threading;
 
 namespace SimpleProviderManaged
 {
     public class Program
     {
-        public static void Main(string[] args)
+        private enum ReturnCode
         {
-            // We want verbose logging so we can see all our callback invocations.
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
+            Success = 0,
+            InvalidArguments = 1,
+            GeneralException = 2,
+        }
+        
+        public static int Main(string[] args)
+        {
+            try
+            {
+                // We want verbose logging so we can see all our callback invocations.
+                Log.Logger = new LoggerConfiguration()
+                    .WriteTo.Console()
+                    .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day)
+                    .CreateLogger();
 
-            Log.Information("Start");
+                Log.Information("Start");
 
-            var parserResult = Parser.Default
-                .ParseArguments<ProviderOptions>(args)
-                .WithParsed((ProviderOptions options) => { Run(options); });
+                var parserResult = Parser.Default
+                    .ParseArguments<ProviderOptions>(args)
+                    .WithParsed((ProviderOptions options) => Run(options));
 
-            Log.Information("Exit");
+                Log.Information("Exit successfully");
+                return (int) ReturnCode.Success;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unexpected exception: {ex}");
+                Thread.Sleep(5 * 1000);
+                return (int)ReturnCode.GeneralException;
+            }
         }
 
         private static void Run(ProviderOptions options)

@@ -5,7 +5,7 @@
 
   <PropertyGroup>
     <OutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\obj\$(Platform)\$(Configuration)\\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BuildOutputDir)\$(MSBuildProjectName)\obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
     <IntDir>$(BuildOutputDir)\$(MSBuildProjectName)\intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
 
