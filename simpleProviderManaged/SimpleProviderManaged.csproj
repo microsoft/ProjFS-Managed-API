@@ -3,7 +3,7 @@
   <Import Project="$(SolutionDir)\ProjectedFSLib.Managed.cs.props" />
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="README.md" />
   </ItemGroup>
 
