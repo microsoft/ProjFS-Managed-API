@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets">
+  <Import Project="$(SolutionDir)\ProjectedFSLib.Managed.cs.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj" />
+    <ProjectReference Include="..\ProjectedFSLib.Managed.API\NetCore\ProjectedFSLib.Managed.NetCore.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.CommandLine" Version="5.3.1" PrivateAssets="All" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <NetCoreFilesToCopy Include="$(BuildOutputDir)\ProjectedFSLib.Managed.NetCore\bin\x64\$(Configuration)\ProjectedFSLib.Managed.dll" />
+    <NetCoreFilesToCopy Include="$(BuildOutputDir)\ProjectedFSLib.Managed.NetCore\bin\x64\$(Configuration)\ProjectedFSLib.Managed.pdb" />
+    <FrameworkFilesToCopy Include="$(BuildOutputDir)\ProjectedFSLib.Managed\bin\x64\$(Configuration)\ProjectedFSLib.Managed.dll" />
+    <FrameworkFilesToCopy Include="$(BuildOutputDir)\ProjectedFSLib.Managed\bin\x64\$(Configuration)\ProjectedFSLib.Managed.pdb" />
+    <DocFilesToCopy Include="..\doc\ProjectedFSLib.Managed.xml" />
+  </ItemGroup>
+
+  <Target Name="CopyFiles" AfterTargets="Build">
+    <PropertyGroup>
+      <PkgDir>$(OutputPath)\pkg\</PkgDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(PkgDir)" />
+    <MakeDir Directories="$(PkgDir)lib\netcoreapp3.1" />
+    <MakeDir Directories="$(PkgDir)lib\net472" />
+
+    <Copy
+        SourceFiles="@(NetCoreFilesToCopy)"
+        DestinationFolder="$(PkgDir)lib\netcoreapp3.1"
+        SkipUnchangedFiles="true"
+        OverwriteReadOnlyFiles="true" />
+    <Copy
+        SourceFiles="@(DocFilesToCopy)"
+        DestinationFolder="$(PkgDir)lib\netcoreapp3.1"
+        SkipUnchangedFiles="true"
+        OverwriteReadOnlyFiles="true" />
+
+    <Copy
+        SourceFiles="@(FrameworkFilesToCopy)"
+        DestinationFolder="$(PkgDir)lib\net472"
+        SkipUnchangedFiles="true"
+        OverwriteReadOnlyFiles="true" />
+    <Copy
+        SourceFiles="@(DocFilesToCopy)"
+        DestinationFolder="$(PkgDir)lib\net472"
+        SkipUnchangedFiles="true"
+        OverwriteReadOnlyFiles="true" />
+
+    <Exec
+        WorkingDirectory="$(PkgDir)"
+        Command="$(PkgNuget_CommandLine)\tools\nuget.exe pack $(MSBuildProjectDirectory)\Microsoft.Windows.ProjFS.nuspec -OutputDirectory $(OutputPath)" />
+  </Target>
+</Project>
