@@ -53,7 +53,7 @@ coverage of the managed wrapper API surface.
     * **.NET Core cross-platform development**
     * **Desktop development with C++**
   * Include the following individual components:
-    * **.NET Framework 4.6.1 SDK**
+    * **.NET Framework 4.7.2 SDK**
     * **C++/CLI support**
     * **Windows 10 SDK (10.0.18362.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
