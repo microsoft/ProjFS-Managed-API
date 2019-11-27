@@ -56,6 +56,6 @@
 
     <Exec
         WorkingDirectory="$(PkgDir)"
-        Command="$(PkgNuget_CommandLine)\tools\nuget.exe pack $(MSBuildProjectDirectory)\Microsoft.Windows.ProjFS.nuspec -OutputDirectory $(OutputPath)" />
+        Command="$(PkgNuget_CommandLine)\tools\nuget.exe pack $(MSBuildProjectDirectory)\Microsoft.Windows.ProjFS.nuspec -BasePath $(PkgDir) -OutputDirectory $(OutputPath)" />
   </Target>
 </Project>
