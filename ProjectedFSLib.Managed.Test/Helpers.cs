@@ -53,7 +53,7 @@ namespace ProjectedFSLib.Managed.Test
 
         public void StartTestProvider()
         {
-            StartTestProvider(out string sourceRoot, out string virtRoot); 
+            StartTestProvider(out string sourceRoot, out string virtRoot);
         }
 
         public void StartTestProvider(out string sourceRoot, out string virtRoot)
@@ -64,8 +64,8 @@ namespace ProjectedFSLib.Managed.Test
             var providerExe = TestContext.Parameters.Get("ProviderExe");
 
             // Create an event for the provider to signal once it is up and running.
-            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, "ProviderTestProceed"); 
-            
+            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, "ProviderTestProceed");
+
             // Set up the provider process and start it.
             ProviderProcess = new Process();
             ProviderProcess.StartInfo.FileName = providerExe;
@@ -131,7 +131,7 @@ namespace ProjectedFSLib.Managed.Test
             GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             string sourceFileName = Path.Combine(sourceRoot, fileName);
-            FileInfo sourceFile = new FileInfo(sourceFileName); 
+            FileInfo sourceFile = new FileInfo(sourceFileName);
 
             if (!sourceFile.Exists)
             {
