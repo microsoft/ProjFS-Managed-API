@@ -426,7 +426,7 @@ namespace SimpleProviderManaged
         {
             Log.Information("----> EndDirectoryEnumerationCallback");
 
-            if (!this.activeEnumerations.TryRemove(enumerationId, out _))
+            if (!this.activeEnumerations.TryRemove(enumerationId, out ActiveEnumeration enumeration))
             {
                 return HResult.InternalError;
             }

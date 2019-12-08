@@ -13,9 +13,11 @@ namespace ProjectedFSLib.Managed.Test
 {
     class Helpers
     {
-        public Process ProviderProcess { get; set; }
+        private Process m_providerProcess;
+        public Process ProviderProcess { get => m_providerProcess; set => m_providerProcess = value; }
 
-        public int WaitTimeoutInMs { get; set; }
+        private int m_waitTimeoutInMs;
+        public int WaitTimeoutInMs { get => m_waitTimeoutInMs; set => m_waitTimeoutInMs = value; }
 
         internal enum NotifyWaitHandleNames
         {
@@ -32,25 +34,26 @@ namespace ProjectedFSLib.Managed.Test
             FilePreConvertToFull,
         }
 
-        public List<EventWaitHandle> NotificationEvents { get; }
+        private List<EventWaitHandle> notificationEvents;
+        public List<EventWaitHandle> NotificationEvents { get => notificationEvents; }
 
         public Helpers(
             int waitTimeoutInMs
         )
         {
-            WaitTimeoutInMs = waitTimeoutInMs;
+            m_waitTimeoutInMs = waitTimeoutInMs;
 
             // Create the events that the notifications tests use.
-            NotificationEvents = new List<EventWaitHandle>();
+            notificationEvents = new List<EventWaitHandle>();
             foreach (string eventName in Enum.GetNames(typeof(NotifyWaitHandleNames)))
             {
-                NotificationEvents.Add(new EventWaitHandle(false, EventResetMode.AutoReset, eventName));
+                notificationEvents.Add(new EventWaitHandle(false, EventResetMode.AutoReset, eventName));
             }
         }
 
         public void StartTestProvider()
         {
-            StartTestProvider(out _, out _);
+            StartTestProvider(out string sourceRoot, out string virtRoot); 
         }
 
         public void StartTestProvider(out string sourceRoot, out string virtRoot)
@@ -61,8 +64,8 @@ namespace ProjectedFSLib.Managed.Test
             var providerExe = TestContext.Parameters.Get("ProviderExe");
 
             // Create an event for the provider to signal once it is up and running.
-            var waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, "ProviderTestProceed");
-
+            EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, "ProviderTestProceed"); 
+            
             // Set up the provider process and start it.
             ProviderProcess = new Process();
             ProviderProcess.StartInfo.FileName = providerExe;
@@ -112,7 +115,7 @@ namespace ProjectedFSLib.Managed.Test
         {
             GetRootNamesForTest(out sourceName, out virtRootName);
 
-            var sourceInfo = new DirectoryInfo(sourceName);
+            DirectoryInfo sourceInfo = new DirectoryInfo(sourceName);
             if (!sourceInfo.Exists)
             {
                 sourceInfo.Create();
@@ -128,7 +131,7 @@ namespace ProjectedFSLib.Managed.Test
             GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             string sourceFileName = Path.Combine(sourceRoot, fileName);
-            var sourceFile = new FileInfo(sourceFileName);
+            FileInfo sourceFile = new FileInfo(sourceFileName); 
 
             if (!sourceFile.Exists)
             {
@@ -159,14 +162,14 @@ namespace ProjectedFSLib.Managed.Test
         // Returns the full path to the full file.
         public string CreateFullFile(string fileName, string fileContent)
         {
-            GetRootNamesForTest(out _, out string virtRoot);
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             string fullFileName = Path.Combine(virtRoot, fileName);
-            var fullFile = new FileInfo(fullFileName);
+            FileInfo fullFile = new FileInfo(fullFileName);
 
             if (!fullFile.Exists)
             {
-                var ancestorPath = new DirectoryInfo(Path.GetDirectoryName(fullFile.FullName));
+                DirectoryInfo ancestorPath = new DirectoryInfo(Path.GetDirectoryName(fullFile.FullName));
                 if (!ancestorPath.Exists)
                 {
                     ancestorPath.Create();
@@ -190,10 +193,10 @@ namespace ProjectedFSLib.Managed.Test
 
         public string ReadFileInVirtRoot(string fileName)
         {
-            GetRootNamesForTest(out _, out string virtRoot);
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             string destFileName = Path.Combine(virtRoot, fileName);
-            var destFile = new FileInfo(destFileName);
+            FileInfo destFile = new FileInfo(destFileName);
             string fileContent;
             using (StreamReader sr = destFile.OpenText())
             {
@@ -205,7 +208,7 @@ namespace ProjectedFSLib.Managed.Test
 
         public FileStream OpenFileInVirtRoot(string fileName, FileMode mode)
         {
-            GetRootNamesForTest(out _, out string virtRoot);
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             string destFileName = Path.Combine(virtRoot, fileName);
             FileStream stream = File.Open(destFileName, mode);

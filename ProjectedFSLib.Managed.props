@@ -4,7 +4,7 @@
   <PropertyGroup Label="Parameters">
     <!-- The real version is determined by the official build process.
          This version is a "built on dev box" special version. -->
-    <ProjFSManagedVersion>0.2.172.2</ProjFSManagedVersion>
+    <ProjFSManagedVersion>0.2.173.2</ProjFSManagedVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="DefaultSettings">
