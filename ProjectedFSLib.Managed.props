@@ -2,7 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup Label="Parameters">
-    <ProjFSManagedVersion>0.3.0.0</ProjFSManagedVersion>
+    <!-- The real version is determined by the official build process.
+         This version is a "built on dev box" special version. -->
+    <ProjFSManagedVersion>0.2.172.2</ProjFSManagedVersion>
   </PropertyGroup>
 
   <PropertyGroup Label="DefaultSettings">

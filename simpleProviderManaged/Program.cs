@@ -4,7 +4,6 @@
 using CommandLine;
 using Serilog;
 using System;
-using System.Threading;
 
 namespace SimpleProviderManaged
 {
@@ -39,7 +38,6 @@ namespace SimpleProviderManaged
             catch (Exception ex)
             {
                 Console.Error.WriteLine($"Unexpected exception: {ex}");
-                Thread.Sleep(5 * 1000);
                 return (int)ReturnCode.GeneralException;
             }
         }
