@@ -47,7 +47,7 @@ namespace SimpleProviderManaged
             if (this.Options.EnableNotifications)
             {
                 string rootName = string.Empty;
-                notificationMappings = new List<NotificationMapping>
+                notificationMappings = new List<NotificationMapping>()
                 {
                     new NotificationMapping(
                         NotificationType.FileOpened
@@ -80,7 +80,7 @@ namespace SimpleProviderManaged
                     enableNegativePathCache: false,
                     notificationMappings: notificationMappings);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Log.Fatal(ex, "Failed to create VirtualizationInstance.");
                 throw;
@@ -445,7 +445,7 @@ namespace SimpleProviderManaged
             Log.Information("----> GetPlaceholderInfoCallback [{Path}]", relativePath);
             Log.Information("  Placeholder creation triggered by [{ProcName} {PID}]", triggeringProcessImageFileName, triggeringProcessId);
 
-            HResult hr;
+            HResult hr = HResult.Ok;
             ProjectedFileInfo fileInfo = this.GetFileInfoInLayer(relativePath);
             if (fileInfo == null)
             {
@@ -484,7 +484,7 @@ namespace SimpleProviderManaged
             Log.Information("----> GetFileDataCallback relativePath [{Path}]", relativePath);
             Log.Information("  triggered by [{ProcName} {PID}]", triggeringProcessImageFileName, triggeringProcessId);
 
-            HResult hr;
+            HResult hr = HResult.Ok;
             if (!this.FileExistsInLayer(relativePath))
             {
                 hr = HResult.FileNotFound;
@@ -560,7 +560,7 @@ namespace SimpleProviderManaged
         {
             Log.Information("----> QueryFileNameCallback relativePath [{Path}]", relativePath);
 
-            HResult hr;
+            HResult hr = HResult.Ok;
             string parentDirectory = Path.GetDirectoryName(relativePath);
             string childName = Path.GetFileName(relativePath);
             if (this.GetChildItemsInLayer(parentDirectory).Any(child => Utils.IsFileNameMatch(child.Name, childName)))
