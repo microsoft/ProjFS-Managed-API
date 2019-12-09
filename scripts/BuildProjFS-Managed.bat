@@ -30,7 +30,7 @@ for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version 
 )
 
 IF NOT DEFINED VsDir (
-  %vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -format json -include packages
+  %vswhere% -all -prerelease -latest -products * -format json -include packages
   echo ERROR: Could not locate a Visual Studio installation with required components.
   echo Refer to Readme.md for a list of the required Visual Studio components.
   exit /b 10
