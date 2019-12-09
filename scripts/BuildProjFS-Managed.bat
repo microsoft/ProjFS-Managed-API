@@ -23,11 +23,14 @@ SET vswherever=2.8.4
 %nuget% install vswhere -Version %vswherever% || exit /b 1
 SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 set WINSDK_BUILD=18362
+echo Checking for VS installation:
+echo %vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath
 for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath`) do (
   set VsDir=%%i
 )
 
 IF NOT DEFINED VsDir (
+  %vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -format json -include packages
   echo ERROR: Could not locate a Visual Studio installation with required components.
   echo Refer to Readme.md for a list of the required Visual Studio components.
   exit /b 10
