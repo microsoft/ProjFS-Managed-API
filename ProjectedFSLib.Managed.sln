@@ -24,8 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{80F7
 		scripts\RunTests.bat = scripts\RunTests.bat
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectedFSLib.Package", "NugetPackage\ProjectedFSLib.Package.csproj", "{01FCBE2D-7018-42C1-B617-EF02032A889C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -48,10 +46,6 @@ Global
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Debug|x64.Build.0 = Debug|Any CPU
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.ActiveCfg = Release|Any CPU
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.Build.0 = Release|Any CPU
-		{01FCBE2D-7018-42C1-B617-EF02032A889C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{01FCBE2D-7018-42C1-B617-EF02032A889C}.Debug|x64.Build.0 = Debug|Any CPU
-		{01FCBE2D-7018-42C1-B617-EF02032A889C}.Release|x64.ActiveCfg = Release|Any CPU
-		{01FCBE2D-7018-42C1-B617-EF02032A889C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
