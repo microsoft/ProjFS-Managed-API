@@ -2,7 +2,7 @@
   <Import Project="$(SolutionDir)\ProjectedFSLib.Managed.cs.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
     <PlatformTarget>x64</PlatformTarget>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Condition="'$(TargetFramework)'=='net472'" Include="..\ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj" />
+    <ProjectReference Condition="'$(TargetFramework)'=='net461'" Include="..\ProjectedFSLib.Managed.API\NetFramework\ProjectedFSLib.Managed.vcxproj" />
     <ProjectReference Condition="'$(TargetFramework)'=='netcoreapp3.1'" Include="..\ProjectedFSLib.Managed.API\NetCore\ProjectedFSLib.Managed.NetCore.vcxproj" />
   </ItemGroup>
 
