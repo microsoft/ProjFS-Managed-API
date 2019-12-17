@@ -47,7 +47,7 @@ coverage of the managed wrapper API surface.
 
 ## Building the ProjFS Managed API
 
-* Install [Visual Studio 2017 Community Edition](https://www.visualstudio.com/downloads/) or higher.
+* Install [Visual Studio 2019 Community Edition](https://www.visualstudio.com/downloads/) version 16.4 or higher.
   * Include the following workloads:
     * **.NET desktop development**
     * **.NET Core cross-platform development**
@@ -55,7 +55,7 @@ coverage of the managed wrapper API surface.
   * Include the following individual components:
     * **.NET Framework 4.6.1 SDK**
     * **C++/CLI support**
-    * **Windows 10 SDK (10.0.17763.0)**
+    * **Windows 10 SDK (10.0.18362.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
 * Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
 * Run `src\scripts\BuildProjFS-Managed.bat`

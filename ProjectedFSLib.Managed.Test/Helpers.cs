@@ -36,7 +36,7 @@ namespace ProjectedFSLib.Managed.Test
 
         private List<EventWaitHandle> notificationEvents;
         public List<EventWaitHandle> NotificationEvents { get => notificationEvents; }
-        
+
         public Helpers(
             int waitTimeoutInMs
         )

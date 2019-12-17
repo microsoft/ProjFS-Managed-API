@@ -485,7 +485,6 @@ namespace SimpleProviderManaged
             Log.Information("  triggered by [{ProcName} {PID}]", triggeringProcessImageFileName, triggeringProcessId);
 
             HResult hr = HResult.Ok;
-
             if (!this.FileExistsInLayer(relativePath))
             {
                 hr = HResult.FileNotFound;
