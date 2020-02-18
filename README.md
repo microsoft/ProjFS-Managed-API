@@ -58,8 +58,9 @@ coverage of the managed wrapper API surface.
     * **Windows 10 SDK (10.0.18362.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
 * Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
+* Open `cmd.exe` with administrator permissions.
 * Run `src\scripts\BuildProjFS-Managed.bat`
-  * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
+  * You can also build in Visual Studio by opening VS as administrator  `src\ProjectedFSLib.Managed.sln` and building.
 
 The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
 
@@ -67,6 +68,18 @@ The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos
 you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to
 [this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
 for instructions.
+
+### Dealing with a BadImageFormatException at run time under .NET Core
+If you encounter this exception pattern at runtime when using this package under .NET Core:
+
+    System.BadImageFormatException: Could not load file or assembly 'ProjectedFSLib.Managed, Version=1.2.19351.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35'. An attempt was made to load a program with an incorrect format.
+
+This typically occurs when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
+
+    <PropertyGroup>
+      <UseIJWHost>True</UseIJWHost>
+    </PropertyGroup>
+
 
 ## Contributing
 
