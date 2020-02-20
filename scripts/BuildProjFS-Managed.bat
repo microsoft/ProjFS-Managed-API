@@ -20,7 +20,7 @@ IF NOT EXIST %nuget% (
 :: Use vswhere to find the latest VS installation (including prerelease installations) with the msbuild component.
 :: See https://github.com/Microsoft/vswhere/wiki/Find-MSBuild
 SET vswherever=2.8.4
-%nuget% install vswhere -Version %vswherever% || exit /b 1
+%nuget% install vswhere -Version %vswherever% -OutputDirectory %PROJFS_PACKAGESDIR% || exit /b 1
 SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 set WINSDK_BUILD=18362
 echo Checking for VS installation:
