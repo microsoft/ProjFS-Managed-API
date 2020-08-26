@@ -87,6 +87,11 @@ public:
     ///     <para>If no entries match the search expression specified in <paramref name="filterFileName"/>,
     ///     or if all the entries in the directory were added in a previous invocation of this callback,
     ///     the provider must return <see cref="HResult::Ok"/>.</para>
+    ///     <para>IMPORTANT: The provider must ensure file and directory names returned from this
+    ///     callback are in the sort order specified by <c>PrjFileNameCompare</c>
+    ///     (see https://docs.microsoft.com/en-us/windows/win32/api/projectedfslib/nf-projectedfslib-prjfilenamecompare ),
+    ///     or else names can be duplicated or missing from the enumeration results presented to the
+    ///     process enumerating the filesystem.</para>
     /// </remarks>
     /// <param name="commandId">
     ///     <para>A value that uniquely identifies an invocation of the callback.</para>
@@ -119,6 +124,11 @@ public:
     ///     <para>If the provider returns <see cref="HResult::Pending"/> from this method, then it must pass
     ///     this value to <c>ProjFS.VirtualizationInstance.CompleteCommand</c> to provide the
     ///     enumeration results.</para>
+    ///     <para>IMPORTANT: File and directory names passed to this parameter must be in the sort
+    ///     order specified by <c>PrjFileNameCompare</c>
+    ///     (see https://docs.microsoft.com/en-us/windows/win32/api/projectedfslib/nf-projectedfslib-prjfilenamecompare ),
+    ///     or else names can be duplicated or missing from the enumeration results presented to the
+    ///     process enumerating the filesystem.</para>
     /// </param>
     /// <returns>
     ///     <para><see cref="HResult::Ok"/> if the provider successfully completes the operation.</para>
