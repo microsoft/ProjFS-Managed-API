@@ -36,6 +36,13 @@ public:
     /// provider returns <c>HResult.InsufficientBuffer</c> from the <c>GetDirectoryEnumerationCallback</c>
     /// method.
     /// </para>
+    /// <para>
+    /// IMPORTANT: File and directory names passed to this method must be in the sort
+    /// specified by <c>PrjFileNameCompare</c>
+    /// (see https://docs.microsoft.com/en-us/windows/win32/api/projectedfslib/nf-projectedfslib-prjfilenamecompare ),
+    /// or else names can be duplicated or missing from the enumeration results presented to the
+    /// process enumerating the filesystem.
+    /// </para>
     /// </remarks>
     /// <param name="fileName">The name of the file or directory.</param>
     /// <param name="fileSize">The size of the file.</param>
@@ -68,6 +75,13 @@ public:
     /// If the function returns <c>false</c> for the first file or directory in the enumeration, the
     /// provider returns <c>HResult.InsufficientBuffer</c> from the <c>GetDirectoryEnumerationCallback</c>
     /// method.
+    /// </para>
+    /// <para>
+    /// IMPORTANT: File and directory names passed to this method must be in the sort
+    /// specified by <c>PrjFileNameCompare</c>
+    /// (see https://docs.microsoft.com/en-us/windows/win32/api/projectedfslib/nf-projectedfslib-prjfilenamecompare ),
+    /// or else names can be duplicated or missing from the enumeration results presented to the
+    /// process enumerating the filesystem.
     /// </para>
     /// </remarks>
     /// <param name="fileName">The name of the file or directory.</param>
