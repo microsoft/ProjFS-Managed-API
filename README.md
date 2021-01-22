@@ -68,10 +68,14 @@ you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer
 [this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
 for instructions.
 
-### Dealing with a BadImageFormatException at run time under .NET Core
-If you encounter this exception pattern at runtime when using this package under .NET Core:
+### Dealing with BadImageFormatExceptions
+If you're seeing an error pattern like this:  
+``` System.BadImageFormatException: Could not load file or assembly 'ProjectedFSLib.Managed, Version=1.2.19351.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35'. An attempt was made to load a program with an incorrect format.  ```  
+then it's likely that a dependent assembly of this library is missing. The most common cause for BadImageFormatExceptions is that you haven't enabled the ProjFS windows component yet, which is now optional:   
+` Enable-WindowsOptionalFeature -Online -FeatureName Client-ProjFS -NoRestart `  
+([source](https://docs.microsoft.com/en-us/windows/win32/projfs/enabling-windows-projected-file-system))
 
-    System.BadImageFormatException: Could not load file or assembly 'ProjectedFSLib.Managed, Version=1.2.19351.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35'. An attempt was made to load a program with an incorrect format.
+#### If you encounter this exception pattern at runtime when using this package under .NET Core:
 
 This typically occurs when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
 
