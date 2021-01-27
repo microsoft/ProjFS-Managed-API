@@ -17,8 +17,9 @@ very large git repos.
 Conceptual documentation for ProjFS along with documentation of its Win32 API is at
 [docs.microsoft.com](https://docs.microsoft.com/en-us/windows/desktop/projfs/projected-file-system).
 
-ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
-starting in Windows 10 version 1809.
+## Enabling ProjFS
+
+ProjFS enablement is **required** for this library to work correctly. ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system) starting in Windows 10 version 1809. 
 
 ## About the ProjFS Managed API
 
@@ -68,12 +69,10 @@ you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer
 [this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
 for instructions.
 
-### Dealing with a BadImageFormatException at run time under .NET Core
-If you encounter this exception pattern at runtime when using this package under .NET Core:
+### Dealing with BadImageFormatExceptions
+The simplest cause for BadImageFormatExceptions is that you still need to [enable ProjFS](#enabling-projfs).
 
-    System.BadImageFormatException: Could not load file or assembly 'ProjectedFSLib.Managed, Version=1.2.19351.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35'. An attempt was made to load a program with an incorrect format.
-
-This typically occurs when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
+For .Net Core specific consumers, this can also occur when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
 
     <PropertyGroup>
       <UseIJWHost>True</UseIJWHost>
