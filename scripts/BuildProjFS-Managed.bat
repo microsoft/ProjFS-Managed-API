@@ -22,7 +22,7 @@ IF NOT EXIST %nuget% (
 SET vswherever=2.8.4
 %nuget% install vswhere -Version %vswherever% -OutputDirectory %PROJFS_PACKAGESDIR% || exit /b 1
 SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
-set WINSDK_BUILD=18362
+set WINSDK_BUILD=19041
 echo Checking for VS installation:
 echo %vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath
 for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath`) do (
