@@ -56,7 +56,7 @@ coverage of the managed wrapper API surface.
   * Include the following individual components:
     * **.NET Framework 4.6.1 SDK**
     * **C++/CLI support**
-    * **Windows 10 SDK (10.0.18362.0)**
+    * **Windows 10 SDK (10.0.19041.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
 * Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
 * Run `src\scripts\BuildProjFS-Managed.bat`
