@@ -26,6 +26,8 @@ ProjFS enablement is **required** for this library to work correctly. ProjFS shi
 The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a wrapper around
 the native API so that developers can write ProjFS providers using managed code.
 
+Note that to use this library on a computer that does not have Visual Studio installed, you must install the [Visual C++ redistributable](https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2019). This applies whether you build this source code yourself or use the pre-compiled library [available from nuget.org](https://www.nuget.org/packages/Microsoft.Windows.ProjFS/).
+
 ## Solution Layout
 
 ### ProjectedFSLib.Managed project
