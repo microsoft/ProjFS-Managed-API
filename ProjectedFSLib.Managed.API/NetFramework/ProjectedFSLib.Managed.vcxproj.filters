@@ -15,99 +15,99 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="..\ApiHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="..\CallbackDelegates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApiHelper.h">
+    <ClInclude Include="..\DirectoryEnumerationResults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CallbackDelegates.h">
+    <ClInclude Include="..\HResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectoryEnumerationResults.h">
+    <ClInclude Include="..\IDirectoryEnumerationResults.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HResult.h">
+    <ClInclude Include="..\IRequiredCallbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IVirtualizationInstance.h">
+    <ClInclude Include="..\IVirtualizationInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationMapping.h">
+    <ClInclude Include="..\IWriteBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NotificationType.h">
+    <ClInclude Include="..\NotificationMapping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OnDiskFileState.h">
+    <ClInclude Include="..\NotificationType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UpdateFailureCause.h">
+    <ClInclude Include="..\OnDiskFileState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UpdateType.h">
+    <ClInclude Include="..\prjlib_deprecated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="..\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VirtualizationInstance.h">
+    <ClInclude Include="..\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WriteBuffer.h">
+    <ClInclude Include="..\UpdateFailureCause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="prjlib_deprecated.h">
+    <ClInclude Include="..\UpdateType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IRequiredCallbacks.h">
+    <ClInclude Include="..\Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IDirectoryEnumerationResults.h">
+    <ClInclude Include="..\VirtualizationInstance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IWriteBuffer.h">
+    <ClInclude Include="..\WriteBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssemblyInfo.cpp">
+    <ClCompile Include="..\ApiHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="..\AssemblyInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApiHelper.cpp">
+    <ClCompile Include="..\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp">
+    <ClCompile Include="..\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualizationInstance.cpp">
+    <ClCompile Include="..\VirtualizationInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WriteBuffer.cpp">
+    <ClCompile Include="..\WriteBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="app.rc">
+    <ResourceCompile Include="..\app.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="app.ico">
+    <Image Include="..\app.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\CreateVersionHeader.bat">
+    <None Include="..\scripts\CreateCliAssemblyVersion.bat">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="scripts\CreateCliAssemblyVersion.bat">
+    <None Include="..\scripts\CreateVersionHeader.bat">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
