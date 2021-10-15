@@ -68,6 +68,14 @@ private:
         _In_ UINT32 placeholderInfoSize
         );
 
+    typedef HRESULT(__stdcall* t_PrjWritePlaceholderInfo2)(
+        _In_ PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT namespaceVirtualizationContext,
+        _In_ PCWSTR destinationFileName,
+        _In_reads_bytes_(placeholderInfoSize) const PRJ_PLACEHOLDER_INFO* placeholderInfo,
+        _In_ UINT32 placeholderInfoSize,
+        _In_ const PRJ_EXTENDED_INFO* ExtendedInfo
+        );
+
     typedef void* (__stdcall* t_PrjAllocateAlignedBuffer)(
         _In_ PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT namespaceVirtualizationContext,
         _In_ size_t size
@@ -178,6 +186,7 @@ internal:
     t_PrjStopVirtualizing _PrjStopVirtualizing = nullptr;
     t_PrjWriteFileData _PrjWriteFileData = nullptr;
     t_PrjWritePlaceholderInfo _PrjWritePlaceholderInfo = nullptr;
+    t_PrjWritePlaceholderInfo2 _PrjWritePlaceholderInfo2 = nullptr;
     t_PrjAllocateAlignedBuffer _PrjAllocateAlignedBuffer = nullptr;
     t_PrjFreeAlignedBuffer _PrjFreeAlignedBuffer = nullptr;
     t_PrjGetVirtualizationInstanceInfo _PrjGetVirtualizationInstanceInfo = nullptr;
