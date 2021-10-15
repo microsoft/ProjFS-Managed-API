@@ -73,7 +73,7 @@ private:
         _In_ PCWSTR destinationFileName,
         _In_reads_bytes_(placeholderInfoSize) const PRJ_PLACEHOLDER_INFO* placeholderInfo,
         _In_ UINT32 placeholderInfoSize,
-        _In_ const PRJ_EXTENDED_INFO* ExtendedInfo
+        _In_opt_ const PRJ_EXTENDED_INFO* ExtendedInfo
         );
 
     typedef void* (__stdcall* t_PrjAllocateAlignedBuffer)(

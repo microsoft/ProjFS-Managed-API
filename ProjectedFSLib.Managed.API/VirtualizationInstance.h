@@ -678,6 +678,19 @@ namespace ProjFS {
             array<System::Byte>^ contentId,
             array<System::Byte>^ providerId) sealed;
 
+        virtual HResult WritePlaceholderInfoSymlink(
+            System::String^ relativePath,
+            System::DateTime creationTime,
+            System::DateTime lastAccessTime,
+            System::DateTime lastWriteTime,
+            System::DateTime changeTime,
+            System::IO::FileAttributes fileAttributes,
+            long long endOfFile,
+            bool isDirectory,
+            array<System::Byte>^ contentId,
+            array<System::Byte>^ providerId,
+            System::String^ targetName) sealed;
+
         /// <summary>
         /// Updates an item that has been cached on the local file system.
         /// </summary>

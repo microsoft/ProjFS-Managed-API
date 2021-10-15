@@ -844,6 +844,51 @@ HResult VirtualizationInstance::WritePlaceholderInfo(String^ relativePath,
     }
 }
 
+
+HResult VirtualizationInstance::WritePlaceholderInfoSymlink(String^ relativePath,
+    DateTime creationTime,
+    DateTime lastAccessTime,
+    DateTime lastWriteTime,
+    DateTime changeTime,
+    FileAttributes fileAttributes,
+    long long endOfFile,
+    bool isDirectory,
+    array<Byte>^ contentId,
+    array<Byte>^ providerId,
+    String^ targetName)
+{
+    if (relativePath == nullptr)
+    {
+        return HResult::InvalidArg;
+    }
+
+    if (!m_apiHelper->UseRS5Api)
+    {
+        return HResult::InternalError;
+    }
+    else
+    {
+        std::shared_ptr<PRJ_PLACEHOLDER_INFO> placeholderInfo = CreatePlaceholderInfo(creationTime,
+            lastAccessTime,
+            lastWriteTime,
+            changeTime,
+            fileAttributes,
+            isDirectory ? 0 : endOfFile,
+            isDirectory,
+            contentId,
+            providerId);
+
+        pin_ptr<const WCHAR> path = PtrToStringChars(relativePath);
+        std::shared_ptr<PRJ_EXTENDED_INFO> extendedInfo = CreatePlaceholderSymlinkExtendedInfo(targetName);
+
+        return static_cast<HResult>(m_apiHelper->_PrjWritePlaceholderInfo2(m_virtualizationContext,
+            path,
+            placeholderInfo.get(),
+            sizeof(PRJ_PLACEHOLDER_INFO),
+            extendedInfo.get()));
+    }
+}
+
 HResult VirtualizationInstance::UpdateFileIfNeeded(String^ relativePath,
                                                    DateTime creationTime,
                                                    DateTime lastAccessTime,
@@ -1735,6 +1780,18 @@ inline std::shared_ptr<PRJ_PLACEHOLDER_INFO> CreatePlaceholderInfo(
     CopyPlaceholderId(placeholderInfo->VersionInfo.ContentID, contentId);
 
     return placeholderInfo;
+}
+
+inline std::shared_ptr<PRJ_EXTENDED_INFO> CreatePlaceholderSymlinkExtendedInfo(System::String^ targetName)
+{
+    std::shared_ptr<PRJ_EXTENDED_INFO> extendedInfo(static_cast<PRJ_EXTENDED_INFO*>(calloc(1,
+        sizeof(PRJ_EXTENDED_INFO))),
+        free);
+
+    extendedInfo->InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
+    extendedInfo->NextInfoOffset = 0;
+    pin_ptr<const WCHAR> path = PtrToStringChars(targetName);
+    extendedInfo->Symlink.TargetName = path;
 }
 
 inline String^ GetTriggeringProcessNameSafe(const PRJ_CALLBACK_DATA* callbackData)

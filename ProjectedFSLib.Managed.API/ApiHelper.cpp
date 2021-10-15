@@ -35,7 +35,7 @@ ApiHelper::ApiHelper() :
         this->_PrjWritePlaceholderInfo = reinterpret_cast<t_PrjWritePlaceholderInfo>(::GetProcAddress(projFsLib,
                                                                                                       "PrjWritePlaceholderInfo"));
 
-        this->_PrjWritePlaceholderInfo2 = reinterpret_cast<t_PrjWritePlaceholderInfo>(::GetProcAddress(projFsLib,
+        this->_PrjWritePlaceholderInfo2 = reinterpret_cast<t_PrjWritePlaceholderInfo2>(::GetProcAddress(projFsLib,
             "PrjWritePlaceholderInfo2"));
 
         this->_PrjAllocateAlignedBuffer = reinterpret_cast<t_PrjAllocateAlignedBuffer>(::GetProcAddress(projFsLib,
@@ -59,6 +59,7 @@ ApiHelper::ApiHelper() :
             !this->_PrjStopVirtualizing ||
             !this->_PrjWriteFileData ||
             !this->_PrjWritePlaceholderInfo ||
+            !this->_PrjWritePlaceholderInfo2 ||
             !this->_PrjAllocateAlignedBuffer ||
             !this->_PrjFreeAlignedBuffer ||
             !this->_PrjGetVirtualizationInstanceInfo ||
