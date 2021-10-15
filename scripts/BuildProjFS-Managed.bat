@@ -4,7 +4,7 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL %~dp0\InitializeEnvironment.bat || EXIT /b 10
 
 IF "%1"=="" (SET "Configuration=Debug") ELSE (SET "Configuration=%1")
-IF "%2"=="" (SET "ProjFSManagedVersion=0.2.173.2") ELSE (SET "ProjFSManagedVersion=%2")
+IF "%2"=="" (SET "ProjFSManagedVersion=1.2.19351.1") ELSE (SET "ProjFSManagedVersion=%2")
 
 SET SolutionConfiguration=%Configuration%
 
