@@ -113,8 +113,6 @@ std::shared_ptr<PRJ_PLACEHOLDER_INFO> CreatePlaceholderInfo(
     array<Byte>^ contentId,
     array<Byte>^ providerId);
 
-std::shared_ptr<PRJ_EXTENDED_INFO> CreatePlaceholderSymlinkExtendedInfo(System::String^ targetName);
-
 String^ GetTriggeringProcessNameSafe(const PRJ_CALLBACK_DATA* callbackData);
 
 #pragma endregion
@@ -1796,20 +1794,6 @@ inline std::shared_ptr<PRJ_PLACEHOLDER_INFO> CreatePlaceholderInfo(
     CopyPlaceholderId(placeholderInfo->VersionInfo.ContentID, contentId);
 
     return placeholderInfo;
-}
-
-inline std::shared_ptr<PRJ_EXTENDED_INFO> CreatePlaceholderSymlinkExtendedInfo(System::String^ targetName)
-{
-    std::shared_ptr<PRJ_EXTENDED_INFO> extendedInfo(static_cast<PRJ_EXTENDED_INFO*>(calloc(1,
-        sizeof(PRJ_EXTENDED_INFO))),
-        free);
-
-    extendedInfo->InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
-    extendedInfo->NextInfoOffset = 0;
-    pin_ptr<const WCHAR> path = PtrToStringChars(targetName);
-    extendedInfo->Symlink.TargetName = path;
-
-    return extendedInfo;
 }
 
 inline String^ GetTriggeringProcessNameSafe(const PRJ_CALLBACK_DATA* callbackData)
