@@ -847,7 +847,8 @@ HResult VirtualizationInstance::WritePlaceholderInfo(String^ relativePath,
 }
 
 
-HResult VirtualizationInstance::WritePlaceholderInfoSymlink(String^ relativePath,
+HResult VirtualizationInstance::WritePlaceholderInfo2(
+    String^ relativePath,
     DateTime creationTime,
     DateTime lastAccessTime,
     DateTime lastWriteTime,
@@ -855,9 +856,9 @@ HResult VirtualizationInstance::WritePlaceholderInfoSymlink(String^ relativePath
     FileAttributes fileAttributes,
     long long endOfFile,
     bool isDirectory,
+    String^ symlinkTargetOrNull,
     array<Byte>^ contentId,
-    array<Byte>^ providerId,
-    String^ targetName)
+    array<Byte>^ providerId)
 {
     if (relativePath == nullptr)
     {
@@ -868,26 +869,39 @@ HResult VirtualizationInstance::WritePlaceholderInfoSymlink(String^ relativePath
     {
         return HResult::InternalError;
     }
-    else
-    {
-        std::shared_ptr<PRJ_PLACEHOLDER_INFO> placeholderInfo = CreatePlaceholderInfo(creationTime,
-            lastAccessTime,
-            lastWriteTime,
-            changeTime,
-            fileAttributes,
-            isDirectory ? 0 : endOfFile,
-            isDirectory,
-            contentId,
-            providerId);
 
-        pin_ptr<const WCHAR> path = PtrToStringChars(relativePath);
-        std::shared_ptr<PRJ_EXTENDED_INFO> extendedInfo = CreatePlaceholderSymlinkExtendedInfo(targetName);
+    std::shared_ptr<PRJ_PLACEHOLDER_INFO> placeholderInfo = CreatePlaceholderInfo(creationTime,
+        lastAccessTime,
+        lastWriteTime,
+        changeTime,
+        fileAttributes,
+        isDirectory ? 0 : endOfFile,
+        isDirectory,
+        contentId,
+        providerId);
+
+    pin_ptr<const WCHAR> path = PtrToStringChars(relativePath);
+
+    if (symlinkTargetOrNull != nullptr)
+    {
+        PRJ_EXTENDED_INFO extendedInfo = {};
+
+        extendedInfo.InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
+        pin_ptr<const WCHAR> targetPath = PtrToStringChars(symlinkTargetOrNull);
+        extendedInfo.Symlink.TargetName = targetPath;
 
         return static_cast<HResult>(m_apiHelper->_PrjWritePlaceholderInfo2(m_virtualizationContext,
             path,
             placeholderInfo.get(),
             sizeof(PRJ_PLACEHOLDER_INFO),
-            extendedInfo.get()));
+            &extendedInfo));
+    }
+    else
+    {
+        return static_cast<HResult>(m_apiHelper->_PrjWritePlaceholderInfo(m_virtualizationContext,
+            path,
+            placeholderInfo.get(),
+            sizeof(PRJ_PLACEHOLDER_INFO)));
     }
 }
 

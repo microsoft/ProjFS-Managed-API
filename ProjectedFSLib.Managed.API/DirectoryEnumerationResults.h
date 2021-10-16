@@ -185,6 +185,79 @@ public:
         return true;
     }
 
+    virtual bool Add2(
+        System::String^ fileName,
+        long long fileSize,
+        bool isDirectory,
+        System::IO::FileAttributes fileAttributes,
+        System::DateTime creationTime,
+        System::DateTime lastAccessTime,
+        System::DateTime lastWriteTime,
+        System::DateTime changeTime,
+        System::String^ symlinkTargetOrNull) sealed
+    {
+        if (System::String::IsNullOrEmpty(fileName))
+        {
+            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
+                "fileName cannot be empty."));
+        }
+
+        pin_ptr<const WCHAR> pFileName = PtrToStringChars(fileName);
+        PRJ_FILE_BASIC_INFO basicInfo = { 0 };
+
+        if (creationTime != System::DateTime::MinValue)
+        {
+            basicInfo.CreationTime.QuadPart = creationTime.ToFileTime();
+        }
+
+        if (lastAccessTime != System::DateTime::MinValue)
+        {
+            basicInfo.LastAccessTime.QuadPart = lastAccessTime.ToFileTime();
+        }
+
+        if (lastWriteTime != System::DateTime::MinValue)
+        {
+            basicInfo.LastWriteTime.QuadPart = lastWriteTime.ToFileTime();
+        }
+
+        if (changeTime != System::DateTime::MinValue)
+        {
+            basicInfo.ChangeTime.QuadPart = changeTime.ToFileTime();
+        }
+
+        basicInfo.FileAttributes = static_cast<UINT32>(fileAttributes);
+        basicInfo.IsDirectory = isDirectory;
+        basicInfo.FileSize = fileSize;
+
+        HRESULT hr;
+        if (symlinkTargetOrNull != nullptr)
+        {
+            PRJ_EXTENDED_INFO extendedInfo = {};
+
+            extendedInfo.InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
+            pin_ptr<const WCHAR> targetPath = PtrToStringChars(symlinkTargetOrNull);
+            extendedInfo.Symlink.TargetName = targetPath;
+
+            hr = ::PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
+                pFileName,
+                &basicInfo,
+                &extendedInfo);
+        }
+        else
+        {
+            hr = ::PrjFillDirEntryBuffer(pFileName,
+                &basicInfo,
+                m_dirEntryBufferHandle);
+        }
+
+        if FAILED(hr)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 private:
 
     PRJ_DIR_ENTRY_BUFFER_HANDLE m_dirEntryBufferHandle;

@@ -80,7 +80,7 @@ namespace SimpleProviderManaged
                     enableNegativePathCache: false,
                     notificationMappings: notificationMappings);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Fatal(ex, "Failed to create VirtualizationInstance.");
                 throw;
@@ -325,7 +325,7 @@ namespace SimpleProviderManaged
         internal HResult StartDirectoryEnumerationCallback(
             int commandId,
             Guid enumerationId,
-            string relativePath, 
+            string relativePath,
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
@@ -389,7 +389,13 @@ namespace SimpleProviderManaged
             {
                 ProjectedFileInfo fileInfo = enumeration.Current;
 
-                if (enumResult.Add(
+                if (!TryGetTargetIfReparsePoint(fileInfo, fileInfo.Name, out string targetPath))
+                {
+                    hr = HResult.InternalError;
+                    break;
+                }
+
+                if (enumResult.Add2(
                     fileName: fileInfo.Name,
                     fileSize: fileInfo.Size,
                     isDirectory: fileInfo.IsDirectory,
@@ -397,7 +403,8 @@ namespace SimpleProviderManaged
                     creationTime: fileInfo.CreationTime,
                     lastAccessTime: fileInfo.LastAccessTime,
                     lastWriteTime: fileInfo.LastWriteTime,
-                    changeTime: fileInfo.ChangeTime))
+                    changeTime: fileInfo.ChangeTime,
+                    symlinkTargetOrNull: targetPath))
                 {
                     entryAdded = true;
                     enumeration.MoveNext();
@@ -437,8 +444,8 @@ namespace SimpleProviderManaged
         }
 
         internal HResult GetPlaceholderInfoCallback(
-            int commandId, 
-            string relativePath, 
+            int commandId,
+            string relativePath,
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
@@ -453,17 +460,25 @@ namespace SimpleProviderManaged
             }
             else
             {
-                hr = this.virtualizationInstance.WritePlaceholderInfo(
-                    relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
-                    creationTime: fileInfo.CreationTime,
-                    lastAccessTime: fileInfo.LastAccessTime,
-                    lastWriteTime: fileInfo.LastWriteTime,
-                    changeTime: fileInfo.ChangeTime,
-                    fileAttributes: fileInfo.Attributes,
-                    endOfFile: fileInfo.Size,
-                    isDirectory: fileInfo.IsDirectory,
-                    contentId: new byte[] { 0 },
-                    providerId: new byte[] { 1 });
+                if (!TryGetTargetIfReparsePoint(fileInfo, relativePath, out string targetPath))
+                {
+                    hr = HResult.InternalError;
+                }
+                else
+                {
+                    hr = this.virtualizationInstance.WritePlaceholderInfo2(
+                        relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
+                        creationTime: fileInfo.CreationTime,
+                        lastAccessTime: fileInfo.LastAccessTime,
+                        lastWriteTime: fileInfo.LastWriteTime,
+                        changeTime: fileInfo.ChangeTime,
+                        fileAttributes: fileInfo.Attributes,
+                        endOfFile: fileInfo.Size,
+                        isDirectory: fileInfo.IsDirectory,
+                        symlinkTargetOrNull: targetPath,
+                        contentId: new byte[] { 0 },
+                        providerId: new byte[] { 1 });
+                }
             }
 
             Log.Information("<---- GetPlaceholderInfoCallback {Result}", hr);
@@ -576,6 +591,27 @@ namespace SimpleProviderManaged
             return hr;
         }
 
+        private bool TryGetTargetIfReparsePoint(ProjectedFileInfo fileInfo, string relativePath, out string targetPath)
+        {
+            targetPath = null;
+
+            if ((fileInfo.Attributes & FileAttributes.ReparsePoint) != 0 /* TODO: Check for reparse point type */)
+            {
+                string layerPath = this.GetFullPathInLayer(relativePath);
+                if (!FileSystemApi.TryGetReparsePointTarget(layerPath, out targetPath))
+                {
+                    return false;
+                }
+                else if (Path.IsPathRooted(targetPath))
+                {
+                    // TODO: What about rooted target path?
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
 
@@ -589,9 +625,9 @@ namespace SimpleProviderManaged
 
             public HResult StartDirectoryEnumerationCallback(
                 int commandId,
-                Guid enumerationId, 
-                string relativePath, 
-                uint triggeringProcessId, 
+                Guid enumerationId,
+                string relativePath,
+                uint triggeringProcessId,
                 string triggeringProcessImageFileName)
             {
                 return this.provider.StartDirectoryEnumerationCallback(
@@ -604,9 +640,9 @@ namespace SimpleProviderManaged
 
             public HResult GetDirectoryEnumerationCallback(
                 int commandId,
-                Guid enumerationId, 
-                string filterFileName, 
-                bool restartScan, 
+                Guid enumerationId,
+                string filterFileName,
+                bool restartScan,
                 IDirectoryEnumerationResults enumResult)
             {
                 return this.provider.GetDirectoryEnumerationCallback(
@@ -624,9 +660,9 @@ namespace SimpleProviderManaged
             }
 
             public HResult GetPlaceholderInfoCallback(
-                int commandId, 
-                string relativePath, 
-                uint triggeringProcessId, 
+                int commandId,
+                string relativePath,
+                uint triggeringProcessId,
                 string triggeringProcessImageFileName)
             {
                 return this.provider.GetPlaceholderInfoCallback(
