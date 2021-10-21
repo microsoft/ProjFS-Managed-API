@@ -604,13 +604,15 @@ namespace SimpleProviderManaged
                 }
                 else if (Path.IsPathRooted(targetPath))
                 {
-                    // TODO: What about rooted target path?
-                    return false;
+                    targetPath = FileSystemApi.TryGetPathRelativeToRoot(this.layerRoot, targetPath, fileInfo.IsDirectory);
+
+                    return true;
                 }
             }
 
             return true;
         }
+
 
         #endregion
 

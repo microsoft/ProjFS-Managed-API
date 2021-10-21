@@ -6,6 +6,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SimpleProviderManaged
 {
@@ -93,6 +94,11 @@ namespace SimpleProviderManaged
             /// No flags.
             /// </summary>
             None = 0,
+
+            /// <summary>
+            /// The handle that identifies a directory.
+            /// </summary>
+            FileAttributeDirectory = 0x20,
 
             /// <summary>
             /// The file should be archived. Applications use this attribute to mark files for backup or removal.
@@ -481,6 +487,14 @@ namespace SimpleProviderManaged
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, ExactSpelling = true)]
         private static extern int CreateSymbolicLinkW(string lpSymlinkFileName, string lpTargetFileName, SymbolicLinkTarget dwFlags);
 
+        [DllImport("shlwapi.dll", SetLastError = true, CharSet = CharSet.Unicode, ExactSpelling = true)]
+        private static extern bool PathRelativePathToW(
+            System.Text.StringBuilder pszPath,
+            string pszFrom,
+            FileFlagsAndAttributes dwAttrFrom,
+            string pszTo,
+            FileFlagsAndAttributes dwAttrTo);
+
         private static unsafe string GetReparsePointTarget(SafeFileHandle handle)
         {
             string targetPath = string.Empty;
@@ -587,6 +601,25 @@ namespace SimpleProviderManaged
                 target = GetReparsePointTarget(handle);
                 return true;
             }
+        }
+
+        public static string TryGetPathRelativeToRoot(string root, string path, bool isPathToADirectory)
+        {
+            const Int32 MaxPath = 260;
+            StringBuilder relativePathBuilder = new StringBuilder(MaxPath);
+
+            bool result = PathRelativePathToW(relativePathBuilder,
+                root,
+                FileFlagsAndAttributes.FileAttributeDirectory,
+                path,
+                isPathToADirectory ? FileFlagsAndAttributes.FileAttributeDirectory : FileFlagsAndAttributes.FileAttributeNormal);
+
+            if (!result)
+            {
+                throw new Exception($"Failed to get relative path of {path} with root {root}.");
+            }
+
+            return relativePathBuilder.ToString();
         }
     }
 }
