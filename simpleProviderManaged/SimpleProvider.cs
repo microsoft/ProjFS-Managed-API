@@ -395,7 +395,7 @@ namespace SimpleProviderManaged
                     break;
                 }
 
-                if (enumResult.Add2(
+                if (enumResult.Add(
                     fileName: fileInfo.Name,
                     fileSize: fileInfo.Size,
                     isDirectory: fileInfo.IsDirectory,

@@ -140,38 +140,16 @@ public:
         System::DateTime lastWriteTime,
         System::DateTime changeTime) sealed
     {
-        if (System::String::IsNullOrEmpty(fileName))
-        {
-            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
-                                                                         "fileName cannot be empty."));
-        }
+        ValidateFileName(fileName);
 
         pin_ptr<const WCHAR> pFileName = PtrToStringChars(fileName);
-        PRJ_FILE_BASIC_INFO basicInfo = { 0 };
-
-        if (creationTime != System::DateTime::MinValue)
-        {
-            basicInfo.CreationTime.QuadPart = creationTime.ToFileTime();
-        }
-
-        if (lastAccessTime != System::DateTime::MinValue)
-        {
-            basicInfo.LastAccessTime.QuadPart = lastAccessTime.ToFileTime();
-        }
-
-        if (lastWriteTime != System::DateTime::MinValue)
-        {
-            basicInfo.LastWriteTime.QuadPart = lastWriteTime.ToFileTime();
-        }
-
-        if (changeTime != System::DateTime::MinValue)
-        {
-            basicInfo.ChangeTime.QuadPart = changeTime.ToFileTime();
-        }
-
-        basicInfo.FileAttributes = static_cast<UINT32>(fileAttributes);
-        basicInfo.IsDirectory = isDirectory;
-        basicInfo.FileSize = fileSize;
+        PRJ_FILE_BASIC_INFO basicInfo = BuildFileBasicInfo(fileSize,
+            isDirectory,
+            fileAttributes,
+            creationTime,
+            lastAccessTime,
+            lastWriteTime,
+            changeTime);
 
         auto hr = ::PrjFillDirEntryBuffer(pFileName,
                                           &basicInfo,
@@ -185,7 +163,41 @@ public:
         return true;
     }
 
-    virtual bool Add2(
+    /// <summary>Adds one entry to a directory enumeration result.</summary>
+    /// <remarks>
+    ///     <para>
+    ///     In its implementation of a <c>GetDirectoryEnumerationCallback</c> delegate the provider
+    ///     calls this method for each matching file or directory in the enumeration.
+    ///     </para>
+    ///     <para>
+    ///     If this method returns <c>false</c>, the provider returns <see cref="HResult::Ok"/> and waits for
+    ///     the next <c>GetDirectoryEnumerationCallback</c>.  Then it resumes filling the enumeration with
+    ///     the entry it was trying to add when it got <c>false</c>. 
+    ///     </para>
+    ///     <para>
+    ///     If the method returns <c>false</c> for the first file or directory in the enumeration, the
+    ///     provider returns <see cref="HResult::InsufficientBuffer"/> from the <c>GetDirectoryEnumerationCallback</c>
+    ///     method.
+    ///     </para>
+    /// </remarks>
+    /// <param name="fileName">The name of the file or directory.</param>
+    /// <param name="fileSize">The size of the file.</param>
+    /// <param name="isDirectory"><c>true</c> if this item is a directory, <c>false</c> if it is a file.</param>
+    /// <param name="fileAttributes">The file attributes.</param>
+    /// <param name="creationTime">The time the file was created.</param>
+    /// <param name="lastAccessTime">The time the file was last accessed.</param>
+    /// <param name="lastWriteTime">The time the file was last written to.</param>
+    /// <param name="changeTime">The time the file was last changed.</param>
+    /// <param name="symlinkTargetOrNull">Specifies the symlink target path if the file is a symlink.</param>
+    /// <returns>
+    ///     <para>
+    ///     <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
+    ///     </para>
+    /// </returns>
+    /// <exception cref="System::ArgumentException">
+    /// <paramref name="fileName"/> is null or empty.
+    /// </exception>
+    virtual bool Add(
         System::String^ fileName,
         long long fileSize,
         bool isDirectory,
@@ -196,38 +208,16 @@ public:
         System::DateTime changeTime,
         System::String^ symlinkTargetOrNull) sealed
     {
-        if (System::String::IsNullOrEmpty(fileName))
-        {
-            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
-                "fileName cannot be empty."));
-        }
+        ValidateFileName(fileName);
 
         pin_ptr<const WCHAR> pFileName = PtrToStringChars(fileName);
-        PRJ_FILE_BASIC_INFO basicInfo = { 0 };
-
-        if (creationTime != System::DateTime::MinValue)
-        {
-            basicInfo.CreationTime.QuadPart = creationTime.ToFileTime();
-        }
-
-        if (lastAccessTime != System::DateTime::MinValue)
-        {
-            basicInfo.LastAccessTime.QuadPart = lastAccessTime.ToFileTime();
-        }
-
-        if (lastWriteTime != System::DateTime::MinValue)
-        {
-            basicInfo.LastWriteTime.QuadPart = lastWriteTime.ToFileTime();
-        }
-
-        if (changeTime != System::DateTime::MinValue)
-        {
-            basicInfo.ChangeTime.QuadPart = changeTime.ToFileTime();
-        }
-
-        basicInfo.FileAttributes = static_cast<UINT32>(fileAttributes);
-        basicInfo.IsDirectory = isDirectory;
-        basicInfo.FileSize = fileSize;
+        PRJ_FILE_BASIC_INFO basicInfo = BuildFileBasicInfo(fileSize,
+            isDirectory,
+            fileAttributes,
+            creationTime,
+            lastAccessTime,
+            lastWriteTime,
+            changeTime);
 
         HRESULT hr;
         if (symlinkTargetOrNull != nullptr)
@@ -261,5 +251,51 @@ public:
 private:
 
     PRJ_DIR_ENTRY_BUFFER_HANDLE m_dirEntryBufferHandle;
+
+    void ValidateFileName(System::String^ fileName)
+    {
+        if (System::String::IsNullOrEmpty(fileName))
+        {
+            throw gcnew System::ArgumentException(System::String::Format(System::Globalization::CultureInfo::InvariantCulture,
+                "fileName cannot be empty."));
+        }
+    }
+
+    PRJ_FILE_BASIC_INFO BuildFileBasicInfo(long long fileSize,
+        bool isDirectory,
+        System::IO::FileAttributes fileAttributes,
+        System::DateTime creationTime,
+        System::DateTime lastAccessTime,
+        System::DateTime lastWriteTime,
+        System::DateTime changeTime)
+    {
+        PRJ_FILE_BASIC_INFO basicInfo = { 0 };
+
+        if (creationTime != System::DateTime::MinValue)
+        {
+            basicInfo.CreationTime.QuadPart = creationTime.ToFileTime();
+        }
+
+        if (lastAccessTime != System::DateTime::MinValue)
+        {
+            basicInfo.LastAccessTime.QuadPart = lastAccessTime.ToFileTime();
+        }
+
+        if (lastWriteTime != System::DateTime::MinValue)
+        {
+            basicInfo.LastWriteTime.QuadPart = lastWriteTime.ToFileTime();
+        }
+
+        if (changeTime != System::DateTime::MinValue)
+        {
+            basicInfo.ChangeTime.QuadPart = changeTime.ToFileTime();
+        }
+
+        basicInfo.FileAttributes = static_cast<UINT32>(fileAttributes);
+        basicInfo.IsDirectory = isDirectory;
+        basicInfo.FileSize = fileSize;
+
+        return basicInfo;
+    }
 };
 }}} // namespace Microsoft.Windows.ProjFS

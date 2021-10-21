@@ -148,7 +148,7 @@ public:
     /// <c>true</c> if the entry was successfully added to the enumeration buffer, <c>false</c> otherwise.
     /// </para>
     /// </returns>
-    bool Add2(
+    bool Add(
         System::String ^ fileName,
         long long fileSize,
         bool isDirectory,
