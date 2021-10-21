@@ -604,7 +604,9 @@ namespace SimpleProviderManaged
                 }
                 else if (Path.IsPathRooted(targetPath))
                 {
-                    targetPath = FileSystemApi.TryGetPathRelativeToRoot(this.layerRoot, targetPath, fileInfo.IsDirectory);
+                    string targetRelativePath = FileSystemApi.TryGetPathRelativeToRoot(this.layerRoot, targetPath, fileInfo.IsDirectory);
+                    // GetFullPath is used to get rid of relative path components (such as .\)
+                    targetPath = Path.GetFullPath(Path.Combine(this.scratchRoot, targetRelativePath));
 
                     return true;
                 }

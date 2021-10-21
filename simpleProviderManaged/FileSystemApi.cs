@@ -608,8 +608,19 @@ namespace SimpleProviderManaged
             const Int32 MaxPath = 260;
             StringBuilder relativePathBuilder = new StringBuilder(MaxPath);
 
+            string pathFrom;
+            if (!root.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                // PathRelativePathToW expects the root to have a trailing slash.
+                pathFrom = root + Path.DirectorySeparatorChar;
+            }
+            else
+            {
+                pathFrom = root;
+            }
+
             bool result = PathRelativePathToW(relativePathBuilder,
-                root,
+                pathFrom,
                 FileFlagsAndAttributes.FileAttributeDirectory,
                 path,
                 isPathToADirectory ? FileFlagsAndAttributes.FileAttributeDirectory : FileFlagsAndAttributes.FileAttributeNormal);
