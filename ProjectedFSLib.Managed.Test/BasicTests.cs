@@ -123,6 +123,32 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That("RandomNonsense", Is.Not.EqualTo(line));
         }
 
+        [TestCase("sourcefoo.txt", "symfoo.txt")]
+        //[TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt")]
+        public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile)
+        {
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
+
+            // Some contents to write to the file in the source and read out through the virtualization.
+            string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
+
+            // Create a file and a symlink to it.
+            helpers.CreateVirtualFile(destinationFile, fileContent);
+            helpers.CreateVirtualSymlink(symlinkFile, destinationFile);
+
+            // Open the file through the virtualization and read its contents.
+            string line = helpers.ReadFileInVirtRoot(destinationFile);
+            Assert.That(fileContent, Is.EqualTo(line));
+            //System.Diagnostics.Debugger.Launch();
+
+            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos());
+
+            // Check if we have the same content if accessing the file through a symlink.
+            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
+            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+        }
+
         // This case exercises the following methods in Microsoft.Windows.ProjFS:
         //  DirectoryEnumerationResults.Add()
         //  

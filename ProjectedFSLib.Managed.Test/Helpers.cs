@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using NUnit.Framework;
+using SimpleProviderManaged;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -158,6 +159,25 @@ namespace ProjectedFSLib.Managed.Test
             return CreateVirtualFile(fileName, "Virtual");
         }
 
+        // Creates a symlink in the source to another file in the source so that it is projected into the virtualization root.
+        // Returns the full path to the virtual symlink.
+        public string CreateVirtualSymlink(string fileName, string targetName)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string sourceSymlinkName = Path.Combine(sourceRoot, fileName);
+            string sourceTargetName = Path.Combine(sourceRoot, targetName);
+
+            if (!File.Exists(sourceSymlinkName))
+            {
+                if (!FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, true))
+                {
+                    throw new Exception($"Failed to create symlink {sourceSymlinkName}.");
+                }
+            }
+
+            return Path.Combine(virtRoot, fileName);
+        }
+
         // Create a file in the virtualization root (i.e. a non-projected or "full" file).
         // Returns the full path to the full file.
         public string CreateFullFile(string fileName, string fileContent)
@@ -204,6 +224,19 @@ namespace ProjectedFSLib.Managed.Test
             }
 
             return fileContent;
+        }
+
+        public string ReadReparsePointTargetInVirtualRoot(string symlinkFileName)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string fullSymlinkName = Path.Combine(virtRoot, symlinkFileName);
+
+            if (!SimpleProviderManaged.FileSystemApi.TryGetReparsePointTarget(fullSymlinkName, out string reparsePointTarget))
+            {
+                throw new Exception($"Failed to get a reparse point of {fullSymlinkName}.");
+            }
+
+            return reparsePointTarget;
         }
 
         public FileStream OpenFileInVirtRoot(string fileName, FileMode mode)
