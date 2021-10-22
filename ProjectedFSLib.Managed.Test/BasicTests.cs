@@ -175,6 +175,47 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
         }
 
+        // We start the virtualization instance in each test case, so that exercises the following
+        // methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.VirtualizationInstance()
+        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
+        //  VirtualizationInstance.StartVirtualizing()
+
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.WritePlaceholderInfo2()
+        //  VirtualizationInstance.CreateWriteBuffer()
+        //  VirtualizationInstance.WriteFileData()
+        //  DirectoryEnumerationResults.Add()
+        //  
+        // It also illustrates the SimpleProvider implementation of the following callbacks:
+        //  IRequiredCallbacks.GetPlaceholderInfoCallback()
+        //  IRequiredCallbakcs.GetFileDataCallback()
+        //  IRequiredCallbacks.StartDirectoryEnumeration()
+        //  IRequiredCallbacks.GetDirectoryEnumeration()
+        //  IRequiredCallbacks.EndDirectoryEnumeration()
+        [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6")]
+        public void TestCanReadSymlinkDirsThroughVirtualizationRoot(string destinationDir, string destinationFileName, string symlinkDir)
+        {
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
+
+            // Some contents to write to the file in the source and read out through the virtualization.
+            string fileContent = nameof(TestCanReadSymlinkDirsThroughVirtualizationRoot);
+
+            string destinationFile = Path.Combine(destinationDir, destinationFileName);
+            helpers.CreateVirtualFile(destinationFile, fileContent);
+            helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir);
+
+            // Enumerate and ensure the symlink is present.
+            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
+            string fullPath = Path.Combine(virtRoot, symlinkDir);
+
+
+            string symlinkFile = Path.Combine(virtRoot, symlinkDir, destinationFileName);
+            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
+            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+        }
+
         // This case exercises the following methods in Microsoft.Windows.ProjFS:
         //  DirectoryEnumerationResults.Add()
         //  

@@ -169,19 +169,26 @@ namespace ProjectedFSLib.Managed.Test
 
             if (!File.Exists(sourceSymlinkName))
             {
-                DirectoryInfo ancestorPath = new DirectoryInfo(Path.GetDirectoryName(sourceSymlinkName));
-                if (!ancestorPath.Exists)
-                {
-                    ancestorPath.Create();
-                }
-
-                if (!FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, true))
-                {
-                    throw new Exception($"Failed to create symlink {sourceSymlinkName}.");
-                }
+                CreateSymlinkAndAncestor(sourceSymlinkName, sourceTargetName, true);
             }
 
             return Path.Combine(virtRoot, fileName);
+        }
+
+        // Creates a symlink in the source to another directory in the source so that it is projected into the virtualization root.
+        // Returns the full path to the virtual symlink.
+        public string CreateVirtualSymlinkDirectory(string symlinkDirectoryName, string targetName)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string sourceSymlinkName = Path.Combine(sourceRoot, symlinkDirectoryName);
+            string sourceTargetName = Path.Combine(sourceRoot, targetName);
+
+            if (!Directory.Exists(sourceSymlinkName))
+            {
+                CreateSymlinkAndAncestor(sourceSymlinkName, sourceTargetName, false);
+            }
+
+            return Path.Combine(virtRoot, symlinkDirectoryName);
         }
 
         // Create a file in the virtualization root (i.e. a non-projected or "full" file).
@@ -261,6 +268,20 @@ namespace ProjectedFSLib.Managed.Test
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private void CreateSymlinkAndAncestor(string sourceSymlinkName, string sourceTargetName, bool isFile)
+        {
+            DirectoryInfo ancestorPath = new DirectoryInfo(Path.GetDirectoryName(sourceSymlinkName));
+            if (!ancestorPath.Exists)
+            {
+                ancestorPath.Create();
+            }
+
+            if (!FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, isFile))
+            {
+                throw new Exception($"Failed to create directory symlink {sourceSymlinkName}.");
+            }
         }
     }
 }
