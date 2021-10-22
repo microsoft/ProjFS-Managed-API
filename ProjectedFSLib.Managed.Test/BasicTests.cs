@@ -210,7 +210,7 @@ namespace ProjectedFSLib.Managed.Test
             List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
             string fullPath = Path.Combine(virtRoot, symlinkDir);
 
-
+            // Ensure we can access the file through directory symlink.
             string symlinkFile = Path.Combine(virtRoot, symlinkDir, destinationFileName);
             string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
             Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
