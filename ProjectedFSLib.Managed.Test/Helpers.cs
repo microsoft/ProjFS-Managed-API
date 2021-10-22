@@ -169,6 +169,12 @@ namespace ProjectedFSLib.Managed.Test
 
             if (!File.Exists(sourceSymlinkName))
             {
+                DirectoryInfo ancestorPath = new DirectoryInfo(Path.GetDirectoryName(sourceSymlinkName));
+                if (!ancestorPath.Exists)
+                {
+                    ancestorPath.Create();
+                }
+
                 if (!FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, true))
                 {
                     throw new Exception($"Failed to create symlink {sourceSymlinkName}.");

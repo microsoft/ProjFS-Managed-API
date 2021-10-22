@@ -143,7 +143,7 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
         [TestCase("sourcefoo.txt", "symfoo.txt")]
-        //[TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt")]
+        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt")]
         public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
@@ -161,10 +161,12 @@ namespace ProjectedFSLib.Managed.Test
 
             // Enumerate and ensure the symlink is present.
             DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
-            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos());
-            FileSystemInfo symlink = virtList.Where(x => x.Name == symlinkFile).First();
+            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
+            string fullPath = Path.Combine(virtRoot, symlinkFile);
+            FileSystemInfo symlink = virtList.Where(x => x.FullName == fullPath).First();
             Assert.That((symlink.Attributes & FileAttributes.ReparsePoint) != 0);
 
+            // Get the symlink target and check that it points to the correct file.
             string reparsePointTarget = helpers.ReadReparsePointTargetInVirtualRoot(symlinkFile);
             Assert.That(reparsePointTarget, Is.EqualTo(Path.Combine(virtRoot, destinationFile)));
 

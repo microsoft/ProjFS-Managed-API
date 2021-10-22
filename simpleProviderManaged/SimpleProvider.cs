@@ -218,6 +218,7 @@ namespace SimpleProviderManaged
                 {
                     yield return new ProjectedFileInfo(
                         fileSystemInfo.Name,
+                        fileSystemInfo.FullName,
                         size: 0,
                         isDirectory: true,
                         creationTime: fileSystemInfo.CreationTime,
@@ -231,6 +232,7 @@ namespace SimpleProviderManaged
                     FileInfo fileInfo = fileSystemInfo as FileInfo;
                     yield return new ProjectedFileInfo(
                         fileInfo.Name,
+                        fileSystemInfo.FullName,
                         size: fileInfo.Length,
                         isDirectory: false,
                         creationTime: fileSystemInfo.CreationTime,
@@ -305,6 +307,7 @@ namespace SimpleProviderManaged
 
             fileInfo = new ProjectedFileInfo(
                 name: fileSystemInfo.Name,
+                fullName: fileSystemInfo.FullName,
                 size: isDirectory ? 0 : new FileInfo(Path.Combine(layerParentPath, layerName)).Length,
                 isDirectory: isDirectory,
                 creationTime: fileSystemInfo.CreationTime,
@@ -389,7 +392,7 @@ namespace SimpleProviderManaged
             {
                 ProjectedFileInfo fileInfo = enumeration.Current;
 
-                if (!TryGetTargetIfReparsePoint(fileInfo, fileInfo.Name, out string targetPath))
+                if (!TryGetTargetIfReparsePoint(fileInfo, fileInfo.FullName, out string targetPath))
                 {
                     hr = HResult.InternalError;
                     break;
@@ -460,7 +463,8 @@ namespace SimpleProviderManaged
             }
             else
             {
-                if (!TryGetTargetIfReparsePoint(fileInfo, relativePath, out string targetPath))
+                string layerPath = this.GetFullPathInLayer(relativePath);
+                if (!TryGetTargetIfReparsePoint(fileInfo, layerPath, out string targetPath))
                 {
                     hr = HResult.InternalError;
                 }
@@ -591,14 +595,13 @@ namespace SimpleProviderManaged
             return hr;
         }
 
-        private bool TryGetTargetIfReparsePoint(ProjectedFileInfo fileInfo, string relativePath, out string targetPath)
+        private bool TryGetTargetIfReparsePoint(ProjectedFileInfo fileInfo, string fullPath, out string targetPath)
         {
             targetPath = null;
 
             if ((fileInfo.Attributes & FileAttributes.ReparsePoint) != 0 /* TODO: Check for reparse point type */)
             {
-                string layerPath = this.GetFullPathInLayer(relativePath);
-                if (!FileSystemApi.TryGetReparsePointTarget(layerPath, out targetPath))
+                if (!FileSystemApi.TryGetReparsePointTarget(fullPath, out targetPath))
                 {
                     return false;
                 }
