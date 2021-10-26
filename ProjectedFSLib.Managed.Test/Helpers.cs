@@ -161,11 +161,11 @@ namespace ProjectedFSLib.Managed.Test
 
         // Creates a symlink in the source to another file in the source so that it is projected into the virtualization root.
         // Returns the full path to the virtual symlink.
-        public string CreateVirtualSymlink(string fileName, string targetName)
+        public string CreateVirtualSymlink(string fileName, string targetName, bool useRootedPaths = false)
         {
             GetRootNamesForTest(out string sourceRoot, out string virtRoot);
             string sourceSymlinkName = Path.Combine(sourceRoot, fileName);
-            string sourceTargetName = Path.Combine(sourceRoot, targetName);
+            string sourceTargetName = useRootedPaths ? Path.Combine(sourceRoot, targetName) : targetName;
 
             if (!File.Exists(sourceSymlinkName))
             {
@@ -177,11 +177,11 @@ namespace ProjectedFSLib.Managed.Test
 
         // Creates a symlink in the source to another directory in the source so that it is projected into the virtualization root.
         // Returns the full path to the virtual symlink.
-        public string CreateVirtualSymlinkDirectory(string symlinkDirectoryName, string targetName)
+        public string CreateVirtualSymlinkDirectory(string symlinkDirectoryName, string targetName, bool useRootedPaths = false)
         {
             GetRootNamesForTest(out string sourceRoot, out string virtRoot);
             string sourceSymlinkName = Path.Combine(sourceRoot, symlinkDirectoryName);
-            string sourceTargetName = Path.Combine(sourceRoot, targetName);
+            string sourceTargetName = useRootedPaths ? Path.Combine(sourceRoot, targetName) : targetName;
 
             if (!Directory.Exists(sourceSymlinkName))
             {

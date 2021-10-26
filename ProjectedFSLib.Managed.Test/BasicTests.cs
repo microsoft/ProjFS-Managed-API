@@ -4,6 +4,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -142,18 +143,18 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.StartDirectoryEnumeration()
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
-        [TestCase("sourcefoo.txt", "symfoo.txt")]
-        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt")]
-        public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile)
+        [TestCase("sourcefoo.txt", "symfoo.txt", true)]
+        [TestCase("sourcefoo.txt", "symfoo.txt", false)]
+        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", true)]
+        public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile, bool useRootedPaths)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
-
             // Some contents to write to the file in the source and read out through the virtualization.
             string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
 
             // Create a file and a symlink to it.
             helpers.CreateVirtualFile(destinationFile, fileContent);
-            helpers.CreateVirtualSymlink(symlinkFile, destinationFile);
+            helpers.CreateVirtualSymlink(symlinkFile, destinationFile, useRootedPaths);
 
             // Open the file through the virtualization and read its contents.
             string line = helpers.ReadFileInVirtRoot(destinationFile);
@@ -168,7 +169,57 @@ namespace ProjectedFSLib.Managed.Test
 
             // Get the symlink target and check that it points to the correct file.
             string reparsePointTarget = helpers.ReadReparsePointTargetInVirtualRoot(symlinkFile);
-            Assert.That(reparsePointTarget, Is.EqualTo(Path.Combine(virtRoot, destinationFile)));
+            string expectedTarget = useRootedPaths ? Path.Combine(virtRoot, destinationFile) : destinationFile;
+            Assert.That(reparsePointTarget, Is.EqualTo(expectedTarget));
+
+            // Check if we have the same content if accessing the file through a symlink.
+            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
+            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+        }
+
+        // We start the virtualization instance in each test case, so that exercises the following
+        // methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.VirtualizationInstance()
+        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
+        //  VirtualizationInstance.StartVirtualizing()
+
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.WritePlaceholderInfo2()
+        //  VirtualizationInstance.CreateWriteBuffer()
+        //  VirtualizationInstance.WriteFileData()
+        //  DirectoryEnumerationResults.Add()
+        //  
+        // It also illustrates the SimpleProvider implementation of the following callbacks:
+        //  IRequiredCallbacks.GetPlaceholderInfoCallback()
+        //  IRequiredCallbakcs.GetFileDataCallback()
+        //  IRequiredCallbacks.StartDirectoryEnumeration()
+        //  IRequiredCallbacks.GetDirectoryEnumeration()
+        //  IRequiredCallbacks.EndDirectoryEnumeration()
+        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", "..\\..\\..\\dir1\\dir2\\dir3\\sourcebar.txt")]
+        public void TestCanReadSymlinksWithRelativePathTargetsThroughVirtualizationRoot(string destinationFile, string symlinkFile, string symlinkTarget)
+        {
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
+            // Some contents to write to the file in the source and read out through the virtualization.
+            string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
+
+            // Create a file and a symlink to it.
+            helpers.CreateVirtualFile(destinationFile, fileContent);
+            helpers.CreateVirtualSymlink(symlinkFile, symlinkTarget, false);
+
+            // Open the file through the virtualization and read its contents.
+            string line = helpers.ReadFileInVirtRoot(destinationFile);
+            Assert.That(fileContent, Is.EqualTo(line));
+
+            // Enumerate and ensure the symlink is present.
+            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
+            string fullPath = Path.Combine(virtRoot, symlinkFile);
+            FileSystemInfo symlink = virtList.Where(x => x.FullName == fullPath).First();
+            Assert.That((symlink.Attributes & FileAttributes.ReparsePoint) != 0);
+
+            // Get the symlink target and check that it points to the correct file.
+            string reparsePointTarget = helpers.ReadReparsePointTargetInVirtualRoot(symlinkFile);
+            Assert.That(reparsePointTarget, Is.EqualTo(symlinkTarget));
 
             // Check if we have the same content if accessing the file through a symlink.
             string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
@@ -203,7 +254,7 @@ namespace ProjectedFSLib.Managed.Test
 
             string destinationFile = Path.Combine(destinationDir, destinationFileName);
             helpers.CreateVirtualFile(destinationFile, fileContent);
-            helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir);
+            helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir, true);
 
             // Enumerate and ensure the symlink is present.
             DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
@@ -214,6 +265,63 @@ namespace ProjectedFSLib.Managed.Test
             string symlinkFile = Path.Combine(virtRoot, symlinkDir, destinationFileName);
             string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
             Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+        }
+
+        // We start the virtualization instance in each test case, so that exercises the following
+        // methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.VirtualizationInstance()
+        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
+        //  VirtualizationInstance.StartVirtualizing()
+
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.WritePlaceholderInfo2()
+        //  VirtualizationInstance.CreateWriteBuffer()
+        //  VirtualizationInstance.WriteFileData()
+        //  DirectoryEnumerationResults.Add()
+        //  
+        // It also illustrates the SimpleProvider implementation of the following callbacks:
+        //  IRequiredCallbacks.GetPlaceholderInfoCallback()
+        //  IRequiredCallbakcs.GetFileDataCallback()
+        [Test]
+        public void TestCanReadSymlinkFilesAndirsThroughVirtualizationRoot()
+        {
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
+
+            //|-- Dir.lnk->Dir
+            //|-- other.txt
+            //|-- Dir
+            //|   -- file.lnk->file.txt
+            //|   -- file.txt
+            //|   -- other.lnk->..\\other.txt
+            //|-- file.lnk->Dir.lnk\file.lnk
+            string fileContent = nameof(TestCanReadSymlinkFilesAndirsThroughVirtualizationRoot);
+            string otherFileContent = nameof(TestCanReadSymlinkFilesAndirsThroughVirtualizationRoot) + "_other";
+
+            string destinationDir = "Dir";
+            string destinationFile = Path.Combine(destinationDir, "file.txt");
+            string otherDestinationFile = "other.txt";
+
+            string fileSymlinkInDestinationDir = Path.Combine(destinationDir, "file.lnk");
+            string dirSymlink = "Dir.lnk";
+            string otherFileSymlink = Path.Combine(destinationDir, "other.lnk");
+            string fileSymlinkInDirSymlink = Path.Combine(dirSymlink, "file.lnk.lnk");
+
+            helpers.CreateVirtualFile(destinationFile, fileContent);
+            helpers.CreateVirtualFile(otherDestinationFile, otherFileContent);
+
+            helpers.CreateVirtualSymlinkDirectory(dirSymlink, destinationDir, true);
+            helpers.CreateVirtualSymlink(fileSymlinkInDestinationDir, destinationFile, true);
+            helpers.CreateVirtualSymlink(otherFileSymlink, "..\\other.txt", false);
+            helpers.CreateVirtualSymlink(fileSymlinkInDirSymlink, fileSymlinkInDestinationDir, true);
+
+            // Ensure we can access the file through directory and file symlink.
+            string symlinkFile = Path.Combine(virtRoot, fileSymlinkInDirSymlink);
+            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
+            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+
+            string otherSymlinkFile = Path.Combine(virtRoot, otherFileSymlink);
+            string lineAccessedThroughOtherSymlink = helpers.ReadFileInVirtRoot(otherSymlinkFile);
+            Assert.That(otherFileContent, Is.EqualTo(lineAccessedThroughOtherSymlink));
         }
 
         // This case exercises the following methods in Microsoft.Windows.ProjFS:
