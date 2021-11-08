@@ -47,6 +47,7 @@ call "%VsDir%\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 pushd "%PROJFS_SRCDIR%"
 msbuild /t:Restore ProjectedFSLib.Managed.sln
 msbuild ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 || exit /b 1
+msbuild ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=arm64 || exit /b 1
 popd
 
 ENDLOCAL

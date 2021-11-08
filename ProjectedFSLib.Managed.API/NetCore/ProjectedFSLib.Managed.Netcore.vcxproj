@@ -17,11 +17,29 @@
       <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
+    <ClCompile>
+      <DisableSpecificWarnings>4564</DisableSpecificWarnings>
+      <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <!-- C4564: NetCore added default parameters instead of supporting many overloads.
       This warning is too broad as it flags methods of imported types whether or not the
       code is using that method. -->
+      <DisableSpecificWarnings>4564</DisableSpecificWarnings>
+      <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
+    <ClCompile>
       <DisableSpecificWarnings>4564</DisableSpecificWarnings>
       <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
