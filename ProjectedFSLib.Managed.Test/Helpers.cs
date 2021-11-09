@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using NUnit.Framework;
-using SimpleProviderManaged;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -278,7 +277,7 @@ namespace ProjectedFSLib.Managed.Test
                 ancestorPath.Create();
             }
 
-            if (!FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, isFile))
+            if (!SimpleProviderManaged.FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, isFile))
             {
                 throw new Exception($"Failed to create directory symlink {sourceSymlinkName}.");
             }
