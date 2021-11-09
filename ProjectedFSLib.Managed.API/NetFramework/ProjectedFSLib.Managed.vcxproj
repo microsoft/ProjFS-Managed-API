@@ -13,23 +13,7 @@
       <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-    <ClCompile>
-      <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <Link>
-      <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <Link>
-      <AdditionalOptions>/profile /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
     <ClCompile>
       <AdditionalOptions>/Zi %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
