@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{80F7
 		scripts\RunTests.bat = scripts\RunTests.bat
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectedFSLib.Managed.Net5.0", "ProjectedFSLib.Managed.API\Net5.0\ProjectedFSLib.Managed.Net5.0.vcxproj", "{F327EC16-D316-4467-962B-DD9FDE672628}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -39,11 +41,9 @@ Global
 		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.ActiveCfg = Release|x64
 		{4E5F40B3-B56F-4B62-92CB-68E7E0E36AFA}.Release|x64.Build.0 = Release|x64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|arm64.ActiveCfg = Debug|arm64
-		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|arm64.Build.0 = Debug|arm64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|x64.ActiveCfg = Debug|x64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Debug|x64.Build.0 = Debug|x64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|arm64.ActiveCfg = Release|arm64
-		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|arm64.Build.0 = Release|arm64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|x64.ActiveCfg = Release|x64
 		{D29E5723-25E6-41C7-AEB9-099CDE30538A}.Release|x64.Build.0 = Release|x64
 		{B4018C7F-BF11-47BC-8770-72B05C9437EE}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -62,6 +62,14 @@ Global
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|arm64.Build.0 = Release|Any CPU
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.ActiveCfg = Release|Any CPU
 		{5697F978-E1ED-4C2E-8218-4110F5EA559D}.Release|x64.Build.0 = Release|Any CPU
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Debug|arm64.ActiveCfg = Debug|arm64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Debug|arm64.Build.0 = Debug|arm64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Debug|x64.ActiveCfg = Debug|x64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Debug|x64.Build.0 = Debug|x64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Release|arm64.ActiveCfg = Release|arm64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Release|arm64.Build.0 = Release|arm64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Release|x64.ActiveCfg = Release|x64
+		{F327EC16-D316-4467-962B-DD9FDE672628}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
