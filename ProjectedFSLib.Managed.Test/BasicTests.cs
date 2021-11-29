@@ -63,7 +63,10 @@ namespace ProjectedFSLib.Managed.Test
             try
             {
                 DirectoryInfo sourceInfo = new DirectoryInfo(sourceRoot);
-                sourceInfo.Delete(true);
+                if (sourceInfo.Exists)
+                {
+                    sourceInfo.Delete(true);
+                }
             }
             catch (IOException ex)
             {
@@ -81,7 +84,10 @@ namespace ProjectedFSLib.Managed.Test
             try
             {
                 DirectoryInfo virtInfo = new DirectoryInfo(virtRoot);
-                virtInfo.Delete(true);
+                if (virtInfo.Exists)
+                {
+                    virtInfo.Delete(true);
+                }
             }
             catch (IOException ex)
             {
@@ -148,6 +154,8 @@ namespace ProjectedFSLib.Managed.Test
         [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", true)]
         public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile, bool useRootedPaths)
         {
+            IgnoreIfSymlinksAreNotSupported();
+
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
             // Some contents to write to the file in the source and read out through the virtualization.
             string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
@@ -198,6 +206,8 @@ namespace ProjectedFSLib.Managed.Test
         [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", "..\\..\\..\\dir1\\dir2\\dir3\\sourcebar.txt")]
         public void TestCanReadSymlinksWithRelativePathTargetsThroughVirtualizationRoot(string destinationFile, string symlinkFile, string symlinkTarget)
         {
+            IgnoreIfSymlinksAreNotSupported();
+
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
             // Some contents to write to the file in the source and read out through the virtualization.
             string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
@@ -247,6 +257,8 @@ namespace ProjectedFSLib.Managed.Test
         [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6")]
         public void TestCanReadSymlinkDirsThroughVirtualizationRoot(string destinationDir, string destinationFileName, string symlinkDir)
         {
+            IgnoreIfSymlinksAreNotSupported();
+
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
 
             // Some contents to write to the file in the source and read out through the virtualization.
@@ -285,6 +297,8 @@ namespace ProjectedFSLib.Managed.Test
         [Test]
         public void TestCanReadSymlinkFilesAndirsThroughVirtualizationRoot()
         {
+            IgnoreIfSymlinksAreNotSupported();
+
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
 
             //|-- Dir.lnk->Dir
@@ -334,6 +348,8 @@ namespace ProjectedFSLib.Managed.Test
         [Test]
         public void TestEnumerationInVirtualizationRoot()
         {
+            IgnoreIfSymlinksAreNotSupported();
+
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
 
             Random random = new Random();
@@ -562,6 +578,15 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the FilePreConvertToFull notification.
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(helpers.WaitTimeoutInMs));
+        }
+
+        private void IgnoreIfSymlinksAreNotSupported()
+        {
+            if (!Helpers.CanThisEnvironmentUseSymlinks())
+            {
+                Assert.Ignore("This environment is older than Windows 2004, so it does not have " +
+                    "the minimal version of ProjFs supporting symlinks. The test will be marked as ignored.");
+            }
         }
     }
 }

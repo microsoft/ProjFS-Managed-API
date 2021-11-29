@@ -51,6 +51,9 @@
     <ClInclude Include="..\prjlib_deprecated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\prjlib_extended.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
