@@ -17,6 +17,20 @@ IF NOT EXIST %nuget% (
   powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://dist.nuget.org/win-x86-commandline/latest/nuget.exe' -OutFile %nuget%"
 )
 
+:: Query the .NET Framework SDK version and install it if missing.
+SET net461ToolsLocation="%programfiles(x86)%\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\"
+SET net461sdk="%PROJFS_TOOLSDIR%\net461installer.exe"
+
+IF NOT EXIST %net461ToolsLocation% (
+  echo .NET Framework 461 SDK is not installled.
+  IF NOT EXIST %net461sdk% (
+    echo Downloading .NET 4.6.1 SDK to %net461sdk%
+    mkdir %net461sdk%\..
+    powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://download.microsoft.com/download/F/1/D/F1DEB8DB-D277-4EF9-9F48-3A65D4D8F965/NDP461-DevPack-KB3105179-ENU.exe' -OutFile %net461sdk%"
+)
+  %net461sdk% /install /quiet /norestart
+)
+
 :: Use vswhere to find the latest VS installation (including prerelease installations) with the msbuild component.
 :: See https://github.com/Microsoft/vswhere/wiki/Find-MSBuild
 SET vswherever=2.8.4
