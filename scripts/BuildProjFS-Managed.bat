@@ -25,7 +25,7 @@ SET vswhere=%PROJFS_PACKAGESDIR%\vswhere.%vswherever%\tools\vswhere.exe
 set WINSDK_BUILD=19041
 echo Checking for VS installation:
 echo %vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath
-for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[16.4,17.0)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath`) do (
+for /f "usebackq tokens=*" %%i in (`%vswhere% -all -prerelease -latest -version "[16.4,17.1)" -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Workload.ManagedDesktop Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Workload.NetCoreTools Microsoft.VisualStudio.Component.Windows10SDK.%WINSDK_BUILD% Microsoft.VisualStudio.Component.VC.CLI.Support -property installationPath`) do (
   set VsDir=%%i
 )
 
