@@ -113,7 +113,6 @@
     <ClInclude Include="..\NotificationType.h" />
     <ClInclude Include="..\OnDiskFileState.h" />
     <ClInclude Include="..\prjlib_deprecated.h" />
-    <ClInclude Include="..\prjlib_extended.h" />
     <ClInclude Include="..\Resource.h" />
     <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="..\UpdateFailureCause.h" />

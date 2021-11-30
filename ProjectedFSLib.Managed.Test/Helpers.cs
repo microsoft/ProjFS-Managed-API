@@ -88,7 +88,7 @@ namespace ProjectedFSLib.Managed.Test
 
         public void StopTestProvider()
         {
-            ProviderProcess?.CloseMainWindow();
+            ProviderProcess.CloseMainWindow();
         }
 
         // Makes name strings for the source and virtualization roots for a test, using the NUnit
@@ -267,20 +267,6 @@ namespace ProjectedFSLib.Managed.Test
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        public static bool CanThisEnvironmentUseSymlinks()
-        {
-            // Only Windows of version 2004 and newer (>=10.0.19041) supports symlink APIs in ProjFS.
-            // Note that until .NET 5.0 OSVersion only reports correct Windows version if Windows 10 is
-            // added to app.manifest. See https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getversionexa
-            Version minWindowsVersionWithProjfsSymlinks = new Version(10, 0, 19041);
-            if (System.Environment.OSVersion.Version >= minWindowsVersionWithProjfsSymlinks)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private void CreateSymlinkAndAncestor(string sourceSymlinkName, string sourceTargetName, bool isFile)
