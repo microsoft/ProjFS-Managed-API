@@ -110,5 +110,6 @@
     <None Include="..\scripts\CreateVersionHeader.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
