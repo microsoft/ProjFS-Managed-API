@@ -4,9 +4,9 @@ CALL %~dp0\InitializeEnvironment.bat || EXIT /b 10
 IF "%1"=="" (SET "Configuration=Debug") ELSE (SET "Configuration=%1")
 
 set RESULT_FRAMEWORK=0
-set TESTDIR=%PROJFS_OUTPUTDIR%\ProjectedFSLib.Managed.Test\bin\AnyCPU\%Configuration%\net461
+set TESTDIR=%PROJFS_OUTPUTDIR%\ProjectedFSLib.Managed.Test\bin\AnyCPU\%Configuration%\net48
 pushd %TESTDIR%
-%TESTDIR%\ProjectedFSLib.Managed.Test.exe --params ProviderExe=%PROJFS_OUTPUTDIR%\SimpleProviderManaged\bin\AnyCPU\%Configuration%\net461\SimpleProviderManaged.exe  || set RESULT_FRAMEWORK=1
+%TESTDIR%\ProjectedFSLib.Managed.Test.exe --params ProviderExe=%PROJFS_OUTPUTDIR%\SimpleProviderManaged\bin\AnyCPU\%Configuration%\net48\SimpleProviderManaged.exe  || set RESULT_FRAMEWORK=1
 popd
 
 set RESULT_CORE=0
