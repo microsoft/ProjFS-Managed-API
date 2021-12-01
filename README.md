@@ -2,8 +2,8 @@
 
 |Branch|Functional Tests|
 |:--:|:--:|
-|**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202019?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=5)|
-|**release**|[![Build status](https://dev.azure.com/microsoft/OS/_apis/build/status/ProjFS%20CI%20-%20Build,%20Sign,%20Package)](https://dev.azure.com/microsoft/OS/_build/latest?definitionId=37476)|
+|**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
+
 
 ## About ProjFS
 
@@ -50,17 +50,15 @@ coverage of the managed wrapper API surface.
 
 ## Building the ProjFS Managed API
 
-* Install [Visual Studio 2019 Community Edition](https://www.visualstudio.com/downloads/) version 16.4 or higher.
+* Install [Visual Studio 2022 Community Edition](https://www.visualstudio.com/downloads/).
   * Include the following workloads:
     * **.NET desktop development**
-    * **.NET Core cross-platform development**
     * **Desktop development with C++**
-  * Include the following individual components:
-    * **.NET Framework 4.6.1 SDK**
+  * Ensure the following individual components are installed:
     * **C++/CLI support**
     * **Windows 10 SDK (10.0.19041.0)**
 * Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
-* Clone this repo into the `src` subfolder, e.g. `C:\Repos\ProjFS-Managed\src`
+* Clone this repo into a subfolder named `src`, e.g. `C:\Repos\ProjFS-Managed\src`
 * Run `src\scripts\BuildProjFS-Managed.bat`
   * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
 
