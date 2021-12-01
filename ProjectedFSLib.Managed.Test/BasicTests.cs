@@ -161,7 +161,8 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(fileContent, Is.EqualTo(line));
 
             // Enumerate and ensure the symlink is present.
-            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            var pathToEnumerate = Path.Combine(virtRoot, Path.GetDirectoryName(symlinkFile));
+            DirectoryInfo virtDirInfo = new DirectoryInfo(pathToEnumerate);
             List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
             string fullPath = Path.Combine(virtRoot, symlinkFile);
             FileSystemInfo symlink = virtList.Where(x => x.FullName == fullPath).First();
@@ -211,7 +212,8 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(fileContent, Is.EqualTo(line));
 
             // Enumerate and ensure the symlink is present.
-            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            var pathToEnumerate = Path.Combine(virtRoot, Path.GetDirectoryName(symlinkFile));
+            DirectoryInfo virtDirInfo = new DirectoryInfo(pathToEnumerate);
             List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
             string fullPath = Path.Combine(virtRoot, symlinkFile);
             FileSystemInfo symlink = virtList.Where(x => x.FullName == fullPath).First();
@@ -257,7 +259,8 @@ namespace ProjectedFSLib.Managed.Test
             helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir, true);
 
             // Enumerate and ensure the symlink is present.
-            DirectoryInfo virtDirInfo = new DirectoryInfo(virtRoot);
+            var pathToEnumerate = Path.Combine(virtRoot, Path.GetDirectoryName(symlinkDir));
+            DirectoryInfo virtDirInfo = new DirectoryInfo(pathToEnumerate);
             List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
             string fullPath = Path.Combine(virtRoot, symlinkDir);
 
