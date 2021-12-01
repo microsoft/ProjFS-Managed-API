@@ -45,7 +45,6 @@ call "%VsDir%\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
  
 :: Restore all dependencies and run the build.
 pushd "%PROJFS_SRCDIR%"
-%nuget% install Microsoft.NETFramework.ReferenceAssemblies.net461  -Version 1.0.2 -OutputDirectory %PROJFS_PACKAGESDIR%
 msbuild /t:Restore ProjectedFSLib.Managed.sln
 msbuild ProjectedFSLib.Managed.sln /p:ProjFSManagedVersion=%ProjFSManagedVersion% /p:Configuration=%SolutionConfiguration% /p:Platform=x64 || exit /b 1
 popd
