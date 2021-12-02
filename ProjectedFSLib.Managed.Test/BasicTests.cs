@@ -32,6 +32,7 @@ namespace ProjectedFSLib.Managed.Test
     public class BasicTests
     {
         private Helpers helpers;
+        private const string SymlinkTestCategory = "SymlinkTest";
 
         [OneTimeSetUp]
         public void ClassSetup()
@@ -43,6 +44,12 @@ namespace ProjectedFSLib.Managed.Test
         [SetUp]
         public void TestSetup()
         {
+            if (ShouldThisTestBeIgnoredAsSymlinkTest())
+            {
+                Assert.Ignore("Symlinks are not supported in this enviroment; skipping the test.");
+                return;
+            }
+
             helpers.CreateRootsForTest(
                 out string sourceRoot,
                 out string virtRoot);
@@ -57,6 +64,12 @@ namespace ProjectedFSLib.Managed.Test
         [TearDown]
         public void TestTeardown()
         {
+            if (ShouldThisTestBeIgnoredAsSymlinkTest())
+            {
+                // Skip teardown for ignored tests
+                return;
+            }
+
             helpers.GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             // Recursively delete the source root directory.
@@ -143,9 +156,9 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.StartDirectoryEnumeration()
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
-        [TestCase("sourcefoo.txt", "symfoo.txt", true)]
-        [TestCase("sourcefoo.txt", "symfoo.txt", false)]
-        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", true)]
+        [TestCase("sourcefoo.txt", "symfoo.txt", true, Category = SymlinkTestCategory)]
+        [TestCase("sourcefoo.txt", "symfoo.txt", false, Category = SymlinkTestCategory)]
+        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", true, Category = SymlinkTestCategory)]
         public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile, bool useRootedPaths)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
@@ -196,7 +209,7 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.StartDirectoryEnumeration()
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
-        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", "..\\..\\..\\dir1\\dir2\\dir3\\sourcebar.txt")]
+        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", "..\\..\\..\\dir1\\dir2\\dir3\\sourcebar.txt", Category = SymlinkTestCategory)]
         public void TestCanReadSymlinksWithRelativePathTargetsThroughVirtualizationRoot(string destinationFile, string symlinkFile, string symlinkTarget)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
@@ -246,7 +259,7 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.StartDirectoryEnumeration()
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
-        [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6")]
+        [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6", Category = SymlinkTestCategory)]
         public void TestCanReadSymlinkDirsThroughVirtualizationRoot(string destinationDir, string destinationFileName, string symlinkDir)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
@@ -286,6 +299,7 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.GetPlaceholderInfoCallback()
         //  IRequiredCallbakcs.GetFileDataCallback()
         [Test]
+        [Category(SymlinkTestCategory)]
         public void TestCanReadSymlinkFilesAndirsThroughVirtualizationRoot()
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
@@ -565,6 +579,11 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the FilePreConvertToFull notification.
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(helpers.WaitTimeoutInMs));
+        }
+
+        private static bool ShouldThisTestBeIgnoredAsSymlinkTest()
+        {
+            return TestContext.CurrentContext.Test.Properties["Category"].Contains(SymlinkTestCategory) && !SimpleProviderManaged.EnvironmentHelper.IsFullSymlinkSupportAvailable();
         }
     }
 }
