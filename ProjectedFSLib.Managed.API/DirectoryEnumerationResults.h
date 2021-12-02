@@ -235,9 +235,10 @@ public:
         }
         else
         {
-            hr = ::PrjFillDirEntryBuffer(pFileName,
+            hr = ::PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
+                pFileName,
                 &basicInfo,
-                m_dirEntryBufferHandle);
+                NULL);
         }
 
         return hr;
