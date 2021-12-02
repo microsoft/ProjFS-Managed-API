@@ -67,7 +67,7 @@ namespace ProjectedFSLib.Managed.Test
             }
             catch (IOException ex)
             {
-                Console.Error.WriteLine("Deleting sourceroot {0}: {1}", virtRoot, ex.Message);
+                Console.Error.WriteLine("Deleting sourceroot {0}: {1}", sourceRoot, ex.Message);
             }
 
             // Recursively delete the virtualization root directory.
@@ -85,7 +85,7 @@ namespace ProjectedFSLib.Managed.Test
             }
             catch (IOException ex)
             {
-                Console.Error.WriteLine("Deleting virtroot {0}: {1}", virtRoot, ex.Message);
+                Console.Error.WriteLine("Deleting virtroot {0} (sourceroot {1}): {2}", virtRoot, sourceRoot, ex.Message);
             }
 
             // Shut down the provider app.
