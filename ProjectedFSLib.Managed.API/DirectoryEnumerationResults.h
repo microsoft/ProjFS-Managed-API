@@ -197,7 +197,7 @@ public:
     /// <exception cref="System::ArgumentException">
     /// <paramref name="fileName"/> is null or empty.
     /// </exception>
-    virtual bool Add(
+    virtual HRESULT Add(
         System::String^ fileName,
         long long fileSize,
         bool isDirectory,
@@ -240,12 +240,7 @@ public:
                 m_dirEntryBufferHandle);
         }
 
-        if FAILED(hr)
-        {
-            return false;
-        }
-
-        return true;
+        return hr;
     }
 
 private:

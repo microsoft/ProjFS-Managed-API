@@ -398,7 +398,7 @@ namespace SimpleProviderManaged
                     break;
                 }
 
-                if (enumResult.Add(
+                var hrFromAdd = enumResult.Add(
                     fileName: fileInfo.Name,
                     fileSize: fileInfo.Size,
                     isDirectory: fileInfo.IsDirectory,
@@ -407,24 +407,9 @@ namespace SimpleProviderManaged
                     lastAccessTime: fileInfo.LastAccessTime,
                     lastWriteTime: fileInfo.LastWriteTime,
                     changeTime: fileInfo.ChangeTime,
-                    symlinkTargetOrNull: targetPath))
-                {
-                    entryAdded = true;
-                    enumeration.MoveNext();
-                }
-                else
-                {
-                    if (entryAdded)
-                    {
-                        hr = HResult.Ok;
-                    }
-                    else
-                    {
-                        hr = HResult.InsufficientBuffer;
-                    }
+                    symlinkTargetOrNull: targetPath);
 
-                    break;
-                }
+                hr = (HResult)hrFromAdd;
             }
 
             Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
