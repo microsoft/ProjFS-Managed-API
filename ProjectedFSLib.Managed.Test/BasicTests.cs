@@ -146,6 +146,9 @@ namespace ProjectedFSLib.Managed.Test
         [TestCase("sourcefoo.txt", "symfoo.txt", true)]
         [TestCase("sourcefoo.txt", "symfoo.txt", false)]
         [TestCase("dir1\\sourcebar.txt", "dir4\\symbar.txt", true)]
+        [TestCase("dir1\\sourcebar.txt", "dir4\\symbar.txt", false)]
+        [TestCase("sourcebar.txt", "dir4\\symbar.txt", true)]
+        [TestCase("dir1\\sourcebar.txt", "symbar.txt", true)]
         public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile, bool useRootedPaths)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
