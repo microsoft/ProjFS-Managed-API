@@ -398,7 +398,8 @@ namespace SimpleProviderManaged
                     break;
                 }
 
-                var hrFromAdd = enumResult.Add(
+
+                var hresult = enumResult.Add(
                     fileName: fileInfo.Name,
                     fileSize: fileInfo.Size,
                     isDirectory: fileInfo.IsDirectory,
@@ -408,8 +409,26 @@ namespace SimpleProviderManaged
                     lastWriteTime: fileInfo.LastWriteTime,
                     changeTime: fileInfo.ChangeTime,
                     symlinkTargetOrNull: targetPath);
+                //File.AppendAllText(@"D:\TempStuff\sym.txt", $"\r\n{fileInfo.FullName}:{hr} ||");
+                if (hresult == (int)HResult.Ok)
+                {
+                    entryAdded = true;
+                    enumeration.MoveNext();
+                }
+                else
+                {
+                    if (entryAdded)
+                    {
+                        hr = HResult.Ok;
+                    }
+                    else
+                    {
+                        hr = (HResult)hresult;
+                    }
 
-                hr = (HResult)hrFromAdd;
+                    break;
+                }
+
             }
 
             Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
