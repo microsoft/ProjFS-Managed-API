@@ -92,6 +92,9 @@ namespace ProjectedFSLib.Managed.Test
             helpers.StopTestProvider();
         }
 
+#if NETCOREAPP3_1
+
+
         // We start the virtualization instance in each test case, so that exercises the following
         // methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.VirtualizationInstance()
@@ -568,5 +571,7 @@ namespace ProjectedFSLib.Managed.Test
             // Wait for the provider to signal that it processed the FilePreConvertToFull notification.
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(helpers.WaitTimeoutInMs));
         }
+#endif
     }
+
 }
