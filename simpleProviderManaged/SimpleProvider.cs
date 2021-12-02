@@ -9,6 +9,7 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using Microsoft.Windows.ProjFS;
+using System.Runtime.InteropServices;
 
 namespace SimpleProviderManaged
 {
@@ -26,6 +27,8 @@ namespace SimpleProviderManaged
         private readonly ConcurrentDictionary<Guid, ActiveEnumeration> activeEnumerations;
 
         private NotificationCallbacks notificationCallbacks;
+
+        private bool isSymlinkSupportAvailable;
 
         public ProviderOptions Options { get; }
 
@@ -100,6 +103,7 @@ namespace SimpleProviderManaged
             }
 
             this.activeEnumerations = new ConcurrentDictionary<Guid, ActiveEnumeration>();
+            this.isSymlinkSupportAvailable = EnvironmentHelper.IsFullSymlinkSupportAvailable();
         }
 
         public bool StartVirtualization()
@@ -398,16 +402,7 @@ namespace SimpleProviderManaged
                     break;
                 }
 
-                if (enumResult.Add(
-                    fileName: fileInfo.Name,
-                    fileSize: fileInfo.Size,
-                    isDirectory: fileInfo.IsDirectory,
-                    fileAttributes: fileInfo.Attributes,
-                    creationTime: fileInfo.CreationTime,
-                    lastAccessTime: fileInfo.LastAccessTime,
-                    lastWriteTime: fileInfo.LastWriteTime,
-                    changeTime: fileInfo.ChangeTime,
-                    symlinkTargetOrNull: targetPath))
+                if (AddFileInfoToEnum(enumResult, fileInfo, targetPath))
                 {
                     entryAdded = true;
                     enumeration.MoveNext();
@@ -429,6 +424,35 @@ namespace SimpleProviderManaged
 
             Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
             return hr;
+        }
+
+        private bool AddFileInfoToEnum(IDirectoryEnumerationResults enumResult, ProjectedFileInfo fileInfo, string targetPath)
+        {
+            if (this.isSymlinkSupportAvailable)
+            {
+                return enumResult.Add(
+                    fileName: fileInfo.Name,
+                    fileSize: fileInfo.Size,
+                    isDirectory: fileInfo.IsDirectory,
+                    fileAttributes: fileInfo.Attributes,
+                    creationTime: fileInfo.CreationTime,
+                    lastAccessTime: fileInfo.LastAccessTime,
+                    lastWriteTime: fileInfo.LastWriteTime,
+                    changeTime: fileInfo.ChangeTime,
+                    symlinkTargetOrNull: targetPath);
+            }
+            else
+            {
+                return enumResult.Add(
+                    fileName: fileInfo.Name,
+                    fileSize: fileInfo.Size,
+                    isDirectory: fileInfo.IsDirectory,
+                    fileAttributes: fileInfo.Attributes,
+                    creationTime: fileInfo.CreationTime,
+                    lastAccessTime: fileInfo.LastAccessTime,
+                    lastWriteTime: fileInfo.LastWriteTime,
+                    changeTime: fileInfo.ChangeTime);
+            }
         }
 
         internal HResult EndDirectoryEnumerationCallback(
@@ -470,7 +494,19 @@ namespace SimpleProviderManaged
                 }
                 else
                 {
-                    hr = this.virtualizationInstance.WritePlaceholderInfo2(
+                    hr = WritePlaceholderInfo(relativePath, fileInfo, targetPath);
+                }
+            }
+
+            Log.Information("<---- GetPlaceholderInfoCallback {Result}", hr);
+            return hr;
+        }
+
+        private HResult WritePlaceholderInfo(string relativePath, ProjectedFileInfo fileInfo, string targetPath)
+        {
+            if (this.isSymlinkSupportAvailable)
+            {
+                return this.virtualizationInstance.WritePlaceholderInfo2(
                         relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
                         creationTime: fileInfo.CreationTime,
                         lastAccessTime: fileInfo.LastAccessTime,
@@ -482,11 +518,21 @@ namespace SimpleProviderManaged
                         symlinkTargetOrNull: targetPath,
                         contentId: new byte[] { 0 },
                         providerId: new byte[] { 1 });
-                }
             }
-
-            Log.Information("<---- GetPlaceholderInfoCallback {Result}", hr);
-            return hr;
+            else
+            {
+                return this.virtualizationInstance.WritePlaceholderInfo(
+                        relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
+                        creationTime: fileInfo.CreationTime,
+                        lastAccessTime: fileInfo.LastAccessTime,
+                        lastWriteTime: fileInfo.LastWriteTime,
+                        changeTime: fileInfo.ChangeTime,
+                        fileAttributes: fileInfo.Attributes,
+                        endOfFile: fileInfo.Size,
+                        isDirectory: fileInfo.IsDirectory,
+                        contentId: new byte[] { 0 },
+                        providerId: new byte[] { 1 });
+            }
         }
 
         internal HResult GetFileDataCallback(
@@ -617,7 +663,6 @@ namespace SimpleProviderManaged
 
             return true;
         }
-
 
         #endregion
 
