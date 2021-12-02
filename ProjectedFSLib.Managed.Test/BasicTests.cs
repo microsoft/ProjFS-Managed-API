@@ -145,7 +145,7 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.EndDirectoryEnumeration()
         [TestCase("sourcefoo.txt", "symfoo.txt", true)]
         [TestCase("sourcefoo.txt", "symfoo.txt", false)]
-        [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", true)]
+        [TestCase("dir1\\sourcebar.txt", "dir4\\symbar.txt", true)]
         public void TestCanReadSymlinksThroughVirtualizationRoot(string destinationFile, string symlinkFile, bool useRootedPaths)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
