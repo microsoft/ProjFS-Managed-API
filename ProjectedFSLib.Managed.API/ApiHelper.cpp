@@ -49,13 +49,12 @@ ApiHelper::ApiHelper() :
 
         this->_PrjMarkDirectoryAsPlaceholder = reinterpret_cast<t_PrjMarkDirectoryAsPlaceholder>(::GetProcAddress(projFsLib,
                                                                                                                   "PrjMarkDirectoryAsPlaceholder"));
-        bool environmentSupportsSymlinks = false;
         if (::GetProcAddress(projFsLib, "PrjWritePlaceholderInfo2") != nullptr)
         {
             // We have the API introduced in Windows 10 version 2004.
             this->_PrjWritePlaceholderInfo2 = reinterpret_cast<t_PrjWritePlaceholderInfo2>(::GetProcAddress(projFsLib,
                 "PrjWritePlaceholderInfo2"));
-            environmentSupportsSymlinks = true;
+            this->useSymlinkApi = true;
         }
 
         ::FreeLibrary(projFsLib);
@@ -64,7 +63,7 @@ ApiHelper::ApiHelper() :
             !this->_PrjStopVirtualizing ||
             !this->_PrjWriteFileData ||
             !this->_PrjWritePlaceholderInfo ||
-            (environmentSupportsSymlinks && !this->_PrjWritePlaceholderInfo2) ||
+            (this->useSymlinkApi && !this->_PrjWritePlaceholderInfo2) ||
             !this->_PrjAllocateAlignedBuffer ||
             !this->_PrjFreeAlignedBuffer ||
             !this->_PrjGetVirtualizationInstanceInfo ||

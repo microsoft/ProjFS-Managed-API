@@ -178,15 +178,18 @@ private:
 #pragma endregion
 
     bool useRS5Api;
+    bool useSymlinkApi;
 
 internal:
+
+    // 2004 API
+    t_PrjWritePlaceholderInfo2 _PrjWritePlaceholderInfo2 = nullptr;
 
     // 1809 API
     t_PrjStartVirtualizing _PrjStartVirtualizing = nullptr;
     t_PrjStopVirtualizing _PrjStopVirtualizing = nullptr;
     t_PrjWriteFileData _PrjWriteFileData = nullptr;
     t_PrjWritePlaceholderInfo _PrjWritePlaceholderInfo = nullptr;
-    t_PrjWritePlaceholderInfo2 _PrjWritePlaceholderInfo2 = nullptr;
     t_PrjAllocateAlignedBuffer _PrjAllocateAlignedBuffer = nullptr;
     t_PrjFreeAlignedBuffer _PrjFreeAlignedBuffer = nullptr;
     t_PrjGetVirtualizationInstanceInfo _PrjGetVirtualizationInstanceInfo = nullptr;
