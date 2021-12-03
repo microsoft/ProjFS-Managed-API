@@ -5,6 +5,10 @@
 
 #include "IDirectoryEnumerationResults.h"
 
+using namespace System;
+using namespace System::Globalization;
+using namespace System::IO;
+
 namespace Microsoft {
 namespace Windows {
 namespace ProjFS {
@@ -21,6 +25,21 @@ internal:
     DirectoryEnumerationResults(PRJ_DIR_ENTRY_BUFFER_HANDLE bufferHandle)
     {
         m_dirEntryBufferHandle = bufferHandle;
+
+        auto projFsLib = ::LoadLibraryW(L"ProjectedFSLib.dll");
+        if (!projFsLib)
+        {
+            throw gcnew FileLoadException(String::Format(CultureInfo::InvariantCulture, "Could not load ProjectedFSLib.dll to set up entry points."));
+        }
+
+        if (::GetProcAddress(projFsLib, "PrjWritePlaceholderInfo2") != nullptr)
+        {
+            // We have the API introduced in Windows 10 version 2004.
+            this->_PrjFillDirEntryBuffer2 = reinterpret_cast<t_PrjFillDirEntryBuffer2>(::GetProcAddress(projFsLib,
+                "PrjFillDirEntryBuffer2"));
+        }
+
+        ::FreeLibrary(projFsLib);
     }
 
     // Provides access to the native handle to the directory entry buffer.
@@ -220,7 +239,7 @@ public:
             changeTime);
 
         HRESULT hr;
-        if (symlinkTargetOrNull != nullptr)
+        if (symlinkTargetOrNull != nullptr && this->_PrjFillDirEntryBuffer2 != nullptr)
         {
             PRJ_EXTENDED_INFO extendedInfo = {};
 
@@ -228,7 +247,7 @@ public:
             pin_ptr<const WCHAR> targetPath = PtrToStringChars(symlinkTargetOrNull);
             extendedInfo.Symlink.TargetName = targetPath;
 
-            hr = ::PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
+            hr = this->_PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
                 pFileName,
                 &basicInfo,
                 &extendedInfo);
@@ -297,5 +316,14 @@ private:
 
         return basicInfo;
     }
+
+    typedef HRESULT(__stdcall* t_PrjFillDirEntryBuffer2)(
+        _In_ PRJ_DIR_ENTRY_BUFFER_HANDLE dirEntryBufferHandle,
+        _In_ PCWSTR fileName,
+        _In_opt_ PRJ_FILE_BASIC_INFO* fileBasicInfo,
+        _In_opt_ PRJ_EXTENDED_INFO* extendedInfo
+        );
+
+    t_PrjFillDirEntryBuffer2 _PrjFillDirEntryBuffer2 = nullptr;
 };
 }}} // namespace Microsoft.Windows.ProjFS
