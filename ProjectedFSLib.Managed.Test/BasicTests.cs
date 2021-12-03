@@ -32,7 +32,7 @@ namespace ProjectedFSLib.Managed.Test
     public class BasicTests
     {
         private Helpers helpers;
-        private const string SymlinkTestCategory = "SymlinkTest";
+        public const string SymlinkTestCategory = "SymlinkTest";
 
         [OneTimeSetUp]
         public void ClassSetup()
@@ -44,12 +44,6 @@ namespace ProjectedFSLib.Managed.Test
         [SetUp]
         public void TestSetup()
         {
-            if (ShouldThisTestBeIgnoredAsSymlinkTest())
-            {
-                Assert.Ignore("Symlinks are not supported in this enviroment; skipping the test.");
-                return;
-            }
-
             helpers.CreateRootsForTest(
                 out string sourceRoot,
                 out string virtRoot);
@@ -64,12 +58,6 @@ namespace ProjectedFSLib.Managed.Test
         [TearDown]
         public void TestTeardown()
         {
-            if (ShouldThisTestBeIgnoredAsSymlinkTest())
-            {
-                // Skip teardown for ignored tests
-                return;
-            }
-
             helpers.GetRootNamesForTest(out string sourceRoot, out string virtRoot);
 
             // Recursively delete the source root directory.
@@ -579,11 +567,6 @@ namespace ProjectedFSLib.Managed.Test
 
             // Wait for the provider to signal that it processed the FilePreConvertToFull notification.
             Assert.That(helpers.NotificationEvents[(int)Helpers.NotifyWaitHandleNames.FilePreConvertToFull].WaitOne(helpers.WaitTimeoutInMs));
-        }
-
-        private static bool ShouldThisTestBeIgnoredAsSymlinkTest()
-        {
-            return TestContext.CurrentContext.Test.Properties["Category"].Contains(SymlinkTestCategory) && !SimpleProviderManaged.EnvironmentHelper.IsFullSymlinkSupportAvailable();
         }
     }
 }
