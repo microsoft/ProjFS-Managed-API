@@ -6,6 +6,20 @@
 namespace Microsoft {
 namespace Windows {
 namespace ProjFS {
+    /// <summary>
+    /// Defines values describing the APIs available from this wrapper.
+    /// </summary>
+    enum class ApiLevel : short
+    {
+        /// <summary>Using Windows 10 version 1803 beta API.</summary>
+        v1803 = 1803,
+
+        /// <summary>Using Windows 10 version 1809 API.</summary>
+        v1809 = 1809,
+
+        /// <summary>Adding APIs introduced in Windows 10 version 2004.</summary>
+        v2004 = 2004,
+    };
 /// <summary>Helper class for using the correct native APIs in the managed layer.</summary>
 /// <remarks>
 /// <para>
@@ -32,12 +46,36 @@ ref class ApiHelper {
 internal:
     ApiHelper();
 
-    property bool UseRS5Api
+    property bool UseBetaApi
     {
         bool get(void);
-    };
+    }
+
+    property ApiLevel SupportedApi
+    {
+        ApiLevel get(void);
+    }
 
 private:
+
+#pragma region Signatures for Windows 10 version 2004 APIs
+
+    typedef HRESULT(__stdcall* t_PrjWritePlaceholderInfo2)(
+        _In_ PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT namespaceVirtualizationContext,
+        _In_ PCWSTR destinationFileName,
+        _In_reads_bytes_(placeholderInfoSize) const PRJ_PLACEHOLDER_INFO* placeholderInfo,
+        _In_ UINT32 placeholderInfoSize,
+        _In_opt_ const PRJ_EXTENDED_INFO* ExtendedInfo
+        );
+
+    typedef HRESULT(__stdcall* t_PrjFillDirEntryBuffer2) (
+        _In_ PRJ_DIR_ENTRY_BUFFER_HANDLE dirEntryBufferHandle,
+        _In_ PCWSTR fileName,
+        _In_opt_ PRJ_FILE_BASIC_INFO* fileBasicInfo,
+        _In_opt_ PRJ_EXTENDED_INFO* extendedInfo
+        );
+
+#pragma endregion
 
 #pragma region Signatures for Windows 10 version 1809 APIs
 
@@ -66,14 +104,6 @@ private:
         _In_ PCWSTR destinationFileName,
         _In_reads_bytes_(placeholderInfoSize) const PRJ_PLACEHOLDER_INFO* placeholderInfo,
         _In_ UINT32 placeholderInfoSize
-        );
-
-    typedef HRESULT(__stdcall* t_PrjWritePlaceholderInfo2)(
-        _In_ PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT namespaceVirtualizationContext,
-        _In_ PCWSTR destinationFileName,
-        _In_reads_bytes_(placeholderInfoSize) const PRJ_PLACEHOLDER_INFO* placeholderInfo,
-        _In_ UINT32 placeholderInfoSize,
-        _In_opt_ const PRJ_EXTENDED_INFO* ExtendedInfo
         );
 
     typedef void* (__stdcall* t_PrjAllocateAlignedBuffer)(
@@ -177,13 +207,13 @@ private:
 
 #pragma endregion
 
-    bool useRS5Api;
-    bool useSymlinkApi;
+    ApiLevel supportedApi{ ApiLevel::v1803 };
 
 internal:
 
     // 2004 API
     t_PrjWritePlaceholderInfo2 _PrjWritePlaceholderInfo2 = nullptr;
+    t_PrjFillDirEntryBuffer2 _PrjFillDirEntryBuffer2 = nullptr;
 
     // 1809 API
     t_PrjStartVirtualizing _PrjStartVirtualizing = nullptr;

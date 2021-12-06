@@ -4,6 +4,7 @@
 #pragma once
 
 #include "IDirectoryEnumerationResults.h"
+#include "ApiHelper.h"
 
 using namespace System;
 using namespace System::Globalization;
@@ -22,25 +23,9 @@ namespace ProjFS {
 public ref class DirectoryEnumerationResults : public IDirectoryEnumerationResults {
 internal:
 
-    DirectoryEnumerationResults(PRJ_DIR_ENTRY_BUFFER_HANDLE bufferHandle)
-    {
-        m_dirEntryBufferHandle = bufferHandle;
-
-        auto projFsLib = ::LoadLibraryW(L"ProjectedFSLib.dll");
-        if (!projFsLib)
-        {
-            throw gcnew FileLoadException(String::Format(CultureInfo::InvariantCulture, "Could not load ProjectedFSLib.dll to set up entry points."));
-        }
-
-        if (::GetProcAddress(projFsLib, "PrjWritePlaceholderInfo2") != nullptr)
-        {
-            // We have the API introduced in Windows 10 version 2004.
-            this->_PrjFillDirEntryBuffer2 = reinterpret_cast<t_PrjFillDirEntryBuffer2>(::GetProcAddress(projFsLib,
-                "PrjFillDirEntryBuffer2"));
-        }
-
-        ::FreeLibrary(projFsLib);
-    }
+    DirectoryEnumerationResults(PRJ_DIR_ENTRY_BUFFER_HANDLE bufferHandle, ApiHelper^ apiHelper) :
+        m_dirEntryBufferHandle(bufferHandle), m_apiHelper(apiHelper)
+    { }
 
     // Provides access to the native handle to the directory entry buffer.
     // Used internally by VirtualizationInstance::CompleteCommand(int, IDirectoryEnumerationResults^).
@@ -227,6 +212,13 @@ public:
         System::DateTime changeTime,
         System::String^ symlinkTargetOrNull) sealed
     {
+        // This API is supported in Windows 10 version 2004 and above.
+        if ((symlinkTargetOrNull != nullptr) &&
+            (m_apiHelper->SupportedApi < ApiLevel::v2004))
+        {
+            throw gcnew NotImplementedException("PrjFillDirEntryBuffer2 is not supported in this version of Windows.");
+        }
+
         ValidateFileName(fileName);
 
         pin_ptr<const WCHAR> pFileName = PtrToStringChars(fileName);
@@ -238,26 +230,19 @@ public:
             lastWriteTime,
             changeTime);
 
-        HRESULT hr;
-        if (symlinkTargetOrNull != nullptr && this->_PrjFillDirEntryBuffer2 != nullptr)
+        PRJ_EXTENDED_INFO extendedInfo = {};
+        if (symlinkTargetOrNull != nullptr)
         {
-            PRJ_EXTENDED_INFO extendedInfo = {};
-
             extendedInfo.InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
             pin_ptr<const WCHAR> targetPath = PtrToStringChars(symlinkTargetOrNull);
             extendedInfo.Symlink.TargetName = targetPath;
+        }
 
-            hr = this->_PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
-                pFileName,
-                &basicInfo,
-                &extendedInfo);
-        }
-        else
-        {
-            hr = ::PrjFillDirEntryBuffer(pFileName,
-                &basicInfo,
-                m_dirEntryBufferHandle);
-        }
+        HRESULT hr;
+        hr = m_apiHelper->_PrjFillDirEntryBuffer2(m_dirEntryBufferHandle,
+                                                  pFileName,
+                                                  &basicInfo,
+                                                  (symlinkTargetOrNull != nullptr) ? &extendedInfo : nullptr);
 
         if FAILED(hr)
         {
@@ -270,6 +255,7 @@ public:
 private:
 
     PRJ_DIR_ENTRY_BUFFER_HANDLE m_dirEntryBufferHandle;
+    ApiHelper^ m_apiHelper;
 
     void ValidateFileName(System::String^ fileName)
     {
@@ -316,14 +302,5 @@ private:
 
         return basicInfo;
     }
-
-    typedef HRESULT(__stdcall* t_PrjFillDirEntryBuffer2)(
-        _In_ PRJ_DIR_ENTRY_BUFFER_HANDLE dirEntryBufferHandle,
-        _In_ PCWSTR fileName,
-        _In_opt_ PRJ_FILE_BASIC_INFO* fileBasicInfo,
-        _In_opt_ PRJ_EXTENDED_INFO* extendedInfo
-        );
-
-    t_PrjFillDirEntryBuffer2 _PrjFillDirEntryBuffer2 = nullptr;
 };
 }}} // namespace Microsoft.Windows.ProjFS

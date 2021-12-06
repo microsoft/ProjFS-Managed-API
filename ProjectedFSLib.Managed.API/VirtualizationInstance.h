@@ -1163,6 +1163,13 @@ namespace ProjFS {
 
 #pragma endregion
 
+    internal:
+
+        virtual property ApiHelper^ ApiHelperObject
+        {
+            ApiHelper^ get(void) sealed;
+        };
+
     private:
 
 #pragma region Private methods
