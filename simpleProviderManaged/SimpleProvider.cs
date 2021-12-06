@@ -370,6 +370,7 @@ namespace SimpleProviderManaged
             // Find the requested enumeration.  It should have been put there by StartDirectoryEnumeration.
             if (!this.activeEnumerations.TryGetValue(enumerationId, out ActiveEnumeration enumeration))
             {
+                Log.Fatal("      GetDirectoryEnumerationCallback {Result}", HResult.InternalError);
                 return HResult.InternalError;
             }
 
@@ -389,7 +390,6 @@ namespace SimpleProviderManaged
                 enumeration.TrySaveFilterString(filterFileName);
             }
 
-            bool entryAdded = false;
             HResult hr = HResult.Ok;
 
             while (enumeration.IsCurrentValid)
@@ -402,27 +402,35 @@ namespace SimpleProviderManaged
                     break;
                 }
 
+                // A provider adds entries to the enumeration buffer until it runs out, or until adding
+                // an entry fails. If adding an entry fails, the provider remembers the entry it couldn't
+                // add. ProjFS will call the GetDirectoryEnumerationCallback again, and the provider
+                // must resume adding entries, starting at the last one it tried to add. SimpleProvider
+                // remembers the entry it couldn't add simply by not advancing its ActiveEnumeration.
                 if (AddFileInfoToEnum(enumResult, fileInfo, targetPath))
                 {
-                    entryAdded = true;
                     enumeration.MoveNext();
                 }
                 else
                 {
-                    if (entryAdded)
-                    {
-                        hr = HResult.Ok;
-                    }
-                    else
+                    // If we could not add the very first entry in the enumeration, a provider must
+                    // return InsufficientBuffer.
+                    if (enumeration.IsCurrentFirst)
                     {
                         hr = HResult.InsufficientBuffer;
                     }
-
                     break;
                 }
             }
 
-            Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
+            if (hr == HResult.Ok)
+            {
+                Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
+            }
+            else
+            {
+                Log.Error("<---- GetDirectoryEnumerationCallback {Result}", hr);
+            }
             return hr;
         }
 
