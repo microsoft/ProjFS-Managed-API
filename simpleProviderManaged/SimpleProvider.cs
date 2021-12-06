@@ -9,6 +9,7 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using Microsoft.Windows.ProjFS;
+using System.Runtime.InteropServices;
 
 namespace SimpleProviderManaged
 {
@@ -26,6 +27,8 @@ namespace SimpleProviderManaged
         private readonly ConcurrentDictionary<Guid, ActiveEnumeration> activeEnumerations;
 
         private NotificationCallbacks notificationCallbacks;
+
+        private bool isSymlinkSupportAvailable;
 
         public ProviderOptions Options { get; }
 
@@ -80,7 +83,7 @@ namespace SimpleProviderManaged
                     enableNegativePathCache: false,
                     notificationMappings: notificationMappings);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Fatal(ex, "Failed to create VirtualizationInstance.");
                 throw;
@@ -100,6 +103,7 @@ namespace SimpleProviderManaged
             }
 
             this.activeEnumerations = new ConcurrentDictionary<Guid, ActiveEnumeration>();
+            this.isSymlinkSupportAvailable = EnvironmentHelper.IsFullSymlinkSupportAvailable();
         }
 
         public bool StartVirtualization()
@@ -218,6 +222,7 @@ namespace SimpleProviderManaged
                 {
                     yield return new ProjectedFileInfo(
                         fileSystemInfo.Name,
+                        fileSystemInfo.FullName,
                         size: 0,
                         isDirectory: true,
                         creationTime: fileSystemInfo.CreationTime,
@@ -231,6 +236,7 @@ namespace SimpleProviderManaged
                     FileInfo fileInfo = fileSystemInfo as FileInfo;
                     yield return new ProjectedFileInfo(
                         fileInfo.Name,
+                        fileSystemInfo.FullName,
                         size: fileInfo.Length,
                         isDirectory: false,
                         creationTime: fileSystemInfo.CreationTime,
@@ -305,6 +311,7 @@ namespace SimpleProviderManaged
 
             fileInfo = new ProjectedFileInfo(
                 name: fileSystemInfo.Name,
+                fullName: fileSystemInfo.FullName,
                 size: isDirectory ? 0 : new FileInfo(Path.Combine(layerParentPath, layerName)).Length,
                 isDirectory: isDirectory,
                 creationTime: fileSystemInfo.CreationTime,
@@ -325,7 +332,7 @@ namespace SimpleProviderManaged
         internal HResult StartDirectoryEnumerationCallback(
             int commandId,
             Guid enumerationId,
-            string relativePath, 
+            string relativePath,
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
@@ -363,6 +370,7 @@ namespace SimpleProviderManaged
             // Find the requested enumeration.  It should have been put there by StartDirectoryEnumeration.
             if (!this.activeEnumerations.TryGetValue(enumerationId, out ActiveEnumeration enumeration))
             {
+                Log.Fatal("      GetDirectoryEnumerationCallback {Result}", HResult.InternalError);
                 return HResult.InternalError;
             }
 
@@ -382,14 +390,55 @@ namespace SimpleProviderManaged
                 enumeration.TrySaveFilterString(filterFileName);
             }
 
-            bool entryAdded = false;
             HResult hr = HResult.Ok;
 
             while (enumeration.IsCurrentValid)
             {
                 ProjectedFileInfo fileInfo = enumeration.Current;
 
-                if (enumResult.Add(
+                if (!TryGetTargetIfReparsePoint(fileInfo, fileInfo.FullName, out string targetPath))
+                {
+                    hr = HResult.InternalError;
+                    break;
+                }
+
+                // A provider adds entries to the enumeration buffer until it runs out, or until adding
+                // an entry fails. If adding an entry fails, the provider remembers the entry it couldn't
+                // add. ProjFS will call the GetDirectoryEnumerationCallback again, and the provider
+                // must resume adding entries, starting at the last one it tried to add. SimpleProvider
+                // remembers the entry it couldn't add simply by not advancing its ActiveEnumeration.
+                if (AddFileInfoToEnum(enumResult, fileInfo, targetPath))
+                {
+                    enumeration.MoveNext();
+                }
+                else
+                {
+                    // If we could not add the very first entry in the enumeration, a provider must
+                    // return InsufficientBuffer.
+                    if (enumeration.IsCurrentFirst)
+                    {
+                        hr = HResult.InsufficientBuffer;
+                    }
+                    break;
+                }
+            }
+
+            if (hr == HResult.Ok)
+            {
+                Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
+            }
+            else
+            {
+                Log.Error("<---- GetDirectoryEnumerationCallback {Result}", hr);
+            }
+            return hr;
+        }
+
+        private bool AddFileInfoToEnum(IDirectoryEnumerationResults enumResult, ProjectedFileInfo fileInfo, string targetPath)
+        {
+            if (this.isSymlinkSupportAvailable)
+            {
+                return enumResult.Add(
                     fileName: fileInfo.Name,
                     fileSize: fileInfo.Size,
                     isDirectory: fileInfo.IsDirectory,
@@ -397,28 +446,21 @@ namespace SimpleProviderManaged
                     creationTime: fileInfo.CreationTime,
                     lastAccessTime: fileInfo.LastAccessTime,
                     lastWriteTime: fileInfo.LastWriteTime,
-                    changeTime: fileInfo.ChangeTime))
-                {
-                    entryAdded = true;
-                    enumeration.MoveNext();
-                }
-                else
-                {
-                    if (entryAdded)
-                    {
-                        hr = HResult.Ok;
-                    }
-                    else
-                    {
-                        hr = HResult.InsufficientBuffer;
-                    }
-
-                    break;
-                }
+                    changeTime: fileInfo.ChangeTime,
+                    symlinkTargetOrNull: targetPath);
             }
-
-            Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
-            return hr;
+            else
+            {
+                return enumResult.Add(
+                    fileName: fileInfo.Name,
+                    fileSize: fileInfo.Size,
+                    isDirectory: fileInfo.IsDirectory,
+                    fileAttributes: fileInfo.Attributes,
+                    creationTime: fileInfo.CreationTime,
+                    lastAccessTime: fileInfo.LastAccessTime,
+                    lastWriteTime: fileInfo.LastWriteTime,
+                    changeTime: fileInfo.ChangeTime);
+            }
         }
 
         internal HResult EndDirectoryEnumerationCallback(
@@ -437,8 +479,8 @@ namespace SimpleProviderManaged
         }
 
         internal HResult GetPlaceholderInfoCallback(
-            int commandId, 
-            string relativePath, 
+            int commandId,
+            string relativePath,
             uint triggeringProcessId,
             string triggeringProcessImageFileName)
         {
@@ -453,21 +495,52 @@ namespace SimpleProviderManaged
             }
             else
             {
-                hr = this.virtualizationInstance.WritePlaceholderInfo(
-                    relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
-                    creationTime: fileInfo.CreationTime,
-                    lastAccessTime: fileInfo.LastAccessTime,
-                    lastWriteTime: fileInfo.LastWriteTime,
-                    changeTime: fileInfo.ChangeTime,
-                    fileAttributes: fileInfo.Attributes,
-                    endOfFile: fileInfo.Size,
-                    isDirectory: fileInfo.IsDirectory,
-                    contentId: new byte[] { 0 },
-                    providerId: new byte[] { 1 });
+                string layerPath = this.GetFullPathInLayer(relativePath);
+                if (!TryGetTargetIfReparsePoint(fileInfo, layerPath, out string targetPath))
+                {
+                    hr = HResult.InternalError;
+                }
+                else
+                {
+                    hr = WritePlaceholderInfo(relativePath, fileInfo, targetPath);
+                }
             }
 
             Log.Information("<---- GetPlaceholderInfoCallback {Result}", hr);
             return hr;
+        }
+
+        private HResult WritePlaceholderInfo(string relativePath, ProjectedFileInfo fileInfo, string targetPath)
+        {
+            if (this.isSymlinkSupportAvailable)
+            {
+                return this.virtualizationInstance.WritePlaceholderInfo2(
+                        relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
+                        creationTime: fileInfo.CreationTime,
+                        lastAccessTime: fileInfo.LastAccessTime,
+                        lastWriteTime: fileInfo.LastWriteTime,
+                        changeTime: fileInfo.ChangeTime,
+                        fileAttributes: fileInfo.Attributes,
+                        endOfFile: fileInfo.Size,
+                        isDirectory: fileInfo.IsDirectory,
+                        symlinkTargetOrNull: targetPath,
+                        contentId: new byte[] { 0 },
+                        providerId: new byte[] { 1 });
+            }
+            else
+            {
+                return this.virtualizationInstance.WritePlaceholderInfo(
+                        relativePath: Path.Combine(Path.GetDirectoryName(relativePath), fileInfo.Name),
+                        creationTime: fileInfo.CreationTime,
+                        lastAccessTime: fileInfo.LastAccessTime,
+                        lastWriteTime: fileInfo.LastWriteTime,
+                        changeTime: fileInfo.ChangeTime,
+                        fileAttributes: fileInfo.Attributes,
+                        endOfFile: fileInfo.Size,
+                        isDirectory: fileInfo.IsDirectory,
+                        contentId: new byte[] { 0 },
+                        providerId: new byte[] { 1 });
+            }
         }
 
         internal HResult GetFileDataCallback(
@@ -576,6 +649,29 @@ namespace SimpleProviderManaged
             return hr;
         }
 
+        private bool TryGetTargetIfReparsePoint(ProjectedFileInfo fileInfo, string fullPath, out string targetPath)
+        {
+            targetPath = null;
+
+            if ((fileInfo.Attributes & FileAttributes.ReparsePoint) != 0 /* TODO: Check for reparse point type */)
+            {
+                if (!FileSystemApi.TryGetReparsePointTarget(fullPath, out targetPath))
+                {
+                    return false;
+                }
+                else if (Path.IsPathRooted(targetPath))
+                {
+                    string targetRelativePath = FileSystemApi.TryGetPathRelativeToRoot(this.layerRoot, targetPath, fileInfo.IsDirectory);
+                    // GetFullPath is used to get rid of relative path components (such as .\)
+                    targetPath = Path.GetFullPath(Path.Combine(this.scratchRoot, targetRelativePath));
+
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
 
@@ -589,9 +685,9 @@ namespace SimpleProviderManaged
 
             public HResult StartDirectoryEnumerationCallback(
                 int commandId,
-                Guid enumerationId, 
-                string relativePath, 
-                uint triggeringProcessId, 
+                Guid enumerationId,
+                string relativePath,
+                uint triggeringProcessId,
                 string triggeringProcessImageFileName)
             {
                 return this.provider.StartDirectoryEnumerationCallback(
@@ -604,9 +700,9 @@ namespace SimpleProviderManaged
 
             public HResult GetDirectoryEnumerationCallback(
                 int commandId,
-                Guid enumerationId, 
-                string filterFileName, 
-                bool restartScan, 
+                Guid enumerationId,
+                string filterFileName,
+                bool restartScan,
                 IDirectoryEnumerationResults enumResult)
             {
                 return this.provider.GetDirectoryEnumerationCallback(
@@ -624,9 +720,9 @@ namespace SimpleProviderManaged
             }
 
             public HResult GetPlaceholderInfoCallback(
-                int commandId, 
-                string relativePath, 
-                uint triggeringProcessId, 
+                int commandId,
+                string relativePath,
+                uint triggeringProcessId,
                 string triggeringProcessImageFileName)
             {
                 return this.provider.GetPlaceholderInfoCallback(

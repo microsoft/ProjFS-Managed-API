@@ -11,7 +11,7 @@ using namespace System::IO;
 using namespace Microsoft::Windows::ProjFS;
 
 ApiHelper::ApiHelper() :
-    useRS5Api(false)
+    supportedApi(ApiLevel::v1803)
 {
     auto projFsLib = ::LoadLibraryW(L"ProjectedFSLib.dll");
     if (!projFsLib)
@@ -22,6 +22,7 @@ ApiHelper::ApiHelper() :
     if (::GetProcAddress(projFsLib, "PrjStartVirtualizing") != nullptr)
     {
         // We have the API introduced in Windows 10 version 1809.
+        this->supportedApi = ApiLevel::v1809;
 
         this->_PrjStartVirtualizing = reinterpret_cast<t_PrjStartVirtualizing>(::GetProcAddress(projFsLib,
                                                                                                 "PrjStartVirtualizing"));
@@ -49,6 +50,16 @@ ApiHelper::ApiHelper() :
 
         this->_PrjMarkDirectoryAsPlaceholder = reinterpret_cast<t_PrjMarkDirectoryAsPlaceholder>(::GetProcAddress(projFsLib,
                                                                                                                   "PrjMarkDirectoryAsPlaceholder"));
+        if (::GetProcAddress(projFsLib, "PrjWritePlaceholderInfo2") != nullptr)
+        {
+            // We have the API introduced in Windows 10 version 2004.
+            this->supportedApi = ApiLevel::v2004;
+
+            this->_PrjWritePlaceholderInfo2 = reinterpret_cast<t_PrjWritePlaceholderInfo2>(::GetProcAddress(projFsLib,
+                "PrjWritePlaceholderInfo2"));
+
+            this->_PrjFillDirEntryBuffer2 = reinterpret_cast<t_PrjFillDirEntryBuffer2>(::GetProcAddress(projFsLib, "PrjFillDirEntryBuffer2"));
+        }
 
         ::FreeLibrary(projFsLib);
 
@@ -66,7 +77,15 @@ ApiHelper::ApiHelper() :
                                                                    "Could not get a required entry point."));
         }
 
-        this->useRS5Api = true;
+        if (this->supportedApi >= ApiLevel::v2004)
+        {
+            if (!this->_PrjWritePlaceholderInfo2 ||
+                !this->_PrjFillDirEntryBuffer2)
+            {
+                throw gcnew EntryPointNotFoundException(String::Format(CultureInfo::InvariantCulture,
+                    "Could not get a required entry point."));
+            }
+        }
     }
     else if (::GetProcAddress(projFsLib, "PrjStartVirtualizationInstance") == nullptr)
     {
@@ -127,7 +146,12 @@ ApiHelper::ApiHelper() :
     }
 }
 
-bool ApiHelper::UseRS5Api::get(void)
+bool ApiHelper::UseBetaApi::get(void)
 {
-    return this->useRS5Api;
+    return (this->supportedApi == ApiLevel::v1803);
+}
+
+ApiLevel ApiHelper::SupportedApi::get(void)
+{
+    return this->supportedApi;
 }

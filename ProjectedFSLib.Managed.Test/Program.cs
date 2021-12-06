@@ -16,6 +16,11 @@ namespace ProjectedFSLib.Managed.Test
 
             List<string> excludeCategories = new List<string>();
 
+            if (!SimpleProviderManaged.EnvironmentHelper.IsFullSymlinkSupportAvailable())
+            {
+                excludeCategories.Add(BasicTests.SymlinkTestCategory);
+            }
+
             Environment.ExitCode = runner.RunTests(includeCategories: null, excludeCategories: excludeCategories);
 
             if (Debugger.IsAttached)
