@@ -133,10 +133,6 @@ public:
     /// or else names can be duplicated or missing from the enumeration results presented to the
     /// process enumerating the filesystem.
     /// </para>
-    /// <para>
-    /// This overload is incompatible with .NET Framework clients. 
-    /// See https://github.com/microsoft/ProjFS-Managed-API/issues/81 for details.
-    /// </para>
     /// </remarks>
     /// <param name="fileName">The name of the file or directory.</param>
     /// <param name="fileSize">The size of the file.</param>
