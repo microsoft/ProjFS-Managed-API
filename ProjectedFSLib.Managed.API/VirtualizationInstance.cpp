@@ -423,6 +423,11 @@ IRequiredCallbacks^ VirtualizationInstance::RequiredCallbacks::get(void)
     return m_requiredCallbacks;
 }
 
+ApiHelper^ VirtualizationInstance::ApiHelperObject::get(void)
+{
+    return m_apiHelper;
+}
+
 #pragma endregion
 
 #pragma region Other properties
@@ -458,7 +463,7 @@ HResult VirtualizationInstance::StartVirtualizing(IRequiredCallbacks^ requiredCa
     *(m_virtualizationContextGc) = this;
 
     HRESULT startHr = S_OK;
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         // Query the file system for sector alignment info that CreateWriteBuffer() will need.
         FindBytesPerSectorAndAlignment();
@@ -659,7 +664,7 @@ HResult VirtualizationInstance::StartVirtualizing(IRequiredCallbacks^ requiredCa
     GUID instanceId = {};
     Guid^ instanceIDRef;
     HRESULT getInfoHr = S_OK;
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         getInfoHr = m_apiHelper->_PrjGetVirtualizationInstanceIdFromHandle(reinterpret_cast<PRJ_VIRTUALIZATIONINSTANCE_HANDLE>(m_virtualizationContext),
                                                                            &instanceId);
@@ -701,7 +706,7 @@ HResult VirtualizationInstance::StartVirtualizing(IRequiredCallbacks^ requiredCa
 void VirtualizationInstance::StopVirtualizing()
 {
     HRESULT hr = S_OK;
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         hr = m_apiHelper->_PrjStopVirtualizationInstance(m_virtualizationContext);
     }
@@ -757,7 +762,7 @@ HResult VirtualizationInstance::WriteFileData(
 
     array<Byte>^ guidData = dataStreamId.ToByteArray();
     pin_ptr<Byte> data = &(guidData[0]);
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         return static_cast<HResult>(m_apiHelper->_PrjWriteFile(reinterpret_cast<PRJ_VIRTUALIZATIONINSTANCE_HANDLE>(m_virtualizationContext),
                                                                reinterpret_cast<GUID*>(data),
@@ -806,7 +811,7 @@ HResult VirtualizationInstance::WritePlaceholderInfo(String^ relativePath,
         return HResult::InvalidArg;
     }
 
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         std::shared_ptr<PRJ_PLACEHOLDER_INFORMATION> fileInformation = CreatePlaceholderInformation(creationTime,
                                                                                                     lastAccessTime,
@@ -844,6 +849,66 @@ HResult VirtualizationInstance::WritePlaceholderInfo(String^ relativePath,
     }
 }
 
+
+HResult VirtualizationInstance::WritePlaceholderInfo2(
+    String^ relativePath,
+    DateTime creationTime,
+    DateTime lastAccessTime,
+    DateTime lastWriteTime,
+    DateTime changeTime,
+    FileAttributes fileAttributes,
+    long long endOfFile,
+    bool isDirectory,
+    String^ symlinkTargetOrNull,
+    array<Byte>^ contentId,
+    array<Byte>^ providerId)
+{
+    // This API is supported in Windows 10 version 2004 and above.
+    if (m_apiHelper->SupportedApi < ApiLevel::v2004)
+    {
+        throw gcnew NotImplementedException("PrjWritePlaceholderInfo2 is not supported in this version of Windows.");
+    }
+
+    if (relativePath == nullptr)
+    {
+        return HResult::InvalidArg;
+    }
+
+    std::shared_ptr<PRJ_PLACEHOLDER_INFO> placeholderInfo = CreatePlaceholderInfo(creationTime,
+        lastAccessTime,
+        lastWriteTime,
+        changeTime,
+        fileAttributes,
+        isDirectory ? 0 : endOfFile,
+        isDirectory,
+        contentId,
+        providerId);
+
+    pin_ptr<const WCHAR> path = PtrToStringChars(relativePath);
+
+    if (symlinkTargetOrNull != nullptr)
+    {
+        PRJ_EXTENDED_INFO extendedInfo = {};
+
+        extendedInfo.InfoType = PRJ_EXT_INFO_TYPE_SYMLINK;
+        pin_ptr<const WCHAR> targetPath = PtrToStringChars(symlinkTargetOrNull);
+        extendedInfo.Symlink.TargetName = targetPath;
+
+        return static_cast<HResult>(m_apiHelper->_PrjWritePlaceholderInfo2(m_virtualizationContext,
+            path,
+            placeholderInfo.get(),
+            sizeof(PRJ_PLACEHOLDER_INFO),
+            &extendedInfo));
+    }
+    else
+    {
+        return static_cast<HResult>(m_apiHelper->_PrjWritePlaceholderInfo(m_virtualizationContext,
+            path,
+            placeholderInfo.get(),
+            sizeof(PRJ_PLACEHOLDER_INFO)));
+    }
+}
+
 HResult VirtualizationInstance::UpdateFileIfNeeded(String^ relativePath,
                                                    DateTime creationTime,
                                                    DateTime lastAccessTime,
@@ -857,7 +922,7 @@ HResult VirtualizationInstance::UpdateFileIfNeeded(String^ relativePath,
                                                    [Out] UpdateFailureCause% failureReason)
 {
     HResult result;
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         std::shared_ptr<PRJ_PLACEHOLDER_INFORMATION> fileInformation = CreatePlaceholderInformation(
             creationTime,
@@ -962,7 +1027,7 @@ IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
 {
     WriteBuffer^ buffer;
 
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         if (desiredBufferSize < m_bytesPerSector)
         {
@@ -1002,7 +1067,7 @@ IWriteBuffer^ VirtualizationInstance::CreateWriteBuffer(
     // to the user.  If we're on Windows 10 version 1803 the sector size is stored on the class.
     // Otherwise it's available from the namespace virtualization context.
     unsigned long bytesPerSector;
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         bytesPerSector = m_bytesPerSector;
     }
@@ -1052,7 +1117,7 @@ HResult VirtualizationInstance::MarkDirectoryAsPlaceholder(
     GUID virtualizationInstanceId;
     HRESULT hr = S_OK;
 
-    if (!m_apiHelper->UseRS5Api)
+    if (m_apiHelper->UseBetaApi)
     {
         hr = m_apiHelper->_PrjGetVirtualizationInstanceIdFromHandle(reinterpret_cast<PRJ_VIRTUALIZATIONINSTANCE_HANDLE>(m_virtualizationContext),
                                                                     &virtualizationInstanceId);
@@ -1105,12 +1170,14 @@ HResult VirtualizationInstance::MarkDirectoryAsVirtualizationRoot(
 {
     PRJ_PLACEHOLDER_VERSION_INFO versionInfo;
     memset(&versionInfo, 0, sizeof(PRJ_PLACEHOLDER_VERSION_INFO));
+
+    // We need our own ApiHelper because this is a static method.
     ApiHelper^ apiHelper = gcnew ApiHelper();
 
     array<Byte>^ guidArray = virtualizationInstanceGuid.ToByteArray();
     pin_ptr<Byte> guidData = &(guidArray[0]);
     pin_ptr<const WCHAR> root = PtrToStringChars(rootPath);
-    if (!apiHelper->UseRS5Api)
+    if (apiHelper->UseBetaApi)
     {
         return static_cast<HResult>(apiHelper->_PrjConvertDirectoryToPlaceholder(root,
                                                                                  L"",
@@ -1290,7 +1357,7 @@ HRESULT PrjGetDirectoryEnumerationCB(_In_ PRJ_CALLBACK_DATA* callbackData,
     {
         gcroot<VirtualizationInstance^>& pVirtualizationInstanceObj = *((gcroot<VirtualizationInstance^>*)callbackData->InstanceContext);
 
-        IDirectoryEnumerationResults^ enumerationData = gcnew DirectoryEnumerationResults(dirEntryBufferHandle);
+        IDirectoryEnumerationResults^ enumerationData = gcnew DirectoryEnumerationResults(dirEntryBufferHandle, pVirtualizationInstanceObj->ApiHelperObject);
         return static_cast<HRESULT>(pVirtualizationInstanceObj->RequiredCallbacks->GetDirectoryEnumerationCallback(
             callbackData->CommandId,
             GUIDtoGuid(*enumerationId),

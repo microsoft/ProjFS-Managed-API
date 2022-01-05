@@ -10,6 +10,7 @@ namespace SimpleProviderManaged
     {
         public ProjectedFileInfo(
             string name,
+            string fullName,
             long size,
             bool isDirectory,
             DateTime creationTime,
@@ -19,6 +20,7 @@ namespace SimpleProviderManaged
             FileAttributes attributes)
         {
             this.Name = name;
+            this.FullName = fullName;
             this.Size = isDirectory ? 0 : size;
             this.IsDirectory = isDirectory;
             this.CreationTime = creationTime;
@@ -31,9 +33,11 @@ namespace SimpleProviderManaged
 
         public ProjectedFileInfo(
             string name,
+            string fullName,
             long size,
             bool isDirectory) : this(
                 name: name,
+                fullName: fullName,
                 size: size,
                 isDirectory: isDirectory,
                 creationTime: DateTime.UtcNow,
@@ -44,6 +48,7 @@ namespace SimpleProviderManaged
         {  }
 
         public string Name { get; }
+        public string FullName { get; }
         public long Size { get; }
         public bool IsDirectory { get; }
         public DateTime CreationTime { get; }

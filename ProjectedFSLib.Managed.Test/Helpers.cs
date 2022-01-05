@@ -158,6 +158,38 @@ namespace ProjectedFSLib.Managed.Test
             return CreateVirtualFile(fileName, "Virtual");
         }
 
+        // Creates a symlink in the source to another file in the source so that it is projected into the virtualization root.
+        // Returns the full path to the virtual symlink.
+        public string CreateVirtualSymlink(string fileName, string targetName, bool useRootedPaths = false)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string sourceSymlinkName = Path.Combine(sourceRoot, fileName);
+            string sourceTargetName = useRootedPaths ? Path.Combine(sourceRoot, targetName) : targetName;
+
+            if (!File.Exists(sourceSymlinkName))
+            {
+                CreateSymlinkAndAncestor(sourceSymlinkName, sourceTargetName, true);
+            }
+
+            return Path.Combine(virtRoot, fileName);
+        }
+
+        // Creates a symlink in the source to another directory in the source so that it is projected into the virtualization root.
+        // Returns the full path to the virtual symlink.
+        public string CreateVirtualSymlinkDirectory(string symlinkDirectoryName, string targetName, bool useRootedPaths = false)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string sourceSymlinkName = Path.Combine(sourceRoot, symlinkDirectoryName);
+            string sourceTargetName = useRootedPaths ? Path.Combine(sourceRoot, targetName) : targetName;
+
+            if (!Directory.Exists(sourceSymlinkName))
+            {
+                CreateSymlinkAndAncestor(sourceSymlinkName, sourceTargetName, false);
+            }
+
+            return Path.Combine(virtRoot, symlinkDirectoryName);
+        }
+
         // Create a file in the virtualization root (i.e. a non-projected or "full" file).
         // Returns the full path to the full file.
         public string CreateFullFile(string fileName, string fileContent)
@@ -206,6 +238,19 @@ namespace ProjectedFSLib.Managed.Test
             return fileContent;
         }
 
+        public string ReadReparsePointTargetInVirtualRoot(string symlinkFileName)
+        {
+            GetRootNamesForTest(out string sourceRoot, out string virtRoot);
+            string fullSymlinkName = Path.Combine(virtRoot, symlinkFileName);
+
+            if (!SimpleProviderManaged.FileSystemApi.TryGetReparsePointTarget(fullSymlinkName, out string reparsePointTarget))
+            {
+                throw new Exception($"Failed to get a reparse point of {fullSymlinkName}.");
+            }
+
+            return reparsePointTarget;
+        }
+
         public FileStream OpenFileInVirtRoot(string fileName, FileMode mode)
         {
             GetRootNamesForTest(out string sourceRoot, out string virtRoot);
@@ -222,6 +267,20 @@ namespace ProjectedFSLib.Managed.Test
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+        private void CreateSymlinkAndAncestor(string sourceSymlinkName, string sourceTargetName, bool isFile)
+        {
+            DirectoryInfo ancestorPath = new DirectoryInfo(Path.GetDirectoryName(sourceSymlinkName));
+            if (!ancestorPath.Exists)
+            {
+                ancestorPath.Create();
+            }
+
+            if (!SimpleProviderManaged.FileSystemApi.TryCreateSymbolicLink(sourceSymlinkName, sourceTargetName, isFile))
+            {
+                throw new Exception($"Failed to create directory symlink {sourceSymlinkName}.");
+            }
         }
     }
 }

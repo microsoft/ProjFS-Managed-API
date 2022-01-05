@@ -7,7 +7,7 @@
 Where:
 * `[NUnit parameters]` are the [normal NUnit parameters](https://github.com/nunit/docs/wiki/Console-Command-Line)
 * `--params ProviderExe` specifies the path to the `SimpleProviderManaged.exe` sample/test provider from the
-[simpleProviderManaged](https://github.com/Microsoft/ProjFS-Managed-API/tree/master/simpleProviderManaged) project.
+[simpleProviderManaged](https://github.com/Microsoft/ProjFS-Managed-API/tree/main/simpleProviderManaged) project.
 
 ## Notes
 Each test case creates a source directory and a virtualization root and then uses the SimpleProviderManaged
