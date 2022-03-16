@@ -9,7 +9,6 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using Microsoft.Windows.ProjFS;
-using System.Runtime.InteropServices;
 
 namespace SimpleProviderManaged
 {
@@ -390,6 +389,7 @@ namespace SimpleProviderManaged
                 enumeration.TrySaveFilterString(filterFileName);
             }
 
+            int numEntriesAdded = 0;
             HResult hr = HResult.Ok;
 
             while (enumeration.IsCurrentValid)
@@ -409,28 +409,33 @@ namespace SimpleProviderManaged
                 // remembers the entry it couldn't add simply by not advancing its ActiveEnumeration.
                 if (AddFileInfoToEnum(enumResult, fileInfo, targetPath))
                 {
+                    Log.Verbose("----> GetDirectoryEnumerationCallback Added {Entry} {Kind} {Target}", fileInfo.Name, fileInfo.IsDirectory, targetPath);
+
+                    ++numEntriesAdded;
                     enumeration.MoveNext();
                 }
                 else
                 {
-                    // If we could not add the very first entry in the enumeration, a provider must
-                    // return InsufficientBuffer.
-                    if (enumeration.IsCurrentFirst)
+                    Log.Verbose("----> GetDirectoryEnumerationCallback NOT added {Entry} {Kind} {Target}", fileInfo.Name, fileInfo.IsDirectory, targetPath);
+
+                    if (numEntriesAdded == 0)
                     {
                         hr = HResult.InsufficientBuffer;
                     }
+
                     break;
                 }
             }
 
             if (hr == HResult.Ok)
             {
-                Log.Information("<---- GetDirectoryEnumerationCallback {Result}", hr);
+                Log.Information("<---- GetDirectoryEnumerationCallback {Result} [Added entries: {EntryCount}]", hr, numEntriesAdded);
             }
             else
             {
-                Log.Error("<---- GetDirectoryEnumerationCallback {Result}", hr);
+                Log.Error("<---- GetDirectoryEnumerationCallback {Result} [Added entries: {EntryCount}]", hr, numEntriesAdded);
             }
+
             return hr;
         }
 
