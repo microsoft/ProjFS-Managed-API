@@ -4,12 +4,10 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 
 namespace ProjectedFSLib.Managed.Test
 {
@@ -126,6 +124,14 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That("RandomNonsense", Is.Not.EqualTo(line));
         }
 
+#if NETCOREAPP3_1_OR_GREATER
+        // Running this test in NET framework causes CI failures in the Win 2022 version. 
+        // They fail because the .NET Framework 4.8 version of the fixed Simple provider trips over the platform bug.
+        // The .NET Core 3.1 one works fine. Evidently Framework and Core enumerate differently, with Framework using 
+        // a buffer that is small enough to hit the platform bug.
+        // 
+        // The CI Win 2019 version doesn't run the symlink tests at all, since symlink support isn't in that version of ProjFS.
+
         // We start the virtualization instance in each test case, so that exercises the following
         // methods in Microsoft.Windows.ProjFS:
         //  VirtualizationInstance.VirtualizationInstance()
@@ -197,12 +203,55 @@ namespace ProjectedFSLib.Managed.Test
         //  IRequiredCallbacks.StartDirectoryEnumeration()
         //  IRequiredCallbacks.GetDirectoryEnumeration()
         //  IRequiredCallbacks.EndDirectoryEnumeration()
+        [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6", Category = SymlinkTestCategory)]
+        public void TestCanReadSymlinkDirsThroughVirtualizationRoot(string destinationDir, string destinationFileName, string symlinkDir)
+        {
+            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
+
+            // Some contents to write to the file in the source and read out through the virtualization.
+            string fileContent = nameof(TestCanReadSymlinkDirsThroughVirtualizationRoot);
+
+            string destinationFile = Path.Combine(destinationDir, destinationFileName);
+            helpers.CreateVirtualFile(destinationFile, fileContent);
+            helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir, true);
+
+            // Enumerate and ensure the symlink is present.
+            var pathToEnumerate = Path.Combine(virtRoot, Path.GetDirectoryName(symlinkDir));
+            DirectoryInfo virtDirInfo = new DirectoryInfo(pathToEnumerate);
+            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
+            string fullPath = Path.Combine(virtRoot, symlinkDir);
+
+            // Ensure we can access the file through directory symlink.
+            string symlinkFile = Path.Combine(virtRoot, symlinkDir, destinationFileName);
+            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
+            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
+        }
+#endif
+
+        // We start the virtualization instance in each test case, so that exercises the following
+        // methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.VirtualizationInstance()
+        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
+        //  VirtualizationInstance.StartVirtualizing()
+
+        // This case exercises the following methods in Microsoft.Windows.ProjFS:
+        //  VirtualizationInstance.WritePlaceholderInfo2()
+        //  VirtualizationInstance.CreateWriteBuffer()
+        //  VirtualizationInstance.WriteFileData()
+        //  DirectoryEnumerationResults.Add()
+        //  
+        // It also illustrates the SimpleProvider implementation of the following callbacks:
+        //  IRequiredCallbacks.GetPlaceholderInfoCallback()
+        //  IRequiredCallbakcs.GetFileDataCallback()
+        //  IRequiredCallbacks.StartDirectoryEnumeration()
+        //  IRequiredCallbacks.GetDirectoryEnumeration()
+        //  IRequiredCallbacks.EndDirectoryEnumeration()
         [TestCase("dir1\\dir2\\dir3\\sourcebar.txt", "dir4\\dir5\\dir6\\symbar.txt", "..\\..\\..\\dir1\\dir2\\dir3\\sourcebar.txt", Category = SymlinkTestCategory)]
         public void TestCanReadSymlinksWithRelativePathTargetsThroughVirtualizationRoot(string destinationFile, string symlinkFile, string symlinkTarget)
         {
             helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
             // Some contents to write to the file in the source and read out through the virtualization.
-            string fileContent = nameof(TestCanReadSymlinksThroughVirtualizationRoot);
+            string fileContent = nameof(TestCanReadSymlinksWithRelativePathTargetsThroughVirtualizationRoot);
 
             // Create a file and a symlink to it.
             helpers.CreateVirtualFile(destinationFile, fileContent);
@@ -225,48 +274,6 @@ namespace ProjectedFSLib.Managed.Test
             Assert.That(reparsePointTarget, Is.EqualTo(symlinkTarget));
 
             // Check if we have the same content if accessing the file through a symlink.
-            string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
-            Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
-        }
-
-        // We start the virtualization instance in each test case, so that exercises the following
-        // methods in Microsoft.Windows.ProjFS:
-        //  VirtualizationInstance.VirtualizationInstance()
-        //  VirtualizationInstance.MarkDirectoryAsVirtualizationRoot()
-        //  VirtualizationInstance.StartVirtualizing()
-
-        // This case exercises the following methods in Microsoft.Windows.ProjFS:
-        //  VirtualizationInstance.WritePlaceholderInfo2()
-        //  VirtualizationInstance.CreateWriteBuffer()
-        //  VirtualizationInstance.WriteFileData()
-        //  DirectoryEnumerationResults.Add()
-        //  
-        // It also illustrates the SimpleProvider implementation of the following callbacks:
-        //  IRequiredCallbacks.GetPlaceholderInfoCallback()
-        //  IRequiredCallbakcs.GetFileDataCallback()
-        //  IRequiredCallbacks.StartDirectoryEnumeration()
-        //  IRequiredCallbacks.GetDirectoryEnumeration()
-        //  IRequiredCallbacks.EndDirectoryEnumeration()
-        [TestCase("dir1\\dir2\\dir3\\", "file.txt", "dir4\\dir5\\sdir6", Category = SymlinkTestCategory)]
-        public void TestCanReadSymlinkDirsThroughVirtualizationRoot(string destinationDir, string destinationFileName, string symlinkDir)
-        {
-            helpers.StartTestProvider(out string sourceRoot, out string virtRoot);
-
-            // Some contents to write to the file in the source and read out through the virtualization.
-            string fileContent = nameof(TestCanReadSymlinkDirsThroughVirtualizationRoot);
-
-            string destinationFile = Path.Combine(destinationDir, destinationFileName);
-            helpers.CreateVirtualFile(destinationFile, fileContent);
-            helpers.CreateVirtualSymlinkDirectory(symlinkDir, destinationDir, true);
-
-            // Enumerate and ensure the symlink is present.
-            var pathToEnumerate = Path.Combine(virtRoot, Path.GetDirectoryName(symlinkDir));
-            DirectoryInfo virtDirInfo = new DirectoryInfo(pathToEnumerate);
-            List<FileSystemInfo> virtList = new List<FileSystemInfo>(virtDirInfo.EnumerateFileSystemInfos("*", SearchOption.AllDirectories));
-            string fullPath = Path.Combine(virtRoot, symlinkDir);
-
-            // Ensure we can access the file through directory symlink.
-            string symlinkFile = Path.Combine(virtRoot, symlinkDir, destinationFileName);
             string lineAccessedThroughSymlink = helpers.ReadFileInVirtRoot(symlinkFile);
             Assert.That(fileContent, Is.EqualTo(lineAccessedThroughSymlink));
         }
