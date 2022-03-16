@@ -20,17 +20,35 @@ namespace SimpleProviderManaged
         {
             try
             {
-                // We want verbose logging so we can see all our callback invocations.
-                Log.Logger = new LoggerConfiguration()
-                    .WriteTo.Console()
-                    .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day)
-                    .CreateLogger();
-
-                Log.Information("Start");
-
-                var parserResult = Parser.Default
+                var parser = new Parser(with =>
+                    {
+                        with.AutoHelp = true;
+                        with.AutoVersion = true;
+                        with.EnableDashDash = true;
+                        with.CaseSensitive = false;
+                        with.CaseInsensitiveEnumValues = true;
+                        with.HelpWriter = Console.Out;
+                    });
+                    
+                var parserResult = parser
                     .ParseArguments<ProviderOptions>(args)
-                    .WithParsed((ProviderOptions options) => Run(options));
+                    .WithParsed((ProviderOptions options) =>
+                    {
+                        // We want verbose logging so we can see all our callback invocations.
+                        var logConfig = new LoggerConfiguration()
+                           .WriteTo.Console()
+                           .WriteTo.File("SimpleProviderManaged-.log", rollingInterval: RollingInterval.Day);
+
+                        if (options.Verbose)
+                        {
+                            logConfig = logConfig.MinimumLevel.Verbose();
+                        }
+
+                        Log.Logger = logConfig.CreateLogger();
+
+                        Log.Information("Start");
+                        Run(options);
+                    });
 
                 Log.Information("Exit successfully");
                 return (int) ReturnCode.Success;
