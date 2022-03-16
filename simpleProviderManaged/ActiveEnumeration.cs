@@ -20,11 +20,6 @@ namespace SimpleProviderManaged
         }
 
         /// <summary>
-        /// Indicates whether the current item is the first one in the enumeration.
-        /// </summary>
-        public bool IsCurrentFirst { get; private set; }
-
-        /// <summary>
         /// true if Current refers to an element in the enumeration, false if Current is past the end of the collection
         /// </summary>
         public bool IsCurrentValid { get; private set; }
@@ -59,8 +54,7 @@ namespace SimpleProviderManaged
         public bool MoveNext()
         {
             this.IsCurrentValid = this.fileInfoEnumerator.MoveNext();
-            this.IsCurrentFirst = false;
-
+        
             while (this.IsCurrentValid && this.IsCurrentHidden())
             {
                 this.IsCurrentValid = this.fileInfoEnumerator.MoveNext();
@@ -146,7 +140,6 @@ namespace SimpleProviderManaged
         private void ResetEnumerator()
         {
             this.fileInfoEnumerator = this.fileInfos.GetEnumerator();
-            this.IsCurrentFirst = true;
         }
     }
 }
