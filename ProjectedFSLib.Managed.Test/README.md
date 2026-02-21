@@ -1,6 +1,16 @@
-# ProjectedFSLib.Managed.Test.exe
+# ProjectedFSLib.Managed.Test
 
-## Command line parameters
+## Running Tests
+
+The simplest way to run all tests is via `dotnet test`:
+
+```bash
+dotnet test -c Release
+```
+
+## Command line parameters (NUnitLite runner)
+
+The test project also builds as an executable that can be run directly:
 
 `ProjectedFSLib.Managed.Test.exe [NUnit parameters] --params ProviderExe=<path to SimpleProviderManaged.exe>`
 

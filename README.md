@@ -1,10 +1,5 @@
 # ProjFS Managed API
 
-|Branch|Functional Tests|
-|:--:|:--:|
-|**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
-
-
 ## About ProjFS
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
@@ -19,65 +14,77 @@ Conceptual documentation for ProjFS along with documentation of its Win32 API is
 
 ## Enabling ProjFS
 
-ProjFS enablement is **required** for this library to work correctly. ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system) starting in Windows 10 version 1809. 
+ProjFS enablement is **required** for this library to work correctly.  ProjFS ships as an
+[optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
+starting in Windows 10 version 1809.
+
+To enable ProjFS, run the following in an elevated PowerShell prompt:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName Client-ProjFS -NoRestart
+```
 
 ## About the ProjFS Managed API
 
-The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a wrapper around
-the native API so that developers can write ProjFS providers using managed code.
+The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a pure C#
+P/Invoke wrapper around the native API so that developers can write ProjFS providers using managed code.
 
-Note that to use this library on a computer that does not have Visual Studio installed, you must install the [Visual C++ redistributable](https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2019). 
+This is a complete rewrite of the original C++/CLI wrapper.  Key improvements:
+
+- **No C++ toolchain required** — builds with `dotnet build`, no Visual Studio C++ workload needed
+- **NativeAOT compatible** — fully supports ahead-of-time compilation and trimming
+- **Cross-compilation friendly** — can be built on any machine with the .NET SDK
+- **Same API surface** — drop-in replacement using the same `Microsoft.Windows.ProjFS` namespace
+
+### Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- Windows 10 version 1809 or later with ProjFS enabled
 
 ## Solution Layout
 
-### ProjectedFSLib.Managed project
+### ProjectedFSLib.Managed.CSharp project
 
-This project contains the code that builds the API wrapper, ProjectedFSLib.Managed.dll.  It is in the
-ProjectedFSLib.Managed.API directory.
+This project contains the pure C# P/Invoke implementation of the ProjFS managed wrapper,
+producing `ProjectedFSLib.Managed.dll`.  It targets net8.0 and net10.0.
 
 ### SimpleProviderManaged project
 
-This project builds a simple ProjFS provider, SimpleProviderManaged.exe, that uses the managed API.
+This project builds a simple ProjFS provider, `SimpleProviderManaged.exe`, that uses the managed API.
 It projects the contents of one directory (the "source") into another one (the "virtualization root").
 
 ### ProjectedFSLib.Managed.Test project
 
-This project builds an NUnit test, ProjectedFSLib.Managed.Test.exe, that uses the SimpleProviderManaged
-provider to exercise the API wrapper.  The managed API is a fairly thin wrapper around the native API,
-and the native API has its own much more comprehensive tests that are routinely executed at Microsoft
-in the normal course of OS development.  So this managed test is just a basic functional test to get
-coverage of the managed wrapper API surface.
+This project builds an NUnit test, `ProjectedFSLib.Managed.Test.exe`, that uses the SimpleProviderManaged
+provider to exercise the API wrapper.
 
-## Building the ProjFS Managed API
+## Building
 
-* Install [Visual Studio 2022 Community Edition](https://www.visualstudio.com/downloads/).
-  * Include the following workloads:
-    * **.NET desktop development**
-    * **Desktop development with C++**
-  * Ensure the following individual components are installed:
-    * **C++/CLI support**
-    * **Windows 10 SDK (10.0.19041.0)**
-* Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
-* Clone this repo into a subfolder named `src`, e.g. `C:\Repos\ProjFS-Managed\src`
-* Run `src\scripts\BuildProjFS-Managed.bat`
-  * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
+```bash
+dotnet build ProjectedFSLib.Managed.sln -c Release
+```
 
-The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
+Or use the build script:
 
-**Note:** The Windows Projected File System optional component must be enabled in Windows before
+```bash
+scripts\BuildProjFS-Managed.bat Release
+```
+
+## Running Tests
+
+```bash
+dotnet test ProjectedFSLib.Managed.sln -c Release
+```
+
+Or use the test script:
+
+```bash
+scripts\RunTests.bat Release
+```
+
+**Note:** The Windows Projected File System optional component must be enabled before
 you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to
-[this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
-for instructions.
-
-### Dealing with BadImageFormatExceptions
-The simplest cause for BadImageFormatExceptions is that you still need to [enable ProjFS](#enabling-projfs).
-
-For .Net Core specific consumers, this can also occur when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
-
-    <PropertyGroup>
-      <UseIJWHost>True</UseIJWHost>
-    </PropertyGroup>
-
+[Enabling ProjFS](#enabling-projfs) above for instructions.
 
 ## Contributing
 

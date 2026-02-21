@@ -75,7 +75,8 @@ namespace ProjectedFSLib.Managed.Test
 
             // Add all the arguments, as well as the "test mode" argument.
             ProviderProcess.StartInfo.Arguments = sourceArg + virtRootArg + " -t";
-            ProviderProcess.StartInfo.UseShellExecute = true;
+            ProviderProcess.StartInfo.UseShellExecute = false;
+            ProviderProcess.StartInfo.CreateNoWindow = true;
 
             ProviderProcess.Start();
 
@@ -88,7 +89,18 @@ namespace ProjectedFSLib.Managed.Test
 
         public void StopTestProvider()
         {
-            ProviderProcess.CloseMainWindow();
+            try
+            {
+                if (ProviderProcess != null && !ProviderProcess.HasExited)
+                {
+                    ProviderProcess.Kill();
+                    ProviderProcess.WaitForExit(5000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("StopTestProvider: {0}", ex.Message);
+            }
         }
 
         // Makes name strings for the source and virtualization roots for a test, using the NUnit

@@ -51,7 +51,46 @@ namespace Microsoft.Windows.ProjFS
             _concurrentThreadCount = concurrentThreadCount;
             _enableNegativePathCache = enableNegativePathCache;
             _notificationMappings = new List<NotificationMapping>(notificationMappings ?? Array.Empty<NotificationMapping>());
-            _instanceId = Guid.NewGuid();
+
+            // Match C++/CLI behavior: create the directory and mark as virtualization root
+            bool markAsRoot = false;
+            var dirInfo = new DirectoryInfo(_rootPath);
+            if (!dirInfo.Exists)
+            {
+                _instanceId = Guid.NewGuid();
+                dirInfo.Create();
+                markAsRoot = true;
+            }
+            else
+            {
+                // Check if the directory already has a ProjFS reparse point.
+                // If not, we need to mark it as a root.
+                // Use PrjGetOnDiskFileState to detect if it's already a ProjFS placeholder/root.
+                int hr = ProjFSNative.PrjGetOnDiskFileState(_rootPath, out uint fileState);
+                if (hr < 0 || fileState == 0)
+                {
+                    // Not a ProjFS virtualization root yet — need to mark it
+                    _instanceId = Guid.NewGuid();
+                    markAsRoot = true;
+                }
+                else
+                {
+                    // Already marked. Get the instance ID via PrjGetVirtualizationInstanceInfo
+                    // after StartVirtualizing. For now, generate a new one.
+                    _instanceId = Guid.NewGuid();
+                }
+            }
+
+            if (markAsRoot)
+            {
+                HResult markResult = MarkDirectoryAsVirtualizationRoot(_rootPath, _instanceId);
+                if (markResult != HResult.Ok)
+                {
+                    int errorCode = unchecked((int)markResult) & 0xFFFF;
+                    throw new System.ComponentModel.Win32Exception(errorCode,
+                        $"Failed to mark directory {_rootPath} as virtualization root. HRESULT: 0x{unchecked((uint)markResult):X8}");
+                }
+            }
         }
 
         public CancelCommandCallback OnCancelCommand { get; set; }
