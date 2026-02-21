@@ -313,10 +313,10 @@ namespace Microsoft.Windows.ProjFS
                     NextInfoOffset = 0,
                 };
 
-                GCHandle targetHandle = GCHandle.Alloc(symlinkTargetOrNull, GCHandleType.Pinned);
+                IntPtr targetPtr = Marshal.StringToHGlobalUni(symlinkTargetOrNull);
                 try
                 {
-                    extendedInfo.SymlinkTargetName = targetHandle.AddrOfPinnedObject();
+                    extendedInfo.SymlinkTargetName = targetPtr;
                     int hr = ProjFSNative.PrjWritePlaceholderInfo2(
                         _context,
                         relativePath,
@@ -327,7 +327,7 @@ namespace Microsoft.Windows.ProjFS
                 }
                 finally
                 {
-                    targetHandle.Free();
+                    Marshal.FreeHGlobal(targetPtr);
                 }
             }
             else

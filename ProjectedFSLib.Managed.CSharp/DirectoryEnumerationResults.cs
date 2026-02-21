@@ -99,17 +99,17 @@ namespace Microsoft.Windows.ProjFS
                     NextInfoOffset = 0,
                 };
 
-                GCHandle targetHandle = GCHandle.Alloc(symlinkTargetOrNull, GCHandleType.Pinned);
+                IntPtr targetPtr = Marshal.StringToHGlobalUni(symlinkTargetOrNull);
                 try
                 {
-                    extendedInfo.SymlinkTargetName = targetHandle.AddrOfPinnedObject();
+                    extendedInfo.SymlinkTargetName = targetPtr;
                     int hr = ProjFSNative.PrjFillDirEntryBuffer2(
                         _dirEntryBufferHandle, fileName, ref basicInfo, ref extendedInfo);
                     return hr >= 0;
                 }
                 finally
                 {
-                    targetHandle.Free();
+                    Marshal.FreeHGlobal(targetPtr);
                 }
             }
             else
