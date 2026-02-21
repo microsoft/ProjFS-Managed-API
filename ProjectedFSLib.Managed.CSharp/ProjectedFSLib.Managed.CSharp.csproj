@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <RootNamespace>Microsoft.Windows.ProjFS</RootNamespace>
+    <AssemblyName>ProjectedFSLib.Managed</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- Package metadata -->
+    <PackageId>Microsoft.Windows.ProjFS.CSharp</PackageId>
+    <Version>$(ProjFSManagedVersion)</Version>
+    <Authors>Microsoft</Authors>
+    <Description>Pure C# P/Invoke wrapper for the Windows Projected File System (ProjFS) API.
+Drop-in replacement for the C++/CLI ProjectedFSLib.Managed.dll that supports NativeAOT,
+trimming, and cross-compilation without requiring the C++ build toolchain.
+
+Requires Windows 10 version 1809+ with the ProjFS optional feature enabled.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>ProjFS;ProjectedFileSystem;VirtualFileSystem;Windows</PackageTags>
+  </PropertyGroup>
+
+</Project>
