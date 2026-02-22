@@ -28,6 +28,8 @@ namespace Microsoft.Windows.ProjFS
         private GCHandle _selfHandle;
         private Guid _instanceId;
         private IRequiredCallbacks _requiredCallbacks;
+        private GCHandle _notificationMappingsHandle;
+        private IntPtr[] _notificationRootStrings;
 
         // Keep delegates alive to prevent GC while native code holds function pointers
         private StartDirectoryEnumerationDelegate _startDirEnumDelegate;
@@ -155,9 +157,7 @@ namespace Microsoft.Windows.ProjFS
             var nativeMappings = new PRJ_NOTIFICATION_MAPPING_NATIVE[_notificationMappings.Count];
             var allocatedStrings = new IntPtr[_notificationMappings.Count];
 
-            try
-            {
-                for (int i = 0; i < _notificationMappings.Count; i++)
+            for (int i = 0; i < _notificationMappings.Count; i++)
                 {
                     string root = _notificationMappings[i].NotificationRoot ?? string.Empty;
                     allocatedStrings[i] = Marshal.StringToHGlobalUni(root);
@@ -201,24 +201,18 @@ namespace Microsoft.Windows.ProjFS
                 }
                 finally
                 {
+                    // Do NOT free mappingsHandle or allocatedStrings here!
+                    // ProjFS may cache the notification mapping pointers.
+                    // Store them for cleanup in StopVirtualizing.
                     if (mappingsHandle.IsAllocated)
                     {
-                        mappingsHandle.Free();
+                        _notificationMappingsHandle = mappingsHandle;
                     }
+                    _notificationRootStrings = allocatedStrings;
                 }
-            }
-            finally
-            {
-                for (int i = 0; i < allocatedStrings.Length; i++)
-                {
-                    if (allocatedStrings[i] != IntPtr.Zero)
-                    {
-                        Marshal.FreeHGlobal(allocatedStrings[i]);
-                    }
-                }
-            }
+            // NOTE: Do NOT free allocatedStrings here — ProjFS may cache notification
+            // mapping pointers. They are freed in StopVirtualizing.
         }
-
         public void StopVirtualizing()
         {
             if (_context != IntPtr.Zero)
