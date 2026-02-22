@@ -115,8 +115,22 @@ namespace ProjectedFSLib.Managed.Test
         // itself or in a setup/teardown fixture for a test case.
         public void GetRootNamesForTest(out string sourceName, out string virtRootName)
         {
+            // ProjFS symlinks require NTFS (ReFS doesn't support the atomic create ECP for symlinks).
+            // If the working directory is on a non-NTFS volume, use a temp directory on the system drive.
+            string workDir = TestContext.CurrentContext.WorkDirectory;
+            try
+            {
+                var driveInfo = new System.IO.DriveInfo(Path.GetPathRoot(workDir));
+                if (!string.Equals(driveInfo.DriveFormat, "NTFS", StringComparison.OrdinalIgnoreCase))
+                {
+                    workDir = Path.Combine(Path.GetTempPath(), "ProjFSTests");
+                    Directory.CreateDirectory(workDir);
+                }
+            }
+            catch { /* If we can't determine the FS type, use the original workDir */ }
+
             string baseName = Path.Combine(
-                TestContext.CurrentContext.WorkDirectory,
+                workDir,
                 TestContext.CurrentContext.Test.MethodName);
 
             sourceName = baseName + "_source";
