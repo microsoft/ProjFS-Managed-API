@@ -46,7 +46,10 @@ This is a complete rewrite of the original C++/CLI wrapper.  Key improvements:
 ### ProjectedFSLib.Managed.CSharp project
 
 This project contains the pure C# P/Invoke implementation of the ProjFS managed wrapper,
-producing `ProjectedFSLib.Managed.dll`.  It targets net8.0 and net10.0.
+producing `ProjectedFSLib.Managed.dll`.  It targets netstandard2.0, net8.0, and net10.0.
+
+The netstandard2.0 target allows use from .NET Framework 4.8 and .NET Core 3.1+ projects,
+providing a migration path from the original C++/CLI package without requiring a TFM upgrade.
 
 ### SimpleProviderManaged project
 

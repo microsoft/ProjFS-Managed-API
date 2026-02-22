@@ -52,6 +52,7 @@ The current `ProjectedFSLib.Managed.dll` is a **C++/CLI mixed-mode assembly**.
 - `Microsoft.Windows.ProjFS` namespace preserved
 - All types, interfaces, delegates, enums — identical signatures
 - 16/16 existing tests pass (including symlink tests)
+- **netstandard2.0** target for .NET Framework 4.8 / .NET Core 3.1 compatibility
 
 ---
 
@@ -116,7 +117,7 @@ Non-symlink operations work on both NTFS and ReFS.
 | Runtime deps | VC++ Redist + Ijwhost.dll | None |
 | NativeAOT | ❌ | ✅ |
 | Trimming | ❌ | ✅ (`IsAotCompatible=true`) |
-| TFMs | net48, netcoreapp3.1 | net8.0, net9.0, net10.0 |
+| TFMs | net48, netcoreapp3.1 | netstandard2.0, net8.0, net9.0, net10.0 |
 | Tests passing | 16/16 | 16/16 |
 | Lines of code | ~4,000 (C++/CLI) | ~1,700 (C#) |
 | Source files | 30+ (.h, .cpp, .vcxproj) | 5 (.cs, .csproj) |

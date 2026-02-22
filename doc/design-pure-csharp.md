@@ -18,7 +18,7 @@ The original ProjFS Managed API is a C++/CLI mixed-mode assembly that wraps the 
 | NativeAOT | Not supported (mixed-mode incompatible) | Fully supported |
 | Trimming | Not supported | `IsAotCompatible=true` |
 | Cross-compilation | Requires matching native toolchain | Any machine with .NET SDK |
-| TFMs | net48, netcoreapp3.1 | net8.0, net9.0, net10.0+ |
+| TFMs | net48, netcoreapp3.1 | netstandard2.0, net8.0, net9.0, net10.0+ |
 | Maintenance | Dual C++/C# expertise needed | C# only |
 
 ## Design Goals

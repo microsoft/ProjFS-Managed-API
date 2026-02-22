@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
     <RootNamespace>Microsoft.Windows.ProjFS</RootNamespace>
     <AssemblyName>ProjectedFSLib.Managed</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <IsAotCompatible>true</IsAotCompatible>
+    <IsAotCompatible Condition="'$(TargetFramework)' != 'netstandard2.0'">true</IsAotCompatible>
 
     <!-- Package metadata -->
     <PackageId>Microsoft.Windows.ProjFS.CSharp</PackageId>
@@ -21,5 +21,9 @@ Requires Windows 10 version 1809+ with the ProjFS optional feature enabled.</Des
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>ProjFS;ProjectedFileSystem;VirtualFileSystem;Windows</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+  </ItemGroup>
 
 </Project>
