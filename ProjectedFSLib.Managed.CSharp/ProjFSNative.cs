@@ -281,7 +281,7 @@ namespace Microsoft.Windows.ProjFS
 
         internal const uint PRJ_EXT_INFO_TYPE_SYMLINK = 1;
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        [StructLayout(LayoutKind.Sequential)]
         internal struct PRJ_NOTIFICATION_MAPPING_NATIVE
         {
             public uint NotificationBitMask;   // PRJ_NOTIFY_TYPES

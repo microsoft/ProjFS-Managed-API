@@ -319,6 +319,7 @@ namespace Microsoft.Windows.ProjFS
                     };
 
                     PRJ_EXTENDED_INFO* pExt = &extendedInfo;
+
                     hr = ProjFSNative.PrjWritePlaceholderInfo2Raw(
                         _context,
                         (IntPtr)pPath,
