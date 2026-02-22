@@ -66,6 +66,14 @@ namespace Microsoft.Windows.ProjFS
         }
 
         /// <summary>Adds one entry to a directory enumeration result, with optional symlink target.</summary>
+        /// <remarks>
+        /// <para>
+        /// <b>NTFS Required for Symlinks:</b> When <paramref name=\"symlinkTargetOrNull\"/> is non-null,
+        /// this calls PrjFillDirEntryBuffer2 which only works on NTFS volumes. ReFS does not support
+        /// the atomic create ECP used by ProjFS to create symlink placeholders. On ReFS, the subsequent
+        /// WritePlaceholderInfo2 call will fail with ERROR_NOT_SUPPORTED (0x80070032).
+        /// </para>
+        /// </remarks>
         /// <exception cref="ArgumentException"><paramref name="fileName"/> is null or empty.</exception>
         public bool Add(
             string fileName,

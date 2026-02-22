@@ -237,6 +237,10 @@ namespace Microsoft.Windows.ProjFS
 
         /// <summary>Adds one entry to a directory enumeration result, with optional symlink target.</summary>
         /// <param name="symlinkTargetOrNull">The symlink target path, or null if this is not a symlink.</param>
+        /// <remarks>
+        /// Symlink entries require an NTFS volume. ReFS does not support ProjFS symlink placeholders.
+        /// See <c>WritePlaceholderInfo2</c> remarks for details.
+        /// </remarks>
         bool Add(
             string fileName,
             long fileSize,

@@ -23,6 +23,19 @@ Where:
 Each test case creates a source directory and a virtualization root and then uses the SimpleProviderManaged
 provider to project the contents of the source directory into the virtualization root.
 
+### NTFS Requirement for Symlink Tests
+
+The symlink tests (`TestCanReadSymlinksThroughVirtualizationRoot`, etc.) require the test
+working directory to be on an **NTFS** volume.  ProjFS creates symlink placeholders via the
+NTFS atomic create ECP, which is not supported on ReFS.  If the working directory is on a
+non-NTFS volume (e.g. ReFS), the test helper automatically falls back to a temp directory on
+the system drive (typically `C:\`, which is NTFS).
+
+If symlink tests fail with `ERROR_NOT_SUPPORTED`, check the volume's filesystem type:
+```powershell
+Get-Volume -DriveLetter D | Select-Object FileSystem
+```
+
 By default the test creates the source and virtualization roots in the test's working directory.  If you are using
 [VFSForGit](https://github.com/Microsoft/VFSForGit) to project GitHub enlistments to your local machine and you try
 to run the test under the Visual Studio debugger, then it is possible that the working directory will end up under

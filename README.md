@@ -86,6 +86,22 @@ scripts\RunTests.bat Release
 you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to
 [Enabling ProjFS](#enabling-projfs) above for instructions.
 
+### Known Filesystem Limitations
+
+**Symlink placeholders require NTFS.**  ProjFS symlink support (`WritePlaceholderInfo2`,
+`PrjFillDirEntryBuffer2` with `PRJ_EXT_INFO_TYPE_SYMLINK`) uses the NTFS atomic create
+ECP internally.  **ReFS does not support this**, and `PrjWritePlaceholderInfo2` will return
+`HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)` (`0x80070032`) when the virtualization root is on
+a ReFS volume.  Non-symlink operations (regular placeholders, file hydration, directory
+enumeration, notifications) work correctly on both NTFS and ReFS.
+
+If you encounter `ERROR_NOT_SUPPORTED` from `WritePlaceholderInfo2`, verify the virtualization
+root is on an NTFS volume:
+
+```powershell
+Get-Volume -DriveLetter D | Select-Object FileSystem  # Should be "NTFS"
+```
+
 ## Contributing
 
 For details on how to contribute to this project, see the CONTRIBUTING.md file in this repository.

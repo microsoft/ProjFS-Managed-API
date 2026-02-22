@@ -274,7 +274,18 @@ namespace Microsoft.Windows.ProjFS
 
         /// <summary>
         /// Sends file or directory metadata to ProjFS, with optional symlink extended info.
+        /// Requires Windows 10 version 2004 or later.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>NTFS Required:</b> Symlink placeholders are created via the NTFS atomic create ECP.
+        /// This method will return <see cref=\"HResult.VirtualizationInvalidOp\"/> or an
+        /// ERROR_NOT_SUPPORTED HRESULT (0x80070032) if the virtualization root is on a ReFS volume,
+        /// because ReFS does not support the atomic create ECP with IO_REPARSE_TAG_SYMLINK.
+        /// Non-symlink placeholder creation (when <paramref name=\"symlinkTargetOrNull\"/> is null)
+        /// works on both NTFS and ReFS.
+        /// </para>
+        /// </remarks>
         public unsafe HResult WritePlaceholderInfo2(
             string relativePath,
             DateTime creationTime,
