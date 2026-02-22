@@ -153,18 +153,18 @@ namespace Microsoft.Windows.ProjFS
 
             // Set up notification mappings
             var nativeMappings = new PRJ_NOTIFICATION_MAPPING_NATIVE[_notificationMappings.Count];
-            var pinnedStrings = new GCHandle[_notificationMappings.Count];
+            var allocatedStrings = new IntPtr[_notificationMappings.Count];
 
             try
             {
                 for (int i = 0; i < _notificationMappings.Count; i++)
                 {
                     string root = _notificationMappings[i].NotificationRoot ?? string.Empty;
-                    pinnedStrings[i] = GCHandle.Alloc(root, GCHandleType.Pinned);
+                    allocatedStrings[i] = Marshal.StringToHGlobalUni(root);
                     nativeMappings[i] = new PRJ_NOTIFICATION_MAPPING_NATIVE
                     {
                         NotificationBitMask = (uint)_notificationMappings[i].NotificationMask,
-                        NotificationRoot = pinnedStrings[i].AddrOfPinnedObject(),
+                        NotificationRoot = allocatedStrings[i],
                     };
                 }
 
@@ -209,11 +209,11 @@ namespace Microsoft.Windows.ProjFS
             }
             finally
             {
-                for (int i = 0; i < pinnedStrings.Length; i++)
+                for (int i = 0; i < allocatedStrings.Length; i++)
                 {
-                    if (pinnedStrings[i].IsAllocated)
+                    if (allocatedStrings[i] != IntPtr.Zero)
                     {
-                        pinnedStrings[i].Free();
+                        Marshal.FreeHGlobal(allocatedStrings[i]);
                     }
                 }
             }
@@ -307,28 +307,27 @@ namespace Microsoft.Windows.ProjFS
 
             if (!string.IsNullOrEmpty(symlinkTargetOrNull))
             {
-                var extendedInfo = new PRJ_EXTENDED_INFO
+                int hr;
+                fixed (char* pTarget = symlinkTargetOrNull)
+                fixed (char* pPath = relativePath)
                 {
-                    InfoType = PRJ_EXT_INFO_TYPE_SYMLINK,
-                    NextInfoOffset = 0,
-                };
+                    var extendedInfo = new PRJ_EXTENDED_INFO
+                    {
+                        InfoType = PRJ_EXT_INFO_TYPE_SYMLINK,
+                        NextInfoOffset = 0,
+                        SymlinkTargetName = (IntPtr)pTarget,
+                    };
 
-                IntPtr targetPtr = Marshal.StringToHGlobalUni(symlinkTargetOrNull);
-                try
-                {
-                    extendedInfo.SymlinkTargetName = targetPtr;
-                    int hr = ProjFSNative.PrjWritePlaceholderInfo2(
+                    PRJ_EXTENDED_INFO* pExt = &extendedInfo;
+                    hr = ProjFSNative.PrjWritePlaceholderInfo2Raw(
                         _context,
-                        relativePath,
-                        ref info,
-                        (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>(),
-                        ref extendedInfo);
-                    return (HResult)hr;
+                        (IntPtr)pPath,
+                        (IntPtr)System.Runtime.CompilerServices.Unsafe.AsPointer(ref info),
+                        (uint)sizeof(PRJ_PLACEHOLDER_INFO),
+                        (IntPtr)pExt);
                 }
-                finally
-                {
-                    Marshal.FreeHGlobal(targetPtr);
-                }
+
+                return (HResult)hr;
             }
             else
             {

@@ -47,6 +47,14 @@ namespace Microsoft.Windows.ProjFS
             uint placeholderInfoSize,
             ref PRJ_EXTENDED_INFO extendedInfo);
 
+        [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "PrjWritePlaceholderInfo2")]
+        internal static extern int PrjWritePlaceholderInfo2Raw(
+            IntPtr namespaceVirtualizationContext,
+            IntPtr destinationFileName,
+            IntPtr placeholderInfo,
+            uint placeholderInfoSize,
+            IntPtr extendedInfo);
+
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjUpdateFileIfNeeded(
             IntPtr namespaceVirtualizationContext,
