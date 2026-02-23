@@ -6,8 +6,10 @@ namespace Microsoft.Windows.ProjFS
     /// <summary>
     /// Native P/Invoke declarations for ProjectedFSLib.dll.
     /// This replaces the C++/CLI mixed-mode ProjectedFSLib.Managed.dll with pure C# P/Invoke.
+    /// On .NET 7+, uses LibraryImport source generators for AOT compatibility.
+    /// On .NET Standard 2.0, falls back to traditional DllImport.
     /// </summary>
-    internal static class ProjFSNative
+    internal static partial class ProjFSNative
     {
         private const string ProjFSLib = "ProjectedFSLib.dll";
 
@@ -17,46 +19,76 @@ namespace Microsoft.Windows.ProjFS
         // Core virtualization lifetime
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjStartVirtualizing(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjStartVirtualizing(
+#endif
             string virtualizationRootPath,
             ref PRJ_CALLBACKS callbacks,
             IntPtr instanceContext,
             ref PRJ_STARTVIRTUALIZING_OPTIONS options,
             out IntPtr namespaceVirtualizationContext);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial void PrjStopVirtualizing(IntPtr namespaceVirtualizationContext);
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern void PrjStopVirtualizing(IntPtr namespaceVirtualizationContext);
+#endif
 
         // ============================
         // Placeholder management
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjWritePlaceholderInfo(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjWritePlaceholderInfo(
+#endif
             IntPtr namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
             uint length);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjWritePlaceholderInfo2(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjWritePlaceholderInfo2(
+#endif
             IntPtr namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
             uint placeholderInfoSize,
             ref PRJ_EXTENDED_INFO extendedInfo);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, EntryPoint = "PrjWritePlaceholderInfo2")]
+        internal static partial int PrjWritePlaceholderInfo2Raw(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "PrjWritePlaceholderInfo2")]
         internal static extern int PrjWritePlaceholderInfo2Raw(
+#endif
             IntPtr namespaceVirtualizationContext,
             IntPtr destinationFileName,
             IntPtr placeholderInfo,
             uint placeholderInfoSize,
             IntPtr extendedInfo);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjUpdateFileIfNeeded(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjUpdateFileIfNeeded(
+#endif
             IntPtr namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
@@ -64,25 +96,42 @@ namespace Microsoft.Windows.ProjFS
             uint updateFlags,
             out uint failureReason);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjDeleteFile(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjDeleteFile(
+#endif
             IntPtr namespaceVirtualizationContext,
             string destinationFileName,
             uint updateFlags,
             out uint failureReason);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjMarkDirectoryAsPlaceholder(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjMarkDirectoryAsPlaceholder(
+#endif
             string rootPathName,
             string targetPathName,
             ref PRJ_PLACEHOLDER_VERSION_INFO versionInfo,
             ref Guid virtualizationInstanceID);
 
         // Overload for MarkDirectoryAsVirtualizationRoot (versionInfo = null)
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16, EntryPoint = "PrjMarkDirectoryAsPlaceholder")]
+        internal static partial int PrjMarkDirectoryAsVirtualizationRoot(
+            string rootPathName,
+            string? targetPathName,
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "PrjMarkDirectoryAsPlaceholder")]
         internal static extern int PrjMarkDirectoryAsVirtualizationRoot(
             string rootPathName,
             [MarshalAs(UnmanagedType.LPWStr)] string targetPathName,
+#endif
             IntPtr versionInfo,
             ref Guid virtualizationInstanceID);
 
@@ -90,35 +139,60 @@ namespace Microsoft.Windows.ProjFS
         // File data streaming
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial int PrjWriteFileData(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjWriteFileData(
+#endif
             IntPtr namespaceVirtualizationContext,
             ref Guid dataStreamId,
             IntPtr buffer,
             ulong byteOffset,
             uint length);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial IntPtr PrjAllocateAlignedBuffer(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern IntPtr PrjAllocateAlignedBuffer(
+#endif
             IntPtr namespaceVirtualizationContext,
             UIntPtr size);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial void PrjFreeAlignedBuffer(IntPtr buffer);
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern void PrjFreeAlignedBuffer(IntPtr buffer);
+#endif
 
         // ============================
         // Command completion
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial int PrjCompleteCommand(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjCompleteCommand(
+#endif
             IntPtr namespaceVirtualizationContext,
             int commandId,
             int completionResult,
             IntPtr extendedParameters);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, EntryPoint = "PrjCompleteCommand")]
+        internal static partial int PrjCompleteCommandWithNotification(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true, EntryPoint = "PrjCompleteCommand")]
         internal static extern int PrjCompleteCommandWithNotification(
+#endif
             IntPtr namespaceVirtualizationContext,
             int commandId,
             int completionResult,
@@ -128,8 +202,13 @@ namespace Microsoft.Windows.ProjFS
         // Cache management
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial int PrjClearNegativePathCache(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjClearNegativePathCache(
+#endif
             IntPtr namespaceVirtualizationContext,
             out uint totalEntryNumber);
 
@@ -137,21 +216,36 @@ namespace Microsoft.Windows.ProjFS
         // Directory enumeration
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjFillDirEntryBuffer(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjFillDirEntryBuffer(
+#endif
             string fileName,
             ref PRJ_FILE_BASIC_INFO fileBasicInfo,
             IntPtr dirEntryBufferHandle);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjFillDirEntryBuffer2(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjFillDirEntryBuffer2(
+#endif
             IntPtr dirEntryBufferHandle,
             string fileName,
             ref PRJ_FILE_BASIC_INFO fileBasicInfo,
             ref PRJ_EXTENDED_INFO extendedInfo);
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16, EntryPoint = "PrjFillDirEntryBuffer2")]
+        internal static partial int PrjFillDirEntryBuffer2NoExtInfo(
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "PrjFillDirEntryBuffer2")]
         internal static extern int PrjFillDirEntryBuffer2NoExtInfo(
+#endif
             IntPtr dirEntryBufferHandle,
             string fileName,
             ref PRJ_FILE_BASIC_INFO fileBasicInfo,
@@ -161,30 +255,57 @@ namespace Microsoft.Windows.ProjFS
         // Filename utilities
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static partial bool PrjDoesNameContainWildCards(string fileName);
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.U1)]
         internal static extern bool PrjDoesNameContainWildCards(string fileName);
+#endif
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static partial bool PrjFileNameMatch(string fileNameToCheck, string pattern);
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.U1)]
         internal static extern bool PrjFileNameMatch(string fileNameToCheck, string pattern);
+#endif
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjFileNameCompare(string fileName1, string fileName2);
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjFileNameCompare(string fileName1, string fileName2);
+#endif
 
         // ============================
         // File state query
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib, StringMarshalling = StringMarshalling.Utf16)]
+        internal static partial int PrjGetOnDiskFileState(string destinationFileName, out uint fileState);
+#else
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjGetOnDiskFileState(string destinationFileName, out uint fileState);
+#endif
 
         // ============================
         // Virtualization instance info
         // ============================
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(ProjFSLib)]
+        internal static partial int PrjGetVirtualizationInstanceInfo(
+#else
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjGetVirtualizationInstanceInfo(
+#endif
             IntPtr namespaceVirtualizationContext,
             ref PRJ_VIRTUALIZATION_INSTANCE_INFO virtualizationInstanceInfo);
 

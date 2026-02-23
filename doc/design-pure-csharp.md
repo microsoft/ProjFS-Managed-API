@@ -33,7 +33,9 @@ The original ProjFS Managed API is a C++/CLI mixed-mode assembly that wraps the 
 
 ### P/Invoke Layer (`ProjFSNative.cs`)
 
-Direct `[DllImport]` declarations for all `ProjectedFSLib.dll` exports:
+Direct P/Invoke declarations for all `ProjectedFSLib.dll` exports, using `#if NET7_0_OR_GREATER`
+to select between `[LibraryImport]` (source-generated, AOT-optimal) and `[DllImport]` (traditional)
+on a per-method basis:
 
 - Core: `PrjStartVirtualizing`, `PrjStopVirtualizing`
 - Placeholders: `PrjWritePlaceholderInfo`, `PrjWritePlaceholderInfo2`, `PrjUpdateFileIfNeeded`
@@ -110,17 +112,18 @@ This matches the minimum supported Windows version for ProjFS as a shipped compo
 
 ## Test Results
 
-All 16 tests pass on both net8.0 and net10.0:
+All tests pass on net48, net8.0, and net10.0:
 
 - 10 core tests: placeholder creation, file hydration, directory enumeration, notifications
-- 6 symlink tests: file symlinks, directory symlinks, relative paths (require NTFS + elevation)
+- 6 symlink tests: file symlinks, directory symlinks, relative paths (require NTFS + Developer Mode)
+- net48 validates the DllImport/netstandard2.0 path; net8.0/net10.0 validate LibraryImport
 
 ## Migration Guide
 
 To switch from the C++/CLI package to the pure C# implementation:
 
 1. Remove the `Microsoft.Windows.ProjFS` NuGet package reference
-2. Add a project reference to `ProjectedFSLib.Managed.CSharp.csproj`
+2. Add a project reference to `ProjectedFSLib.Managed.csproj`
 3. Remove `<UseIJWHost>True</UseIJWHost>` from your project file (no longer needed)
 4. Remove the Visual C++ redistributable from your installer
 5. No code changes required — same namespace, same API surface

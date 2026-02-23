@@ -1,5 +1,16 @@
 # ProjFS Managed API
 
+|Branch|Functional Tests|
+|:--:|:--:|
+|**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
+
+| | |
+|---|---|
+| **Package** | `Microsoft.Windows.ProjFS` |
+| **Version** | 2.0.0 |
+| **Targets** | netstandard2.0, net8.0, net9.0, net10.0 |
+| **License** | MIT |
+
 ## About ProjFS
 
 ProjFS is short for Windows Projected File System.  ProjFS allows a user-mode application called a
@@ -34,22 +45,38 @@ This is a complete rewrite of the original C++/CLI wrapper.  Key improvements:
 - **No C++ toolchain required** — builds with `dotnet build`, no Visual Studio C++ workload needed
 - **NativeAOT compatible** — fully supports ahead-of-time compilation and trimming
 - **Cross-compilation friendly** — can be built on any machine with the .NET SDK
+- **LibraryImport on .NET 7+** — uses source-generated P/Invoke marshalling for better AOT perf
+- **DllImport fallback** — netstandard2.0 target retains traditional P/Invoke for broad compatibility
 - **Same API surface** — drop-in replacement using the same `Microsoft.Windows.ProjFS` namespace
+- **NuGet ready** — publishes to nuget.org as `Microsoft.Windows.ProjFS`
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (required for net10.0 TFM; also builds net8.0/net9.0/netstandard2.0)
 - Windows 10 version 1809 or later with ProjFS enabled
 
 ## Solution Layout
 
-### ProjectedFSLib.Managed.CSharp project
+### ProjectedFSLib.Managed project
 
 This project contains the pure C# P/Invoke implementation of the ProjFS managed wrapper,
 producing `ProjectedFSLib.Managed.dll`.  It targets netstandard2.0, net8.0, and net10.0.
 
 The netstandard2.0 target allows use from .NET Framework 4.8 and .NET Core 3.1+ projects,
 providing a migration path from the original C++/CLI package without requiring a TFM upgrade.
+
+### P/Invoke Strategy
+
+The library uses two P/Invoke strategies depending on the target framework:
+
+| Target | Strategy | Benefit |
+|--------|----------|---------|
+| net8.0, net9.0, net10.0 | `LibraryImport` (source generator) | AOT-compatible, no runtime marshalling overhead |
+| netstandard2.0 | `DllImport` (traditional) | Broad compatibility (.NET Framework 4.8, .NET Core 3.1+) |
+
+The declarations live in two partial class files:
+- `ProjFSNative.cs` — shared structs/constants + DllImport fallback
+- `ProjFSNative.LibraryImport.cs` — LibraryImport declarations (compiled only on .NET 7+)
 
 ### SimpleProviderManaged project
 
@@ -63,27 +90,45 @@ provider to exercise the API wrapper.
 
 ## Building
 
-```bash
+```powershell
 dotnet build ProjectedFSLib.Managed.sln -c Release
 ```
 
 Or use the build script:
 
-```bash
-scripts\BuildProjFS-Managed.bat Release
+```powershell
+.\scripts\BuildProjFS-Managed.bat Release
 ```
 
 ## Running Tests
 
-```bash
+```powershell
 dotnet test ProjectedFSLib.Managed.sln -c Release
 ```
 
 Or use the test script:
 
-```bash
-scripts\RunTests.bat Release
+```powershell
+.\scripts\RunTests.bat Release
 ```
+
+## NuGet Package
+
+### Installing
+
+```powershell
+dotnet add package Microsoft.Windows.ProjFS
+```
+
+### Creating a Package Locally
+
+```powershell
+.\scripts\Pack-NuGet.ps1
+```
+
+This produces `.nupkg` and `.snupkg` files in `artifacts/packages/`.
+
+Official NuGet publishing is handled by the internal CI/CD pipeline.
 
 **Note:** The Windows Projected File System optional component must be enabled before
 you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to

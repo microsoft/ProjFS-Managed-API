@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <ProjFSManagedVersion>2.0.0</ProjFSManagedVersion>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

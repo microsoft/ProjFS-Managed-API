@@ -45,7 +45,7 @@ The current `ProjectedFSLib.Managed.dll` is a **C++/CLI mixed-mode assembly**.
 <PackageReference Include="Microsoft.Windows.ProjFS" Version="1.2.19351.1" />
 
 <!-- After -->
-<ProjectReference Include="ProjectedFSLib.Managed.CSharp.csproj" />
+<ProjectReference Include="ProjectedFSLib.Managed.csproj" />
 <!-- No other code changes needed -->
 ```
 
@@ -118,7 +118,8 @@ Non-symlink operations work on both NTFS and ReFS.
 | NativeAOT | ❌ | ✅ |
 | Trimming | ❌ | ✅ (`IsAotCompatible=true`) |
 | TFMs | net48, netcoreapp3.1 | netstandard2.0, net8.0, net9.0, net10.0 |
-| Tests passing | 16/16 | 16/16 |
+| Tests passing | 16/16 | 16/16 (net48: 12/12) |
+| P/Invoke strategy | C++/CLI mixed-mode | LibraryImport (.NET 7+) / DllImport (netstandard2.0) |
 | Lines of code | ~4,000 (C++/CLI) | ~1,700 (C#) |
 | Source files | 30+ (.h, .cpp, .vcxproj) | 5 (.cs, .csproj) |
 
@@ -143,7 +144,7 @@ This unblocks the complete .NET 10 + NativeAOT migration:
 # Ask
 
 1. **Accept the PR** to replace C++/CLI with pure C# in ProjFS-Managed-API
-2. **Publish updated NuGet** targeting modern .NET TFMs
+2. **Publish updated NuGet** (`Microsoft.Windows.ProjFS` v2.0.0) targeting modern .NET TFMs
 3. **VFSForGit** can then depend on the upstream package instead of vendoring
 
 This is **incremental** — the old C++/CLI package continues to work for existing consumers.
