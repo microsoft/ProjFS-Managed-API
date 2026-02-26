@@ -91,7 +91,7 @@ provider to exercise the API wrapper.
 ## Building
 
 ```powershell
-dotnet build ProjectedFSLib.Managed.sln -c Release
+dotnet build ProjectedFSLib.Managed.slnx -c Release
 ```
 
 Or use the build script:
@@ -103,7 +103,7 @@ Or use the build script:
 ## Running Tests
 
 ```powershell
-dotnet test ProjectedFSLib.Managed.sln -c Release
+dotnet test ProjectedFSLib.Managed.slnx -c Release
 ```
 
 Or use the test script:

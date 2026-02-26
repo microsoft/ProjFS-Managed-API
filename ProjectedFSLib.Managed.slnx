@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Scripts/">
+    <File Path="scripts/BuildProjFS-Managed.bat" />
+    <File Path="scripts/InitializeEnvironment.bat" />
+    <File Path="scripts/NukeBuildOutputs.bat" />
+    <File Path="scripts/RunTests.bat" />
+    <File Path="scripts/Pack-NuGet.ps1" />
+  </Folder>
+  <Project Path="ProjectedFSLib.Managed/ProjectedFSLib.Managed.csproj" />
+  <Project Path="ProjectedFSLib.Managed.Test/ProjectedFSLib.Managed.Test.csproj" />
+  <Project Path="simpleProviderManaged/SimpleProviderManaged.csproj" />
+</Solution>

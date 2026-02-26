@@ -113,7 +113,7 @@ Non-symlink operations work on both NTFS and ReFS.
 
 | Metric | C++/CLI | Pure C# |
 |--------|---------|---------|
-| Build toolchain | VS 2022 + C++ + C++/CLI | `dotnet build` |
+| Build toolchain | VS 2026 + C++ + C++/CLI | `dotnet build` |
 | Runtime deps | VC++ Redist + Ijwhost.dll | None |
 | NativeAOT | ❌ | ✅ |
 | Trimming | ❌ | ✅ (`IsAotCompatible=true`) |
