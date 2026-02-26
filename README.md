@@ -1,8 +1,10 @@
 # ProjFS Managed API
 
+<!--
 |Branch|Functional Tests|
 |:--:|:--:|
 |**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
+-->
 
 | | |
 |---|---|
@@ -157,3 +159,4 @@ For details on how to contribute to this project, see the CONTRIBUTING.md file i
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
