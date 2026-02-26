@@ -4,6 +4,12 @@
 |:--:|:--:|
 |**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
 
+| | |
+|---|---|
+| **Package** | `Microsoft.Windows.ProjFS` |
+| **Version** | 2.0.0 |
+| **Targets** | netstandard2.0, net8.0, net9.0, net10.0 |
+| **License** | MIT |
 
 ## About ProjFS
 
@@ -19,65 +25,130 @@ Conceptual documentation for ProjFS along with documentation of its Win32 API is
 
 ## Enabling ProjFS
 
-ProjFS enablement is **required** for this library to work correctly. ProjFS ships as an [optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system) starting in Windows 10 version 1809. 
+ProjFS enablement is **required** for this library to work correctly.  ProjFS ships as an
+[optional component](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
+starting in Windows 10 version 1809.
+
+To enable ProjFS, run the following in an elevated PowerShell prompt:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName Client-ProjFS -NoRestart
+```
 
 ## About the ProjFS Managed API
 
-The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a wrapper around
-the native API so that developers can write ProjFS providers using managed code.
+The Windows SDK contains a native C API for ProjFS.  The ProjFS Managed API provides a pure C#
+P/Invoke wrapper around the native API so that developers can write ProjFS providers using managed code.
 
-Note that to use this library on a computer that does not have Visual Studio installed, you must install the [Visual C++ redistributable](https://visualstudio.microsoft.com/downloads/#microsoft-visual-c-redistributable-for-visual-studio-2019). 
+This is a complete rewrite of the original C++/CLI wrapper.  Key improvements:
+
+- **No C++ toolchain required** — builds with `dotnet build`, no Visual Studio C++ workload needed
+- **NativeAOT compatible** — fully supports ahead-of-time compilation and trimming
+- **Cross-compilation friendly** — can be built on any machine with the .NET SDK
+- **LibraryImport on .NET 7+** — uses source-generated P/Invoke marshalling for better AOT perf
+- **DllImport fallback** — netstandard2.0 target retains traditional P/Invoke for broad compatibility
+- **Same API surface** — drop-in replacement using the same `Microsoft.Windows.ProjFS` namespace
+- **NuGet ready** — publishes to nuget.org as `Microsoft.Windows.ProjFS`
+
+### Prerequisites
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (required for net10.0 TFM; also builds net8.0/net9.0/netstandard2.0)
+- Windows 10 version 1809 or later with ProjFS enabled
 
 ## Solution Layout
 
 ### ProjectedFSLib.Managed project
 
-This project contains the code that builds the API wrapper, ProjectedFSLib.Managed.dll.  It is in the
-ProjectedFSLib.Managed.API directory.
+This project contains the pure C# P/Invoke implementation of the ProjFS managed wrapper,
+producing `ProjectedFSLib.Managed.dll`.  It targets netstandard2.0, net8.0, and net10.0.
+
+The netstandard2.0 target allows use from .NET Framework 4.8 and .NET Core 3.1+ projects,
+providing a migration path from the original C++/CLI package without requiring a TFM upgrade.
+
+### P/Invoke Strategy
+
+The library uses two P/Invoke strategies depending on the target framework:
+
+| Target | Strategy | Benefit |
+|--------|----------|---------|
+| net8.0, net9.0, net10.0 | `LibraryImport` (source generator) | AOT-compatible, no runtime marshalling overhead |
+| netstandard2.0 | `DllImport` (traditional) | Broad compatibility (.NET Framework 4.8, .NET Core 3.1+) |
+
+The declarations live in two partial class files:
+- `ProjFSNative.cs` — shared structs/constants + DllImport fallback
+- `ProjFSNative.LibraryImport.cs` — LibraryImport declarations (compiled only on .NET 7+)
 
 ### SimpleProviderManaged project
 
-This project builds a simple ProjFS provider, SimpleProviderManaged.exe, that uses the managed API.
+This project builds a simple ProjFS provider, `SimpleProviderManaged.exe`, that uses the managed API.
 It projects the contents of one directory (the "source") into another one (the "virtualization root").
 
 ### ProjectedFSLib.Managed.Test project
 
-This project builds an NUnit test, ProjectedFSLib.Managed.Test.exe, that uses the SimpleProviderManaged
-provider to exercise the API wrapper.  The managed API is a fairly thin wrapper around the native API,
-and the native API has its own much more comprehensive tests that are routinely executed at Microsoft
-in the normal course of OS development.  So this managed test is just a basic functional test to get
-coverage of the managed wrapper API surface.
+This project builds an NUnit test, `ProjectedFSLib.Managed.Test.exe`, that uses the SimpleProviderManaged
+provider to exercise the API wrapper.
 
-## Building the ProjFS Managed API
+## Building
 
-* Install [Visual Studio 2022 Community Edition](https://www.visualstudio.com/downloads/).
-  * Include the following workloads:
-    * **.NET desktop development**
-    * **Desktop development with C++**
-  * Ensure the following individual components are installed:
-    * **C++/CLI support**
-    * **Windows 10 SDK (10.0.19041.0)**
-* Create a folder to clone into, e.g. `C:\Repos\ProjFS-Managed`
-* Clone this repo into a subfolder named `src`, e.g. `C:\Repos\ProjFS-Managed\src`
-* Run `src\scripts\BuildProjFS-Managed.bat`
-  * You can also build in Visual Studio by opening `src\ProjectedFSLib.Managed.sln` and building.
+```powershell
+dotnet build ProjectedFSLib.Managed.slnx -c Release
+```
 
-The build outputs will be placed under a `BuildOutput` subfolder, e.g. `C:\Repos\ProjFS-Managed\BuildOutput`.
+Or use the build script:
 
-**Note:** The Windows Projected File System optional component must be enabled in Windows before
+```powershell
+.\scripts\BuildProjFS-Managed.bat Release
+```
+
+## Running Tests
+
+```powershell
+dotnet test ProjectedFSLib.Managed.slnx -c Release
+```
+
+Or use the test script:
+
+```powershell
+.\scripts\RunTests.bat Release
+```
+
+## NuGet Package
+
+### Installing
+
+```powershell
+dotnet add package Microsoft.Windows.ProjFS
+```
+
+### Creating a Package Locally
+
+```powershell
+.\scripts\Pack-NuGet.ps1
+```
+
+This produces `.nupkg` and `.snupkg` files in `artifacts/packages/`.
+
+Official NuGet publishing is handled by the internal CI/CD pipeline.
+
+**Note:** The Windows Projected File System optional component must be enabled before
 you can run SimpleProviderManaged.exe or a provider of your own devising.  Refer to
-[this page](https://docs.microsoft.com/en-us/windows/desktop/projfs/enabling-windows-projected-file-system)
-for instructions.
+[Enabling ProjFS](#enabling-projfs) above for instructions.
 
-### Dealing with BadImageFormatExceptions
-The simplest cause for BadImageFormatExceptions is that you still need to [enable ProjFS](#enabling-projfs).
+### Known Filesystem Limitations
 
-For .Net Core specific consumers, this can also occur when the .NET Core loader attempts to find Ijwhost.dll from the .NET Core runtime. To force this to be deployed with your application under MSBuild, add the following property to each csproj file that is importing the Microsoft.Windows.ProjFS package:
+**Symlink placeholders require NTFS.**  ProjFS symlink support (`WritePlaceholderInfo2`,
+`PrjFillDirEntryBuffer2` with `PRJ_EXT_INFO_TYPE_SYMLINK`) uses the NTFS atomic create
+ECP internally.  **ReFS does not support this**, and `PrjWritePlaceholderInfo2` will return
+`HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)` (`0x80070032`) when the virtualization root is on
+a ReFS volume.  Non-symlink operations (regular placeholders, file hydration, directory
+enumeration, notifications) work correctly on both NTFS and ReFS.
 
-    <PropertyGroup>
-      <UseIJWHost>True</UseIJWHost>
-    </PropertyGroup>
+If you encounter `ERROR_NOT_SUPPORTED` from `WritePlaceholderInfo2`, verify the virtualization
+root is on an NTFS volume:
 
+```powershell
+Get-Volume -DriveLetter D | Select-Object FileSystem  # Should be "NTFS"
+```
 
 ## Contributing
 

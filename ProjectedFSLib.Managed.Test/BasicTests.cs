@@ -35,7 +35,7 @@ namespace ProjectedFSLib.Managed.Test
         [OneTimeSetUp]
         public void ClassSetup()
         {
-            // Default timeout for wait handles is 10 seconds
+            // Default timeout for wait handles
             helpers = new Helpers(10 * 1000);
         }
 

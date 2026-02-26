@@ -75,7 +75,8 @@ namespace ProjectedFSLib.Managed.Test
 
             // Add all the arguments, as well as the "test mode" argument.
             ProviderProcess.StartInfo.Arguments = sourceArg + virtRootArg + " -t";
-            ProviderProcess.StartInfo.UseShellExecute = true;
+            ProviderProcess.StartInfo.UseShellExecute = false;
+            ProviderProcess.StartInfo.CreateNoWindow = true;
 
             ProviderProcess.Start();
 
@@ -88,7 +89,18 @@ namespace ProjectedFSLib.Managed.Test
 
         public void StopTestProvider()
         {
-            ProviderProcess.CloseMainWindow();
+            try
+            {
+                if (ProviderProcess != null && !ProviderProcess.HasExited)
+                {
+                    ProviderProcess.Kill();
+                    ProviderProcess.WaitForExit(5000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("StopTestProvider: {0}", ex.Message);
+            }
         }
 
         // Makes name strings for the source and virtualization roots for a test, using the NUnit
@@ -103,8 +115,22 @@ namespace ProjectedFSLib.Managed.Test
         // itself or in a setup/teardown fixture for a test case.
         public void GetRootNamesForTest(out string sourceName, out string virtRootName)
         {
+            // ProjFS symlinks require NTFS (ReFS doesn't support the atomic create ECP for symlinks).
+            // If the working directory is on a non-NTFS volume, use a temp directory on the system drive.
+            string workDir = TestContext.CurrentContext.WorkDirectory;
+            try
+            {
+                var driveInfo = new System.IO.DriveInfo(Path.GetPathRoot(workDir));
+                if (!string.Equals(driveInfo.DriveFormat, "NTFS", StringComparison.OrdinalIgnoreCase))
+                {
+                    workDir = Path.Combine(Path.GetTempPath(), "ProjFSTests");
+                    Directory.CreateDirectory(workDir);
+                }
+            }
+            catch { /* If we can't determine the FS type, use the original workDir */ }
+
             string baseName = Path.Combine(
-                TestContext.CurrentContext.WorkDirectory,
+                workDir,
                 TestContext.CurrentContext.Test.MethodName);
 
             sourceName = baseName + "_source";
