@@ -20,6 +20,7 @@ with DllImport fallback on .NET Standard 2.0 for broad compatibility.
 
 Requires Windows 10 version 1809+ with the ProjFS optional feature enabled.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <PackageTags>ProjFS;ProjectedFileSystem;VirtualFileSystem;Windows;PInvoke;NativeAOT</PackageTags>
     <PackageProjectUrl>https://github.com/microsoft/ProjFS-Managed-API</PackageProjectUrl>
     <RepositoryUrl>https://github.com/microsoft/ProjFS-Managed-API</RepositoryUrl>
