@@ -5,6 +5,7 @@
     <OutputType>Exe</OutputType>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
