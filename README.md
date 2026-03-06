@@ -1,8 +1,6 @@
 # ProjFS Managed API
 
-|Branch|Functional Tests|
-|:--:|:--:|
-|**main**|[![Build status](https://dev.azure.com/projfs/ci/_apis/build/status/PR%20-%20Build%20and%20Functional%20Test%20-%202022?branchName=main)](https://dev.azure.com/projfs/ci/_build/latest?definitionId=7)|
+[![NuGet](https://img.shields.io/nuget/v/Microsoft.Windows.ProjFS.svg)](https://www.nuget.org/packages/Microsoft.Windows.ProjFS)
 
 | | |
 |---|---|
