@@ -64,44 +64,25 @@ namespace Microsoft.Windows.ProjFS
             _enableNegativePathCache = enableNegativePathCache;
             _notificationMappings = new List<NotificationMapping>(notificationMappings ?? Array.Empty<NotificationMapping>());
 
-            // Match C++/CLI behavior: create the directory and mark as virtualization root
-            bool markAsRoot = false;
+            // Create the directory if needed, then always mark as virtualization root.
+            // PrjMarkDirectoryAsPlaceholder must be called before PrjStartVirtualizing
+            // to register the directory with the ProjFS driver. Even if the directory
+            // already has ProjFS state (returns ReparsePointEncountered / 0x8007112B),
+            // the call primes the driver's in-memory registration — skipping it causes
+            // PrjStartVirtualizing to fail with ERROR_FILE_SYSTEM_VIRTUALIZATION_PROVIDER_UNKNOWN.
             var dirInfo = new DirectoryInfo(_rootPath);
             if (!dirInfo.Exists)
             {
-                _instanceId = Guid.NewGuid();
                 dirInfo.Create();
-                markAsRoot = true;
-            }
-            else
-            {
-                // Check if the directory already has a ProjFS reparse point.
-                // If not, we need to mark it as a root.
-                // Use PrjGetOnDiskFileState to detect if it's already a ProjFS placeholder/root.
-                int hr = ProjFSNative.PrjGetOnDiskFileState(_rootPath, out uint fileState);
-                if (hr < 0 || fileState == 0)
-                {
-                    // Not a ProjFS virtualization root yet — need to mark it
-                    _instanceId = Guid.NewGuid();
-                    markAsRoot = true;
-                }
-                else
-                {
-                    // Already marked. Get the instance ID via PrjGetVirtualizationInstanceInfo
-                    // after StartVirtualizing. For now, generate a new one.
-                    _instanceId = Guid.NewGuid();
-                }
             }
 
-            if (markAsRoot)
+            _instanceId = Guid.NewGuid();
+            HResult markResult = MarkDirectoryAsVirtualizationRoot(_rootPath, _instanceId);
+            if (markResult != HResult.Ok && markResult != HResult.ReparsePointEncountered)
             {
-                HResult markResult = MarkDirectoryAsVirtualizationRoot(_rootPath, _instanceId);
-                if (markResult != HResult.Ok)
-                {
-                    int errorCode = unchecked((int)markResult) & 0xFFFF;
-                    throw new System.ComponentModel.Win32Exception(errorCode,
-                        $"Failed to mark directory {_rootPath} as virtualization root. HRESULT: 0x{unchecked((uint)markResult):X8}");
-                }
+                int errorCode = unchecked((int)markResult) & 0xFFFF;
+                throw new System.ComponentModel.Win32Exception(errorCode,
+                    $"Failed to mark directory {_rootPath} as virtualization root. HRESULT: 0x{unchecked((uint)markResult):X8}");
             }
         }
 

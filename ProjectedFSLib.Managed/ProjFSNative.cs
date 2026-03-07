@@ -321,7 +321,7 @@ namespace Microsoft.Windows.ProjFS
         {
             public uint Size;
             public uint Flags;
-            public SafeProjFsHandle namespaceVirtualizationContext;
+            public IntPtr namespaceVirtualizationContext;  // PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT (native handle, NOT SafeHandle)
             public int CommandId;
             public Guid FileId;
             public Guid DataStreamId;
