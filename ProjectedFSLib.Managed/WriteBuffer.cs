@@ -14,12 +14,12 @@ namespace Microsoft.Windows.ProjFS
         private IntPtr _buffer;
         private bool _disposed;
 
-        internal unsafe WriteBuffer(IntPtr virtualizationContext, uint desiredBufferSize)
+        internal unsafe WriteBuffer(SafeProjFsHandle virtualizationContext, uint desiredBufferSize)
         {
             _buffer = ProjFSNative.PrjAllocateAlignedBuffer(virtualizationContext, new UIntPtr(desiredBufferSize));
             if (_buffer == IntPtr.Zero)
             {
-                throw new OutOfMemoryException("PrjAllocateAlignedBuffer returned null");
+                throw new InvalidOperationException("PrjAllocateAlignedBuffer returned null — insufficient memory or invalid context.");
             }
 
             Length = desiredBufferSize;
@@ -32,7 +32,9 @@ namespace Microsoft.Windows.ProjFS
             Dispose(false);
         }
 
+#pragma warning disable CA1720 // Identifier contains type name — established public API
         public IntPtr Pointer => _buffer;
+#pragma warning restore CA1720
 
         public UnmanagedMemoryStream Stream { get; private set; }
 

@@ -30,8 +30,11 @@ namespace Microsoft.Windows.ProjFS
             ref PRJ_CALLBACKS callbacks,
             IntPtr instanceContext,
             ref PRJ_STARTVIRTUALIZING_OPTIONS options,
-            out IntPtr namespaceVirtualizationContext);
+            out SafeProjFsHandle namespaceVirtualizationContext);
 
+        // PrjStopVirtualizing takes raw IntPtr (not SafeProjFsHandle) because it is
+        // called from SafeProjFsHandle.ReleaseHandle(), where the SafeHandle is already
+        // closed and cannot be marshaled. All other ProjFS APIs use SafeProjFsHandle.
 #if NET7_0_OR_GREATER
         [LibraryImport(ProjFSLib)]
         internal static partial void PrjStopVirtualizing(IntPtr namespaceVirtualizationContext);
@@ -51,7 +54,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjWritePlaceholderInfo(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
             uint length);
@@ -63,7 +66,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjWritePlaceholderInfo2(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
             uint placeholderInfoSize,
@@ -76,7 +79,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true, EntryPoint = "PrjWritePlaceholderInfo2")]
         internal static extern int PrjWritePlaceholderInfo2Raw(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             IntPtr destinationFileName,
             IntPtr placeholderInfo,
             uint placeholderInfoSize,
@@ -89,7 +92,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjUpdateFileIfNeeded(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             string destinationFileName,
             ref PRJ_PLACEHOLDER_INFO placeholderInfo,
             uint length,
@@ -103,7 +106,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int PrjDeleteFile(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             string destinationFileName,
             uint updateFlags,
             out uint failureReason);
@@ -146,7 +149,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjWriteFileData(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             ref Guid dataStreamId,
             IntPtr buffer,
             ulong byteOffset,
@@ -159,7 +162,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern IntPtr PrjAllocateAlignedBuffer(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             UIntPtr size);
 
 #if NET7_0_OR_GREATER
@@ -181,7 +184,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjCompleteCommand(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             int commandId,
             int completionResult,
             IntPtr extendedParameters);
@@ -193,7 +196,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true, EntryPoint = "PrjCompleteCommand")]
         internal static extern int PrjCompleteCommandWithNotification(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             int commandId,
             int completionResult,
             ref PRJ_COMPLETE_COMMAND_EXTENDED_PARAMETERS extendedParameters);
@@ -209,7 +212,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjClearNegativePathCache(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             out uint totalEntryNumber);
 
         // ============================
@@ -306,7 +309,7 @@ namespace Microsoft.Windows.ProjFS
         [DllImport(ProjFSLib, ExactSpelling = true)]
         internal static extern int PrjGetVirtualizationInstanceInfo(
 #endif
-            IntPtr namespaceVirtualizationContext,
+            SafeProjFsHandle namespaceVirtualizationContext,
             ref PRJ_VIRTUALIZATION_INSTANCE_INFO virtualizationInstanceInfo);
 
         // ============================
@@ -318,7 +321,7 @@ namespace Microsoft.Windows.ProjFS
         {
             public uint Size;
             public uint Flags;
-            public IntPtr NamespaceVirtualizationContext;
+            public IntPtr namespaceVirtualizationContext;  // PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT (native handle, NOT SafeHandle)
             public int CommandId;
             public Guid FileId;
             public Guid DataStreamId;

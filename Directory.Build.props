@@ -1,9 +1,11 @@
 <Project>
 
   <PropertyGroup>
-    <ProjFSManagedVersion>2.0.0</ProjFSManagedVersion>
+    <ProjFSManagedVersion>2.1.0</ProjFSManagedVersion>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
 
 </Project>
