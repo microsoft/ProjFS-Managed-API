@@ -24,12 +24,22 @@ namespace Microsoft.Windows.ProjFS
         private readonly bool _enableNegativePathCache;
         private readonly List<NotificationMapping> _notificationMappings;
 
-        private IntPtr _context; // PRJ_NAMESPACE_VIRTUALIZATION_CONTEXT
+        private SafeProjFsHandle _safeContext; // Guarantees PrjStopVirtualizing via critical finalizer
         private GCHandle _selfHandle;
         private Guid _instanceId;
         private IRequiredCallbacks _requiredCallbacks;
         private GCHandle _notificationMappingsHandle;
         private IntPtr[] _notificationRootStrings;
+        private bool _disposed;
+
+        private void ThrowIfDisposed()
+        {
+#if NET8_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(_disposed, this);
+#else
+            if (_disposed) throw new ObjectDisposedException(nameof(VirtualizationInstance));
+#endif
+        }
 
         // Keep delegates alive to prevent GC while native code holds function pointers
         private StartDirectoryEnumerationDelegate _startDirEnumDelegate;
@@ -127,6 +137,7 @@ namespace Microsoft.Windows.ProjFS
 
         public unsafe HResult StartVirtualizing(IRequiredCallbacks requiredCallbacks)
         {
+            ThrowIfDisposed();
             _requiredCallbacks = requiredCallbacks ?? throw new ArgumentNullException(nameof(requiredCallbacks));
 
             _selfHandle = GCHandle.Alloc(this);
@@ -190,7 +201,7 @@ namespace Microsoft.Windows.ProjFS
                         ref callbacks,
                         GCHandle.ToIntPtr(_selfHandle),
                         ref options,
-                        out _context);
+                        out _safeContext);
 
                     if (hr < 0)
                     {
@@ -213,29 +224,87 @@ namespace Microsoft.Windows.ProjFS
             // NOTE: Do NOT free allocatedStrings here — ProjFS may cache notification
             // mapping pointers. They are freed in StopVirtualizing.
         }
+        /// <summary>
+        /// Stops the virtualization instance and releases all resources.
+        /// Equivalent to calling <see cref="Dispose()"/>.
+        /// Retained for backward compatibility — prefer <c>using</c> or <see cref="Dispose()"/>.
+        /// </summary>
         public void StopVirtualizing()
         {
-            if (_context != IntPtr.Zero)
+            Dispose();
+        }
+
+        /// <summary>
+        /// Releases all resources used by this VirtualizationInstance.
+        /// Calls PrjStopVirtualizing if not already stopped, frees GCHandles,
+        /// and releases unmanaged notification string memory.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged resources. Called by Dispose() and StopVirtualizing().
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+            _disposed = true;
+
+            // Release the ProjFS virtualization context via SafeHandle.
+            // SafeProjFsHandle.ReleaseHandle calls PrjStopVirtualizing.
+            // Even if this Dispose is skipped, the SafeHandle's critical
+            // finalizer guarantees cleanup.
+            if (_safeContext != null && !_safeContext.IsInvalid && !_safeContext.IsClosed)
             {
-                ProjFSNative.PrjStopVirtualizing(_context);
-                _context = IntPtr.Zero;
+                _safeContext.Dispose();
             }
 
             if (_selfHandle.IsAllocated)
             {
                 _selfHandle.Free();
             }
+
+            // Free notification mapping strings allocated via Marshal.StringToHGlobalUni
+            if (_notificationRootStrings != null)
+            {
+                foreach (var ptr in _notificationRootStrings)
+                {
+                    if (ptr != IntPtr.Zero)
+                        Marshal.FreeHGlobal(ptr);
+                }
+                _notificationRootStrings = null;
+            }
+
+            if (_notificationMappingsHandle.IsAllocated)
+            {
+                _notificationMappingsHandle.Free();
+            }
+        }
+
+        /// <summary>
+        /// Destructor ensures PrjStopVirtualizing is called if Dispose was not.
+        /// Prevents zombie processes when the VirtualizationInstance is abandoned.
+        /// </summary>
+        ~VirtualizationInstance()
+        {
+            Dispose(false);
         }
 
         public HResult ClearNegativePathCache(out uint totalEntryNumber)
         {
-            int hr = ProjFSNative.PrjClearNegativePathCache(_context, out totalEntryNumber);
+            ThrowIfDisposed();
+            int hr = ProjFSNative.PrjClearNegativePathCache(_safeContext, out totalEntryNumber);
             return (HResult)hr;
         }
 
         public HResult DeleteFile(string relativePath, UpdateType updateFlags, out UpdateFailureCause failureReason)
         {
-            int hr = ProjFSNative.PrjDeleteFile(_context, relativePath, (uint)updateFlags, out uint cause);
+            ThrowIfDisposed();
+            int hr = ProjFSNative.PrjDeleteFile(_safeContext, relativePath, (uint)updateFlags, out uint cause);
             failureReason = (UpdateFailureCause)cause;
             return (HResult)hr;
         }
@@ -252,6 +321,7 @@ namespace Microsoft.Windows.ProjFS
             byte[] contentId,
             byte[] providerId)
         {
+            ThrowIfDisposed();
             var info = new PRJ_PLACEHOLDER_INFO();
             info.FileBasicInfo.IsDirectory = isDirectory ? (byte)1 : (byte)0;
             info.FileBasicInfo.FileSize = endOfFile;
@@ -264,7 +334,7 @@ namespace Microsoft.Windows.ProjFS
             CopyIdToVersionInfo(contentId, providerId, ref info.VersionInfo);
 
             int hr = ProjFSNative.PrjWritePlaceholderInfo(
-                _context,
+                _safeContext,
                 relativePath,
                 ref info,
                 (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>());
@@ -299,6 +369,7 @@ namespace Microsoft.Windows.ProjFS
             byte[] contentId,
             byte[] providerId)
         {
+            ThrowIfDisposed();
             var info = new PRJ_PLACEHOLDER_INFO();
             info.FileBasicInfo.IsDirectory = isDirectory ? (byte)1 : (byte)0;
             info.FileBasicInfo.FileSize = isDirectory ? 0 : endOfFile;
@@ -326,7 +397,7 @@ namespace Microsoft.Windows.ProjFS
                     PRJ_EXTENDED_INFO* pExt = &extendedInfo;
 
                     hr = ProjFSNative.PrjWritePlaceholderInfo2Raw(
-                        _context,
+                        _safeContext,
                         (IntPtr)pPath,
                         (IntPtr)System.Runtime.CompilerServices.Unsafe.AsPointer(ref info),
                         (uint)sizeof(PRJ_PLACEHOLDER_INFO),
@@ -338,7 +409,7 @@ namespace Microsoft.Windows.ProjFS
             else
             {
                 int hr = ProjFSNative.PrjWritePlaceholderInfo(
-                    _context,
+                    _safeContext,
                     relativePath,
                     ref info,
                     (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>());
@@ -359,6 +430,7 @@ namespace Microsoft.Windows.ProjFS
             UpdateType updateFlags,
             out UpdateFailureCause failureReason)
         {
+            ThrowIfDisposed();
             var info = new PRJ_PLACEHOLDER_INFO();
             info.FileBasicInfo.IsDirectory = 0;
             info.FileBasicInfo.FileSize = endOfFile;
@@ -371,7 +443,7 @@ namespace Microsoft.Windows.ProjFS
             CopyIdToVersionInfo(contentId, providerId, ref info.VersionInfo);
 
             int hr = ProjFSNative.PrjUpdateFileIfNeeded(
-                _context,
+                _safeContext,
                 relativePath,
                 ref info,
                 (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>(),
@@ -384,24 +456,27 @@ namespace Microsoft.Windows.ProjFS
 
         public HResult CompleteCommand(int commandId, HResult completionResult)
         {
-            int hr = ProjFSNative.PrjCompleteCommand(_context, commandId, (int)completionResult, IntPtr.Zero);
+            ThrowIfDisposed();
+            int hr = ProjFSNative.PrjCompleteCommand(_safeContext, commandId, (int)completionResult, IntPtr.Zero);
             return (HResult)hr;
         }
 
         public HResult CompleteCommand(int commandId, NotificationType newNotificationMask)
         {
+            ThrowIfDisposed();
             var extParams = new PRJ_COMPLETE_COMMAND_EXTENDED_PARAMETERS
             {
                 CommandType = PRJ_COMPLETE_COMMAND_TYPE_NOTIFICATION,
                 NotificationMask = (uint)newNotificationMask,
             };
 
-            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_context, commandId, 0, ref extParams);
+            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_safeContext, commandId, 0, ref extParams);
             return (HResult)hr;
         }
 
         public HResult CompleteCommand(int commandId, IDirectoryEnumerationResults results)
         {
+            ThrowIfDisposed();
             var dirResults = (DirectoryEnumerationResults)results;
             var extParams = new PRJ_COMPLETE_COMMAND_EXTENDED_PARAMETERS
             {
@@ -409,27 +484,30 @@ namespace Microsoft.Windows.ProjFS
                 DirEntryBufferHandle = dirResults.DirEntryBufferHandle,
             };
 
-            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_context, commandId, 0, ref extParams);
+            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_safeContext, commandId, 0, ref extParams);
             return (HResult)hr;
         }
 
         public HResult CompleteCommand(int commandId)
         {
-            int hr = ProjFSNative.PrjCompleteCommand(_context, commandId, 0, IntPtr.Zero);
+            ThrowIfDisposed();
+            int hr = ProjFSNative.PrjCompleteCommand(_safeContext, commandId, 0, IntPtr.Zero);
             return (HResult)hr;
         }
 
         public IWriteBuffer CreateWriteBuffer(uint desiredBufferSize)
         {
-            return new WriteBuffer(_context, desiredBufferSize);
+            ThrowIfDisposed();
+            return new WriteBuffer(_safeContext, desiredBufferSize);
         }
 
         public IWriteBuffer CreateWriteBuffer(ulong byteOffset, uint length, out ulong alignedByteOffset, out uint alignedLength)
         {
+            ThrowIfDisposed();
             // Get the sector size from PrjGetVirtualizationInstanceInfo so we can
             // compute aligned values for byteOffset and length.
             var instanceInfo = new PRJ_VIRTUALIZATION_INSTANCE_INFO();
-            int hr = ProjFSNative.PrjGetVirtualizationInstanceInfo(_context, ref instanceInfo);
+            int hr = ProjFSNative.PrjGetVirtualizationInstanceInfo(_safeContext, ref instanceInfo);
             if (hr < 0)
             {
                 throw new System.ComponentModel.Win32Exception(hr,
@@ -453,12 +531,14 @@ namespace Microsoft.Windows.ProjFS
 
         public HResult WriteFileData(Guid dataStreamId, IWriteBuffer buffer, ulong byteOffset, uint length)
         {
-            int hr = ProjFSNative.PrjWriteFileData(_context, ref dataStreamId, buffer.Pointer, byteOffset, length);
+            ThrowIfDisposed();
+            int hr = ProjFSNative.PrjWriteFileData(_safeContext, ref dataStreamId, buffer.Pointer, byteOffset, length);
             return (HResult)hr;
         }
 
         public unsafe HResult MarkDirectoryAsPlaceholder(string targetDirectoryPath, byte[] contentId, byte[] providerId)
         {
+            ThrowIfDisposed();
             var versionInfo = new PRJ_PLACEHOLDER_VERSION_INFO();
             CopyIdToVersionInfo(contentId, providerId, ref versionInfo);
 
