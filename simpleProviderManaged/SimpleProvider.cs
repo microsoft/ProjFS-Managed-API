@@ -16,7 +16,7 @@ namespace SimpleProviderManaged
     /// This is a simple file system "reflector" provider.  It projects files and directories from
     /// a directory called the "layer root" into the virtualization root, also called the "scratch root".
     /// </summary>
-    public class SimpleProvider
+    public class SimpleProvider : IDisposable
     {
         // These variables hold the layer and scratch paths.
         private readonly string scratchRoot;
@@ -128,6 +128,12 @@ namespace SimpleProviderManaged
             }
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            this.virtualizationInstance?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         private static bool IsEnumerationFilterSet(

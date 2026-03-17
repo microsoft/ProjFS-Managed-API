@@ -17,7 +17,7 @@ namespace Microsoft.Windows.ProjFS
     /// the ProjFS virtualization root is released, preventing zombie processes.
     /// </para>
     /// </remarks>
-    internal class SafeProjFsHandle : SafeHandleZeroOrMinusOneIsInvalid
+    internal sealed class SafeProjFsHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         /// <summary>
         /// Parameterless constructor required by P/Invoke marshaler for out-parameter usage.
