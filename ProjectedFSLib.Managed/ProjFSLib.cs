@@ -128,7 +128,7 @@ namespace Microsoft.Windows.ProjFS
 
         private static void ValidateNotificationRoot(string root)
         {
-            if (root == "." || (root != null && root.StartsWith(".\\")))
+            if (root == "." || (root != null && root.StartsWith(".\\", StringComparison.Ordinal)))
             {
                 throw new ArgumentException(
                     "notificationRoot cannot be \".\" or begin with \".\\\"");
@@ -216,7 +216,9 @@ namespace Microsoft.Windows.ProjFS
     // Interfaces
     public interface IWriteBuffer : IDisposable
     {
+#pragma warning disable CA1720 // Identifier contains type name — established public API, cannot rename
         IntPtr Pointer { get; }
+#pragma warning restore CA1720
         UnmanagedMemoryStream Stream { get; }
         long Length { get; }
     }
@@ -289,7 +291,7 @@ namespace Microsoft.Windows.ProjFS
             string triggeringProcessImageFileName);
     }
 
-    public interface IVirtualizationInstance
+    public interface IVirtualizationInstance : IDisposable
     {
         /// <summary>Returns the virtualization instance GUID.</summary>
         Guid VirtualizationInstanceId { get; }

@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Package** | `Microsoft.Windows.ProjFS` |
-| **Version** | 2.0.0 |
+| **Version** | 2.1.0 |
 | **Targets** | netstandard2.0, net8.0, net9.0, net10.0 |
 | **License** | MIT |
 

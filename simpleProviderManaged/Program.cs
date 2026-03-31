@@ -62,16 +62,7 @@ namespace SimpleProviderManaged
 
         private static void Run(ProviderOptions options)
         {
-            SimpleProvider provider;
-            try
-            {
-                provider = new SimpleProvider(options);
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Failed to create SimpleProvider.");
-                throw;
-            }
+            using SimpleProvider provider = new SimpleProvider(options);
 
             Log.Information("Starting provider");
 
