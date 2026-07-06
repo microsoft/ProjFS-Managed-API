@@ -41,6 +41,26 @@ namespace Microsoft.Windows.ProjFS
 #endif
         }
 
+        // Returns the native virtualization context, guarding against use before it has been
+        // established. _safeContext is only assigned by a successful StartVirtualizing call. If
+        // StartVirtualizing was never called, or threw (for example, an OutOfMemoryException while
+        // marshaling under memory pressure) before assigning the out parameter, _safeContext is
+        // still null. Passing a null SafeHandle to a P/Invoke throws a NullReferenceException from
+        // deep inside the generated marshaling stub, which is reported against the native entry
+        // point (e.g. PrjCompleteCommand / PrjDeleteFile) and is indistinguishable from a genuine
+        // native crash. Throwing InvalidOperationException here makes the misuse explicit and
+        // recoverable for the caller.
+        private SafeProjFsHandle RequireContext()
+        {
+            if (_safeContext == null)
+            {
+                throw new InvalidOperationException(
+                    "The virtualization instance is not running. StartVirtualizing must complete successfully before calling this method.");
+            }
+
+            return _safeContext;
+        }
+
         // Keep delegates alive to prevent GC while native code holds function pointers
         private StartDirectoryEnumerationDelegate _startDirEnumDelegate;
         private EndDirectoryEnumerationDelegate _endDirEnumDelegate;
@@ -278,14 +298,14 @@ namespace Microsoft.Windows.ProjFS
         public HResult ClearNegativePathCache(out uint totalEntryNumber)
         {
             ThrowIfDisposed();
-            int hr = ProjFSNative.PrjClearNegativePathCache(_safeContext, out totalEntryNumber);
+            int hr = ProjFSNative.PrjClearNegativePathCache(RequireContext(), out totalEntryNumber);
             return (HResult)hr;
         }
 
         public HResult DeleteFile(string relativePath, UpdateType updateFlags, out UpdateFailureCause failureReason)
         {
             ThrowIfDisposed();
-            int hr = ProjFSNative.PrjDeleteFile(_safeContext, relativePath, (uint)updateFlags, out uint cause);
+            int hr = ProjFSNative.PrjDeleteFile(RequireContext(), relativePath, (uint)updateFlags, out uint cause);
             failureReason = (UpdateFailureCause)cause;
             return (HResult)hr;
         }
@@ -315,7 +335,7 @@ namespace Microsoft.Windows.ProjFS
             CopyIdToVersionInfo(contentId, providerId, ref info.VersionInfo);
 
             int hr = ProjFSNative.PrjWritePlaceholderInfo(
-                _safeContext,
+                RequireContext(),
                 relativePath,
                 ref info,
                 (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>());
@@ -378,7 +398,7 @@ namespace Microsoft.Windows.ProjFS
                     PRJ_EXTENDED_INFO* pExt = &extendedInfo;
 
                     hr = ProjFSNative.PrjWritePlaceholderInfo2Raw(
-                        _safeContext,
+                        RequireContext(),
                         (IntPtr)pPath,
                         (IntPtr)System.Runtime.CompilerServices.Unsafe.AsPointer(ref info),
                         (uint)sizeof(PRJ_PLACEHOLDER_INFO),
@@ -390,7 +410,7 @@ namespace Microsoft.Windows.ProjFS
             else
             {
                 int hr = ProjFSNative.PrjWritePlaceholderInfo(
-                    _safeContext,
+                    RequireContext(),
                     relativePath,
                     ref info,
                     (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>());
@@ -424,7 +444,7 @@ namespace Microsoft.Windows.ProjFS
             CopyIdToVersionInfo(contentId, providerId, ref info.VersionInfo);
 
             int hr = ProjFSNative.PrjUpdateFileIfNeeded(
-                _safeContext,
+                RequireContext(),
                 relativePath,
                 ref info,
                 (uint)Marshal.SizeOf<PRJ_PLACEHOLDER_INFO>(),
@@ -438,7 +458,7 @@ namespace Microsoft.Windows.ProjFS
         public HResult CompleteCommand(int commandId, HResult completionResult)
         {
             ThrowIfDisposed();
-            int hr = ProjFSNative.PrjCompleteCommand(_safeContext, commandId, (int)completionResult, IntPtr.Zero);
+            int hr = ProjFSNative.PrjCompleteCommand(RequireContext(), commandId, (int)completionResult, IntPtr.Zero);
             return (HResult)hr;
         }
 
@@ -451,7 +471,7 @@ namespace Microsoft.Windows.ProjFS
                 NotificationMask = (uint)newNotificationMask,
             };
 
-            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_safeContext, commandId, 0, ref extParams);
+            int hr = ProjFSNative.PrjCompleteCommandWithNotification(RequireContext(), commandId, 0, ref extParams);
             return (HResult)hr;
         }
 
@@ -465,21 +485,21 @@ namespace Microsoft.Windows.ProjFS
                 DirEntryBufferHandle = dirResults.DirEntryBufferHandle,
             };
 
-            int hr = ProjFSNative.PrjCompleteCommandWithNotification(_safeContext, commandId, 0, ref extParams);
+            int hr = ProjFSNative.PrjCompleteCommandWithNotification(RequireContext(), commandId, 0, ref extParams);
             return (HResult)hr;
         }
 
         public HResult CompleteCommand(int commandId)
         {
             ThrowIfDisposed();
-            int hr = ProjFSNative.PrjCompleteCommand(_safeContext, commandId, 0, IntPtr.Zero);
+            int hr = ProjFSNative.PrjCompleteCommand(RequireContext(), commandId, 0, IntPtr.Zero);
             return (HResult)hr;
         }
 
         public IWriteBuffer CreateWriteBuffer(uint desiredBufferSize)
         {
             ThrowIfDisposed();
-            return new WriteBuffer(_safeContext, desiredBufferSize);
+            return new WriteBuffer(RequireContext(), desiredBufferSize);
         }
 
         public IWriteBuffer CreateWriteBuffer(ulong byteOffset, uint length, out ulong alignedByteOffset, out uint alignedLength)
@@ -488,7 +508,7 @@ namespace Microsoft.Windows.ProjFS
             // Get the sector size from PrjGetVirtualizationInstanceInfo so we can
             // compute aligned values for byteOffset and length.
             var instanceInfo = new PRJ_VIRTUALIZATION_INSTANCE_INFO();
-            int hr = ProjFSNative.PrjGetVirtualizationInstanceInfo(_safeContext, ref instanceInfo);
+            int hr = ProjFSNative.PrjGetVirtualizationInstanceInfo(RequireContext(), ref instanceInfo);
             if (hr < 0)
             {
                 throw new System.ComponentModel.Win32Exception(hr,
@@ -513,7 +533,7 @@ namespace Microsoft.Windows.ProjFS
         public HResult WriteFileData(Guid dataStreamId, IWriteBuffer buffer, ulong byteOffset, uint length)
         {
             ThrowIfDisposed();
-            int hr = ProjFSNative.PrjWriteFileData(_safeContext, ref dataStreamId, buffer.Pointer, byteOffset, length);
+            int hr = ProjFSNative.PrjWriteFileData(RequireContext(), ref dataStreamId, buffer.Pointer, byteOffset, length);
             return (HResult)hr;
         }
 
